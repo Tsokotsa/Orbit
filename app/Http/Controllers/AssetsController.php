@@ -112,6 +112,7 @@ class AssetsController extends Controller
 
     public function add_model(Request $request)
     {
+        $user = auth()->user();
         // Get raw Tagify JSON string
         $modelsJson = $request->vendor_model; // e.g., '[{"value":"MG3455"},{"value":"MG6789"}]'
 
