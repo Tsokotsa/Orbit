@@ -1,0 +1,1 @@
+Those are the logs for client {{ $client_id }}
