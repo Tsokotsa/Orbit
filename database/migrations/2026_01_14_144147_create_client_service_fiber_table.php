@@ -15,6 +15,12 @@ return new class extends Migration
             $table->id();
             $table->integer('service_id');
             $table->integer('client_id');
+            $table->integer('site_id')->nullable();
+            $table->string('ip')->nullable();
+            $table->string("vlan")->nullable();
+            $table->enum('status', ['active', 'suspended', 'disabled', 'other'])->default('active');
+            $table->enum('suspension', ['auto', 'mannual', 'force', 'other'])->default('auto');
+            $table->string('additional_info')->nullable();
             $table->timestamps();
         });
     }

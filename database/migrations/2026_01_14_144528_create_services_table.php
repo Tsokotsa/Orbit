@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
+            $table->string('table_identifier')->nullable();
             $table->string('d_speed')->nullable();
             $table->string('u_speed')->nullable();
             $table->string('profile')->nullable();
+            $table->string('icon')->nullable();
+            $table->string('logo')->nullable();
             $table->json('pops')->nullable();
             $table->json('mediums')->nullable();
             $table->enum('public_ip', ['y','n'])->default('n');
