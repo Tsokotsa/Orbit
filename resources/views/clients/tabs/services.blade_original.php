@@ -13,27 +13,38 @@
                 <!--begin::Menu-->
                 <div class="menu menu-column menu-rounded menu-state-bg menu-state-primary fw-semibold"
                     id="services-module">
-                    <!-- Tsokotsa cid -->
-                    <input type="hidden" id="client_id" value="{{ $client_id }}">
-                    <!-- END -->
 
-                    @forelse($client_services as $services)
-                        <div class="menu-item">
-                            <a href="#" class="menu-link" data-service-tab="{{ $services['service_name'] }}">
-                                <span class="menu-icon">
-                                    <i class="{{ $services['icon'] }}"></i>
-                                </span>
-                                <span class="menu-title">{{ Str::ucfirst($services['service_name']) }}</span>
-                                <span class="menu-badge">
-                                    <span class="badge badge-sm badge-circle badge-warning">{{ $services['count'] }}</span>
-                                </span>
-                            </a>
-                        </div>
-                    @empty
-                        <div class="menu-item text-center">
-                            <h6 class="text-muted">No Services Found</h6>
-                        </div>
-                    @endforelse
+                    <div class="menu-item">
+                        <a href="#" class="menu-link active" data-service-tab="fiber">
+                            <span class="menu-icon">
+                                <i class="bi bi-optical-audio fs-3"></i>
+                            </span>
+                            <span class="menu-title">Fiber</span>
+                        </a>
+                    </div>
+
+                    <div class="menu-item">
+                        <a href="#" class="menu-link" data-service-tab="wireless">
+                            <span class="menu-icon">
+                                <i class="fa fa-wifi fs-3"></i>
+                            </span>
+                            <span class="menu-title">Wireless</span>
+                            <span class="menu-badge">
+                                <span class="badge badge-sm badge-circle badge-danger">5</span>
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="menu-item">
+                        <a href="#" class="menu-link" data-service-tab="vsat">
+                            <span class="menu-icon">
+                                <i class="fa fa-satellite fs-3"></i>
+                            </span>
+                            <span class="menu-title">Vsat</span>
+                        </a>
+                    </div>
+
+
                 </div>
                 <!--end::Menu-->
             </div>

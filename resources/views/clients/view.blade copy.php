@@ -135,30 +135,21 @@
     </script>
 
     <script>
-        function loadServiceTab(service) {
 
+        function loadServiceTab(service) {
             $('#service-tab-content').html(`
         <div class="d-flex justify-content-center align-items-center" style="min-height:200px">
             <p class="text-muted fs-4 mb-0">Loading Orbit service...</p>
         </div>
     `);
+            $.get(`/client/services/${service}`, function(response) {
+                $('#service-tab-content').html(response);
 
-            $.ajax({
-                url: `/client/services/${service}`,
-                method: 'GET',
-                data: {
-                    client_id: window.CLIENT_ID
-                },
-                success: function(response) {
-                    $('#service-tab-content').html(response);
-                },
-                error: function() {
-                    $('#service-tab-content').html(
-                        '<div class="text-center text-muted">Failed to load service</div>'
-                    );
-                }
             });
         }
+
+        // initial load
+        loadServiceTab('fiber');
 
         // delegated click handler
         $(document).on('click', '#services-module .menu-link', function(e) {

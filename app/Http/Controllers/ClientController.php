@@ -8,6 +8,16 @@ use Log;
 
 class ClientController extends Controller
 {
+
+    // Class property
+    protected $client_services_table;
+
+    // Constructor to initialize it
+    public function __construct()
+    {
+        $this->client_services_table = "client_service_"; // example, could come from auth() or request
+    }
+
     public function view_cLient(Request $request)
     {
         $client = "";
@@ -74,9 +84,53 @@ class ClientController extends Controller
             case 'services':
 
                 $clientId = $request->query('client_id');
+
+                Log::info("Retrieving all Services for client $clientId");
+
+                // 1️⃣ Get distinct table_identifiers
+                $serviceGroups = DB::table('services')
+                    ->select('table_identifier')
+                    ->distinct()
+                    ->get();
+
+                $clientServices = [];
+
+                foreach ($serviceGroups as $group) {
+
+                    $tableIdentifier = $group->table_identifier;
+                    $table = $this->client_services_table . $tableIdentifier;
+
+                    // 2️⃣ Get service IDs for this table_identifier
+                    $serviceIds = DB::table('services')
+                        ->where('table_identifier', $tableIdentifier)
+                        ->pluck('id');
+
+                    // 3️⃣ Count client services in the dynamic table
+                    $count = DB::table($table)
+                        ->where('client_id', $clientId)
+                        ->whereIn('service_id', $serviceIds)
+                        ->count();
+
+                    if ($count > 0) {
+                        // 4️⃣ Get display data (icon, speed, etc.)
+                        $serviceMeta = DB::table('services')
+                            ->where('table_identifier', $tableIdentifier)
+                            ->first();
+
+                        $clientServices[] = [
+                            'service_name' => $tableIdentifier,
+                            'icon' => $serviceMeta->icon,
+                            'd_speed' => $serviceMeta->d_speed,
+                            'count' => $count,
+                        ];
+                    }
+
+                }
+
                 Log::info("This is the cliet ID that was passed on the [ $tab ] TAB $clientId");
                 return view('clients.tabs.services', [
-                    'client_id' => $clientId
+                    'client_id' => $clientId,
+                    'client_services' => $clientServices
                 ]);
 
 
