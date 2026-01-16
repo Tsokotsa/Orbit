@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Log;
+use App\Helpers\Tsokotsa\activityHelper;
 use function Laravel\Prompts\select;
 
 class ServiceController extends Controller
@@ -71,12 +72,16 @@ class ServiceController extends Controller
 
     public function get_service_satt(Request $request)
     {
+        $logger = new activityHelper();
         $table = "satt";
         $clientID = $request->client_id;
 
         $services = $this->get_service_by_id($table, $clientID);
 
         Log::info("Found Services for client $clientID  ====  $services");
+        
+        $logger->logActivity('Accessed resource', $table, $clientID);
+
 
         return view("clients.services.satt-tab")->with(["services" => $services]);
     }

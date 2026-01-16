@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Models\Activity;
 
+class activityHelper {
 
-if (! function_exists('logActivity')) {
     /**
      * Log activity with user_id and acc_id.
      *
@@ -27,4 +27,7 @@ if (! function_exists('logActivity')) {
             ])
             ->log($description);
     }
+
 }
+
+
