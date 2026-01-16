@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Log;
-use App\Helpers\Tsokotsa\activityHelper;
+use activityHelper;
 use function Laravel\Prompts\select;
 
 class ServiceController extends Controller

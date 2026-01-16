@@ -1,29 +1,34 @@
 <?php
 
-namespace App\Helpers\Tsokotsa;
-
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Models\Activity;
+use Jenssegers\Agent\Agent;
 
-class activityHelper {
+class ActivityHelper
+{
 
     /**
-     * Log activity with user_id and acc_id.
+     * Log activity with user info, account, device, IP and timestamp
      *
      * @param string $description
-     * @param mixed $subject
+     * @param mixed|null $subject
      * @param int|null $accId
      * @return void
      */
     function logActivity(string $description, $subject = null, $accId = null)
     {
+        $agent = new Agent();
+
         activity()
             ->causedBy(auth()->user())
-            ->performedOn($subject)
+ //           ->performedOn($subject)
             ->withProperties([
                 'acc_id' => $accId ?? auth()->user()->acc_id ?? null,
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'device' => $agent->device(),
+                'platform' => $agent->platform(),
+                'browser' => $agent->browser(),
+                'timestamp' => now()->toDateTimeString(),
             ])
             ->log($description);
     }

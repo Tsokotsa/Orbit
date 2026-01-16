@@ -1,9 +1,13 @@
-<div class="card mb-5 mb-lg-10" data-select2-id="select2-data-111-v6v5">
+<div class="card mb-5 mb-xl-10">
     <!--begin::Card header-->
-    <div class="card-header">
+    <div class="card-header border-0 pt-6">
         <!--begin::Heading-->
         <div class="card-title">
-            <h3>Acc Activity</h3>
+            <div class="d-flex align-items-center position-relative my-1">
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                <input type="text" data-kt-user-table-filter="search"
+                    class="form-control form-control-solid w-250px ps-13" placeholder="Search activities...">
+            </div>
         </div>
         <!--end::Heading-->
         <!--begin::Toolbar-->
@@ -36,13 +40,13 @@
     </div>
     <!--end::Card header-->
     <!--begin::Card body-->
-    <div class="card-body p-0">
+    <div class="card-body pt-9 pb-0">
         <!--begin::Table wrapper-->
         <div class="table-responsive">
             <!--begin::Table-->
             <table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9">
                 <!--begin::Thead-->
-                <thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
+                <thead class="fs-5 fw-semibold bg-lighten fw-semibold fs-6 text-muted">
                     <tr>
                         <th class="min-w-100px">User</th>
                         <th class="min-w-250px">Actions</th>
@@ -54,27 +58,25 @@
                 <!--end::Thead-->
                 <!--begin::Tbody-->
                 <tbody class="fw-6 fw-semibold text-gray-600">
-                    <tr>
-                        <td>
-                            <a href="#" class="text-hover-primary text-gray-600">{{ $activity->uid }}</a>
-                        </td>
-                        <td>
-                            <span class="badge badge-light-success fs-7 fw-bold">{{ $activity->description }}</span>
-                        </td>
-                        <td>{{ $activity->u_device }}</td>
-                        <td>{{ $activity->u_ip }}</td>
-                        <td>{{ $activity->u_date }}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <a href="#" class="text-hover-primary text-gray-600">United Kingdom(10)</a>
-                        </td>
-                        <td>
-                            <span class="badge badge-light-success fs-7 fw-bold">OK</span>
-                        </td>
-                        <td>Safari - Mac OS</td>
-                        <td>236.125.56.78</td>
-                        <td>10 mins ago</td>
+                    @forelse ($activity as $log)
+                        <tr>
+                            <td>
+                                <a href="#" class="text-hover-primary text-gray-600">{{ $log->causer?->name }}
+                                    {{ $log->causer?->surname }}</a>
+                            </td>
+                            <td>
+                                <span class="badge badge-light-success fs-7 fw-bold">{{ $log->description }}</span>
+                            </td>
+                            <td>{{ $log->properties['device'] ?? '-' }} ({{ $log->properties['platform'] ?? '-' }})</td>
+                            <td>{{ $log->properties['ip'] ?? '-' }}</td>
+                            <td>{{ $log->properties['timestamp'] ?? $log->created_at }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No activities found on this plannet ...
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
                 <!--end::Tbody-->
             </table>

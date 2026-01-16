@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use ActivityHelper;
+use Spatie\Activitylog\Models\Activity;
 use Log;
 
 class ClientController extends Controller
@@ -136,9 +138,20 @@ class ClientController extends Controller
 
             case 'logs':
                 $clientId = $request->query('client_id');
+                $userId = auth()->id(); // currently logged-in user
+
                 Log::info("This is the cliet ID that was passed on the [ $tab ] TAB $clientId");
+                $logs = Activity::where('causer_id', $userId)
+                    ->whereJsonContains('properties->acc_id', $clientId)
+                    ->latest()
+                    ->get();
+                
+                Log::info($logs);
+
+
                 return view('clients.tabs.logs', [
-                    'client_id' => $clientId
+                    'client_id' => $clientId,
+                    'activity'  => $logs
                 ]);
 
             default:
