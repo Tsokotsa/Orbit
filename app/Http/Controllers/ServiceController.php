@@ -19,7 +19,7 @@ class ServiceController extends Controller
 
     public function get_service_by_id($table, $client_id)
     {
-        $table = $this->client_services_table.$table;
+        $table = $this->client_services_table . $table;
         /* $allowedTables = ['service_table1', 'service_table2', 'service_table3']; Tsokotsa Future filter tables
 
         if (!in_array($table, $allowedTables)) {
@@ -33,8 +33,8 @@ class ServiceController extends Controller
             ->join('services', "$table.service_id", '=', 'services.id')
             ->where("$table.client_id", $client_id)
             ->select(
-                "$table.*", "services.*"         // All columns from client-specific table
-
+                "$table.*",
+                "services.*"         // All columns from client-specific table
             )->get();
 
     }
@@ -54,7 +54,7 @@ class ServiceController extends Controller
 
         Log::info("Found Services for client $clientID  ====  $services");
 
-        return view("clients.services.fiber-tab")->with(["services_$table" => $services]);
+        return view("clients.services.fiber-tab")->with(["services" => $services]);
     }
 
     public function get_service_wireless(Request $request)
@@ -66,7 +66,7 @@ class ServiceController extends Controller
 
         Log::info("Found Services for client $clientID  ====  $services");
 
-        return view("clients.services.wireless-tab")->with(['services' => $services]);
+        return view("clients.services.wireless-tab")->with(["services" => $services]);
     }
 
     public function get_service_satt(Request $request)
@@ -78,7 +78,7 @@ class ServiceController extends Controller
 
         Log::info("Found Services for client $clientID  ====  $services");
 
-        return view("clients.services.satt-tab")->with(['services' => $services]);
+        return view("clients.services.satt-tab")->with(["services" => $services]);
     }
 
     public function get_ajax(Request $request)

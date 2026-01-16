@@ -23,6 +23,7 @@
 
     <link href=" assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/tsokotsa.css" rel="stylesheet" type="text/css" />
     
     @stack('styles')
     <!--end::Global Stylesheets Bundle-->

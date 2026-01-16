@@ -32,7 +32,8 @@
         },
 
         "files":[
-            "app/Helpers/Tsokotsa/generalHelpers.php"
+            "app/Helpers/Tsokotsa/generalHelpers.php",
+            "app/Helpers/Tsokotsa/activityHelper.php"
         ]
     },
     "autoload-dev": {
