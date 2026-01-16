@@ -118,6 +118,14 @@
                             <span class="menu-title">Assets</span>
                         </a>
                         <!--end:Menu link-->
+                        <!--begin:Menu link-->
+                        <a class="menu-link" href="/calix">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                            <span class="menu-title">Calix</span>
+                        </a>
+                        <!--end:Menu link-->
                     </div>
                     <!--end:Menu item-->
                 </div>

@@ -35,13 +35,8 @@ class CalixService
     /**
      * Fetch GUI variables (with offset/limit)
      */
-    public function getGuiVariable(
-        //string $variableName, // the dynamic part in the URL
-        $variableName = "Maputo",
-        int $offset = 0,
-        int $limit = 20
-    ) {
-        $endpoint = "/rest/v1/config/device/gui/{$variableName}";
+    public function exec_query($endpoint, $query, int $offset, int $limit)
+    {
 
         $params = [
             'offset' => $offset,
