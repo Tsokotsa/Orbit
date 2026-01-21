@@ -5,42 +5,56 @@
         <!--begin::Content container-->
         <div id="kt_app_content_container" class="app-container container-fluid">
 
-            <div class="card mb-5 mb-xl-10">
-                <div class="card-body pt-9 pb-0">
-                    <!--begin::Details-->
-                    <div class="d-flex flex-wrap flex-sm-nowrap"></div>
-                    <!--end::Details-->
-                    <!--begin::Navs-->
-                    <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold" id="dataTabs"
-                        role="tablist">
-                        <!--begin::Nav item-->
+            <div class="card mb-5 mb-xl-10 position-relative overflow-hidden card-rounded">
+                <!-- Ribbon Top-Left -->
+                <div class="ribbon ribbon-triangle ribbon-top-start border-success">
+                    <div class="ribbon-icon mt-n5 ms-n6">
+                        <i class="bi bi-check fs-2 text-white"></i> <!-- Replace icon as needed -->
+                    </div>
+                </div>
+
+                <!-- Header -->
+                <div class="card-header py-4">
+                    <div class="card-title d-flex flex-column">
+                        <span class="text-muted text-uppercase fw-semibold fs-6 mb-1">
+                            {{ $client['name'] }}
+                        </span>
+                        <span class="fw-bold fs-9 text-gray-900 letter-spacing">
+                           Acc Number:  {{ $client['id'] }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body pt-2 pb-0">
+                    <!-- Optional Details Section -->
+                    <div class="d-flex flex-wrap flex-sm-nowrap">
+                        <!-- Add summary stats, badges, or icons here -->
+                    </div>
+
+                    <!-- Nav Tabs -->
+                    <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold"
+                        id="dataTabs" role="tablist">
                         <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5 active" data-bs-toggle="tab"
                                 data-tab="overview" href="#">Overview</a>
                         </li>
-                        <!--end::Nav item-->
-                        <!--begin::Nav item-->
                         <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="assets"
                                 href="#">Assets</a>
                         </li>
-                        <!--end::Nav item-->
-                        <!--begin::Nav item-->
                         <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="services"
                                 href="#">Services</a>
                         </li>
-                        <!--end::Nav item-->
-                        <!--begin::Nav item-->
                         <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="logs"
                                 href="#">Logs</a>
                         </li>
-                        <!--end::Nav item-->
                     </ul>
-                    <!--begin::Navs-->
                 </div>
             </div>
+
 
             <!-- Include The Tabs -->
             <div class="tab-content mt-3">

@@ -20,7 +20,12 @@ use Illuminate\Support\Facades\Schedule;
 // Schedule::job(new CountMsgsJob)->everyFifteenMinutes(); // This Works
 // Schedule::job(new CountMsgsJob)->everyMinute(); // Use the above, this is for test
 
- Schedule::command('send-email-cmd')->everyFifteenSeconds(); // This Test
+ //Schedule::command('send-email-cmd')->everyFifteenSeconds(); // This Test
+
+Schedule::command('starlink:refresh-token')
+    ->everyFiveMinutes()
+    ->withoutOverlapping();
+
 
 
 

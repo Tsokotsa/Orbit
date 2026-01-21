@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\OdooService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use ActivityHelper;
@@ -12,33 +13,34 @@ class ClientController extends Controller
 {
 
     // Class property
+    protected OdooService $odooservice;
     protected $client_services_table;
 
     // Constructor to initialize it
-    public function __construct()
+    public function __construct(OdooService $odoo)
     {
         $this->client_services_table = "client_service_"; // example, could come from auth() or request
+        $this->odooservice = $odoo;
     }
 
     public function view_cLient(Request $request)
     {
-        $client = "";
         $client_id = $request->query('client_id'); // retrieves 6170
 
-        // $client_query = $odoo->execute(
-        //     'res.partner',
-        //     'search_read',
-        //     [
-        //         [['id', '=', $client_id]],
-        //     ],
-        //     [
-        //         'fields' => ['id', 'name', 'email', 'phone', 'company_type', 'create_date',],
-        //         //'limit' => 5,
-        //     ]
-        // );
-        // $client = $client_query[0];
-        //    Log::info("Retrieving Client wih ID:  $client_id");
-        return view('clients.view')->with('client_id', $client_id);
+        $client_query = $this->odooservice->execute(
+            'res.partner',
+            'search_read',
+            [
+                [['id', '=', $client_id]],
+            ],
+            [
+                'fields' => ['id', 'name', 'email', 'phone', 'company_type', 'create_date',],
+                //'limit' => 5,
+            ]
+        );
+        $client = $client_query[0];
+        Log::info("Retrieving Client wih ID:  $client_id");
+        return view('clients.view')->with(['client_id' => $client_id, 'client' => $client]);
     }
 
     public function get_all_assets()
@@ -59,7 +61,7 @@ class ClientController extends Controller
 
     public function load($tab, Request $request)
     {
-        // $client_id = $request->query('client_id');
+        $client_id = $request->query('client_id');
 
         // Log::info("Got from Request $client_id");
         // return false;
@@ -67,7 +69,7 @@ class ClientController extends Controller
         switch ($tab) {
             case 'overview':
 
-                return view('clients.tabs.overview')->with('client_id', "1734");
+                return view('clients.tabs.overview')->with('client_id', $client_id);
 
             case 'assets':
                 $clientId = $request->query('client_id');
@@ -145,13 +147,13 @@ class ClientController extends Controller
                     ->whereJsonContains('properties->acc_id', $clientId)
                     ->latest()
                     ->get();
-                
+
                 Log::info($logs);
 
 
                 return view('clients.tabs.logs', [
                     'client_id' => $clientId,
-                    'activity'  => $logs
+                    'activity' => $logs
                 ]);
 
             default:

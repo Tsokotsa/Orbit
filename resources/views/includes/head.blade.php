@@ -20,7 +20,7 @@
     
 
     <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/7.0.0/css/flag-icons.min.css" rel="stylesheet">
     <link href=" assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/tsokotsa.css" rel="stylesheet" type="text/css" />
