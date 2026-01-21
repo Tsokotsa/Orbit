@@ -40,11 +40,11 @@ class OdooService
     {
         $response = $this->http()->post($this->url . '/jsonrpc', [
             'jsonrpc' => '2.0',
-            'method'  => 'call',
-            'params'  => [
+            'method' => 'call',
+            'params' => [
                 'service' => 'common',
-                'method'  => 'authenticate',
-                'args'    => [
+                'method' => 'authenticate',
+                'args' => [
                     $this->db,
                     $this->username,
                     $this->apiKey,
@@ -72,11 +72,11 @@ class OdooService
     ) {
         $response = $this->http()->post($this->url . '/jsonrpc', [
             'jsonrpc' => '2.0',
-            'method'  => 'call',
-            'params'  => [
+            'method' => 'call',
+            'params' => [
                 'service' => 'object',
-                'method'  => 'execute_kw',
-                'args'    => [
+                'method' => 'execute_kw',
+                'args' => [
                     $this->db,
                     $this->uid,
                     $this->apiKey,
@@ -98,5 +98,24 @@ class OdooService
         }
 
         return $response['result'];
+    }
+
+    public function get_client_by_id($client_id)
+    {
+
+        $query = $this->execute(
+            'res.partner',
+            'search_read',
+            [
+                [['id', '=', $client_id]],
+            ],
+            [
+                'fields' => ['id', 'name', 'email', 'phone', 'company_type', 'create_date',],
+                //'limit' => 5,
+            ]
+        );
+
+        return $query[0];
+
     }
 }

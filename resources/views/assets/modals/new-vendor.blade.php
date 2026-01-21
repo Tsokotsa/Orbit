@@ -1,8 +1,8 @@
-<div class="modal fade" tabindex="-1" id="modelModal">
+<div class="modal fade" tabindex="-1" id="vendorModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Add New Model</h3>
+                <h3 class="modal-title">Add New vendor</h3>
 
                 <!--begin::Close-->
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
@@ -12,17 +12,17 @@
             </div>
 
             <div class="modal-body">
-                <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed p-6 mb-8">
+                <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed p-6 mb-8">
                     <!--begin::Icon-->
-                    <i class="ki-outline ki-information fs-2tx text-warning me-4"></i>
+                    <i class="ki-outline ki-information fs-2tx text-primary me-4"></i>
                     <!--end::Icon-->
                     <!--begin::Wrapper-->
                     <div class="d-flex flex-stack flex-grow-1">
                         <!--begin::Content-->
                         <div class="fw-semibold">
                             <h4 class="text-gray-900 fw-bold">Pay attention!</h4>
-                            <div class="fs-8 text-gray-700">Make sure you bind the model to the correct Vendor
-                                <a class="fw-bold" href="#">New Vendor</a>.
+                            <div class="fs-8 text-gray-700">Make sure you not duplicating Vendors
+                                <a class="fw-bold" href="#">Show Existing Vendors</a>.
                             </div>
                         </div>
                         <!--end::Content-->

@@ -84,10 +84,21 @@
                                 @endforeach
                             </div>
                             <!--end::Items-->
-                            <div class="card-footer border-0" style="text-align:center">
-                                <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#vendorModal">Add New Model</a>
+                            <div class="card-footer border-0 d-flex justify-content-center gap-3">
+                                <button type="button" class="btn btn-sm btn-light-primary" data-bs-toggle="modal"
+                                    data-bs-target="#vendorModal">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Add Vendor
+                                </button>
+                                <!-- Secondary button (modal trigger) -->
+
+                                <button type="button" class="btn btn-sm btn-success fw-semibold" data-bs-toggle="modal"
+                                    data-bs-target="#modelModal">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Add Model
+                                </button>
                             </div>
+
                         </div>
                         <!--end: Card Body-->
                     </div>
@@ -95,6 +106,7 @@
                 </div>
                 <!-- Include Modals -->
                 @include('assets.modals.new-model')
+                @include('assets.modals.new-vendor')
                 <!-- END Include -->
                 <div class="col-xl-8">
                     <!--begin::Card-->
@@ -872,7 +884,7 @@
         });
 
 
-        $('#vendorModal').on('shown.bs.modal', function() {
+        $('#modelModal').on('shown.bs.modal', function() {
 
             const $select = $('#vendorSelect');
 
@@ -894,7 +906,7 @@
                     });
 
                     $select.select2({
-                        dropdownParent: $('#vendorModal'),
+                        dropdownParent: $('#modelModal'),
                         placeholder: 'Select a vendor',
                         allowClear: true,
                         width: '100%',
@@ -995,30 +1007,30 @@
         });
 
         function formatVendor(vendor) {
-    if (!vendor.id) return vendor.text;
+            if (!vendor.id) return vendor.text;
 
-    const logo = $(vendor.element).data('logo');
+            const logo = $(vendor.element).data('logo');
 
-    return `
+            return `
         <div class="d-flex align-items-center">
             <img src="${logo}" class="me-2" style="width:24px;height:24px;border-radius:4px;">
             <span>${vendor.text}</span>
         </div>
     `;
-}
+        }
 
-function formatVendorSelection(vendor) {
-    if (!vendor.id) return vendor.text;
+        function formatVendorSelection(vendor) {
+            if (!vendor.id) return vendor.text;
 
-    const logo = $(vendor.element).data('logo');
+            const logo = $(vendor.element).data('logo');
 
-    return `
+            return `
         <div class="d-flex align-items-center">
             <img src="${logo}" class="me-2" style="width:20px;height:20px;border-radius:4px;">
             <span>${vendor.text}</span>
         </div>
     `;
-}
+        }
 
 
 

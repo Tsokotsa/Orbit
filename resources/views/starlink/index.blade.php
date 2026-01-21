@@ -21,7 +21,7 @@
                         <!-- Header -->
                         <div class="card-header py-4">
                             <div class="card-title d-flex flex-column">
-                                <span class="text-muted text-uppercase fw-semibold fs-6 mb-1">
+                                <span class="text-muted text-uppercase fw-semibold fs-6 mb-1 pt-4">
                                     {{ $account['content']['accountName'] ?? '—' }}
                                 </span>
                                 <span class="fw-bold fs-9 text-gray-900 letter-spacing">
@@ -78,7 +78,7 @@
 
                         <div class="card-body pt-0">
                             <div class="table-responsive">
-                                <table class="table align-middle table-row-dashed fs-9 gy-4" id="subscribersTable">
+                                <table class="table align-middle table-row-dashed fs-8 gy-4" id="subscribersTable">
                                     <thead>
                                         <tr class="fw-bold text-gray-600 text-uppercase">
                                             <th>Service Line</th>
@@ -119,12 +119,12 @@
                                                                     $unit = 'GB';
                                                                 }
                                                             @endphp
-                                                            <div class="d-flex flex-column gap-1 p-2 mb-2 rounded bg-light">
+                                                            <div class="d-flex flex-column gap-1 rounded">
                                                                 <span
-                                                                    class="badge badge-light-dark">{{ $block['productId'] ?? '—' }}</span>
-                                                                <span class="badge badge-light-primary"
-                                                                    data-bs-toggle="tooltip" title="Monthly Plan">
-                                                                    Used: {{ $block['count'] ?? 0 }} | Plan:
+                                                                    class="badge badge-light-primary">{{ $block['productId'] ?? '—' }}</span>
+                                                                <span class="badge badge-dark "
+                                                                    data-bs-toggle="tooltip" title="Monthly Plan" style="width: fit-content;">
+                                                                    Plan: 
                                                                     {{ $value }} {{ $unit }}
                                                                 </span>
                                                                 <div class="text-muted fs-8">

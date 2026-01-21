@@ -27,18 +27,8 @@ class ClientController extends Controller
     {
         $client_id = $request->query('client_id'); // retrieves 6170
 
-        $client_query = $this->odooservice->execute(
-            'res.partner',
-            'search_read',
-            [
-                [['id', '=', $client_id]],
-            ],
-            [
-                'fields' => ['id', 'name', 'email', 'phone', 'company_type', 'create_date',],
-                //'limit' => 5,
-            ]
-        );
-        $client = $client_query[0];
+        $client = $this->odooservice->get_client_by_id($client_id);
+
         Log::info("Retrieving Client wih ID:  $client_id");
         return view('clients.view')->with(['client_id' => $client_id, 'client' => $client]);
     }
@@ -69,7 +59,12 @@ class ClientController extends Controller
         switch ($tab) {
             case 'overview':
 
-                return view('clients.tabs.overview')->with('client_id', $client_id);
+                $client = $this->odooservice->get_client_by_id($client_id);
+
+                Log::info("Retrieved Many clients from DB " .json_encode($client));
+                Log::info("This is the cliet ID that was passed on the [ $tab ] TAB $client_id");
+
+                return view('clients.tabs.overview')->with(['client_id' => $client_id, 'client' => $client]);
 
             case 'assets':
                 $clientId = $request->query('client_id');

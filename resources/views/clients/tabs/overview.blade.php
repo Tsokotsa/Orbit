@@ -9,7 +9,7 @@
                     <div class="col-md-8 fv-row fv-plugins-icon-container">
                         <!--begin::Label-->
                         <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                            <span class="required">Target Title</span>
+                            <span class="required">Acc Name</span>
                             <span class="ms-1" data-bs-toggle="tooltip" aria-label="This is the Acc from Odoo."
                                 data-bs-original-title="This is the Acc from Odoo." data-kt-initialized="1">
                                 <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i></span>
@@ -17,7 +17,7 @@
                         <!--end::Label-->
                         <input type="hidden" id="client_id" value="{{ $client_id }}">
                         <input type="text" class="form-control form-control-solid disabled"
-                            value="{{ $client['name'] ?? ' N/A' }}">
+                            value="{{ $client['name'] ?? 'N/A' }}">
                         <div
                             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                         </div>
@@ -85,10 +85,9 @@
 
                 <!--begin::Input group-->
                 <div class="d-flex flex-column mb-8">
-                    <label class="fs-6 fw-semibold mb-2">Target Details</label>
-
-                    <textarea class="form-control form-control-solid" rows="3" name="target_details"
-                        placeholder="Type Target Details">                        </textarea>
+                    <label class="fs-6 fw-semibold mb-2">Special Notes</label>
+                    <textarea class="form-control form-control-solid" rows="3" name="target_details" placeholder="Some info we must note">
+                    </textarea>
                 </div>
                 <!--end::Input group-->
 
