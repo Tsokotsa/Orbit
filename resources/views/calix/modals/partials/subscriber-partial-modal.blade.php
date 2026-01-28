@@ -1,309 +1,241 @@
-<form id="modal_add_contact_form" class="form fv-plugins-bootstrap5 fv-plugins-framework" action="#">
-    @csrf
-    <div class="card border-0">
-        <div class="card-header card-header-stretch">
-            <h3 class="card-title" id="subscriberModalTitle">Subscriber
-                <span class="badge bg-warning text-dark ms-2">
-                    {{ $subscriber[0]['subscriber']['name'] }}
+<div class="accordion accordion-icon-toggle" id="kt_ports_accordion">
+
+    @foreach ($subscribers[0]['associate-port'] ?? [] as $index => $port)
+        @php
+            $collapseId = "port_collapse_$index";
+            $detailsTab = "details_tab_$index";
+            $profileTab = "profile_tab_$index";
+            $ipv4Tab = "ipv4_tab_$index";
+            $actionsTab = "actions_tab_$index";
+        @endphp
+
+        <div class="mb-5">
+            <!-- Header -->
+            <div class="accordion-header py-3 d-flex {{ $index !== 0 ? 'collapsed' : '' }}" data-bs-toggle="collapse"
+                data-bs-target="#{{ $collapseId }}">
+
+                <span class="accordion-icon">
+                    <i class="ki-duotone ki-arrow-right fs-4">
+                        <span class="path1"></span><span class="path2"></span>
+                    </i>
                 </span>
-            </h3>
-            <div class="card-toolbar">
-                <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_pane_7">Details</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_pane_8">Profile</a>
-                    </li>
-                </ul>
+                <h6
+                    class="fs-8 fw-semibold mb-0 ms-4 badge {{ $port['ont_status']['oper-status'] === 'present'
+                        ? 'bg-light-primary'
+                        : 'bg-light-danger
+                                                                                                
+                                                                                                ' }} text-dark">
+                    {{ $port['port'] ?? '—' }}
+                    <span class="badge badge-light ms-2">
+                        {{ $port['network-name'] ?? 'Unknown OLT' }}
+                    </span>
+                </h6>
+            </div>
+
+            <!-- Body -->
+            <div id="{{ $collapseId }}" class="collapse {{ $index === 0 ? 'show' : '' }} ps-5"
+                data-bs-parent="#kt_ports_accordion">
+
+                <!-- FORM -->
+                <form class="form">
+
+                    <div class="card border-0">
+                        <div class="ms-auto px-4">
+                            <ul class="nav nav-tabs nav-line-tabs fs-7 border-0">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" onclick="event.stopPropagation()"
+                                        href="#{{ $detailsTab }}">
+                                        Details
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" onclick="event.stopPropagation()"
+                                        href="#{{ $profileTab }}">
+                                        Stats
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" onclick="event.stopPropagation()"
+                                        href="#{{ $ipv4Tab }}">
+                                        IpV4
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" onclick="event.stopPropagation()"
+                                        href="#{{ $actionsTab }}">
+                                        Actions
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="tab-content">
+
+                                <!-- DETAILS -->
+                                <div class="tab-pane fade show active" id="{{ $detailsTab }}">
+                                    <div class="row g-5">
+                                        <div class="col-md-5 input-group-sm">
+                                            <label class="form-label">Service Template</label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $port['associate-service'][0]['serviceTemplate'] ?? '' }}">
+                                        </div>
+
+                                        <div class="col-md-4 input-group-sm">
+                                            <label class="form-label">Device s/n</label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $port['device-serial'] ?? '' }}">
+                                        </div>
+
+                                        <div class="col-md-3 input-group-sm">
+                                            <label class="form-label">Vlan</label>
+                                            <input type="text" class="form-control"
+                                                value="{{ $port['associate-service'][0]['vlan'] ?? '' }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Stats -->
+                                <div class="tab-pane fade" id="{{ $profileTab }}">
+                                    <div class="row g-5">
+                                        <div class="table-responsive">
+                                            <table
+                                                class="table table-row-dashed table-row-gray-300 align-middle gs-4 gy-3 mb-0">
+                                                <thead class="text-muted fw-semibold fs-9 text-uppercase top-3">
+                                                    <tr>
+                                                        <th>Serial #</th>
+                                                        <th>Range Length</th>
+                                                        <th>Uptime</th>
+                                                        <th class="text-center">ONT Rx</th>
+                                                        <th class="text-center">ONT Tx</th>
+                                                        <th class="text-center">OLT Rx</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    <tr class="fw-semibold fs-8">
+                                                        <!-- Serial -->
+                                                        <td>
+                                                            <span class="text-gray-900">
+                                                                {{ $port['ont_status']['serial-number'] ?? '—' }}
+                                                            </span>
+                                                        </td>
+
+                                                        <!-- Range -->
+                                                        <td>
+                                                            {{ isset($port['ont_status']['range-length']) ? number_format($port['ont_status']['range-length'] / 1000, 2) : '—' }}
+                                                            <span class="text-muted">km</span>
+                                                        </td>
+
+                                                        <!-- Uptime -->
+                                                        <td>
+                                                            <span class="text-success">
+                                                                {{ \Carbon\CarbonInterval::seconds($port['ont_status']['up-time'])->cascade()->forHumans(short: true) ?? '—' }}
+                                                            </span>
+                                                        </td>
+
+                                                        <!-- ONT RX -->
+                                                        <td class="text-center">
+                                                            <span class="badge badge-light">
+                                                                {{ $port['ont_status']['opt-signal-level'] ?? '—' }}
+                                                                dBm
+                                                            </span>
+                                                        </td>
+
+                                                        <!-- ONT TX -->
+                                                        <td class="text-center">
+                                                            <span class="badge badge-light">
+                                                                {{ $port['ont_status']['tx-opt-level'] ?? '—' }} dBm
+                                                            </span>
+                                                        </td>
+
+                                                        <!-- OLT RX -->
+                                                        <td class="text-center">
+                                                            <span class="badge badge-light">
+                                                                {{ $port['ont_status']['ne-opt-signal-level'] ?? '—' }}
+                                                                dBm
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- IPv4 Details -->
+                                <div class="tab-pane fade" id="{{ $ipv4Tab }}">
+                                    <div class="row g-5">
+                                        <span class="text-mutted fs-4">Details Related to the IPv4 Address</span>
+                                    </div>
+                                </div>
+                                <!-- End Ipv4 -->
+
+                                <!-- IPv4 Details -->
+                                <div class="tab-pane fade" id="{{ $actionsTab }}">
+                                    <div class="row g-5">
+                                        <div
+                                            class="notice d-flex bg-light-warning rounded border-warning border border-dashed p-4 mb-8">
+                                            <!--begin::Icon-->
+                                            <i class="ki-outline ki-information fs-2tx text-warning me-4"></i>
+                                            <!--end::Icon-->
+                                            <!--begin::Wrapper-->
+                                            <div class="d-flex flex-stack flex-grow-1">
+                                                <!--begin::Content-->
+                                                <div class="fw-semibold">
+                                                    <h4 class="text-gray-900 fw-bold">Proceed with Caution!</h4>
+                                                    <div class="fs-8 text-gray-700">Changes made here will be written on
+                                                        <a class="fw-bold" href="/land">ONT</a>.
+                                                    </div>
+                                                </div>
+
+                                                <!--end::Content-->
+                                            </div>
+                                            <!--end::Wrapper-->
+                                        </div>
+
+                                        <!-- Begin of Actions -->
+                                        <td class="text-center align-middle">
+                                            <div class="d-inline-flex gap-2 justify-content-center">
+
+                                                <!-- Play -->
+                                                <a href="#"
+                                                    class="btn btn-xs btn-dark d-flex align-items-center gap-1">
+                                                    <i class="las {{ ($port['ont_status']['oper-status'] ?? '') === 'present' ? 'la-pause text-danger' : 'la-play text-success' }}"></i>
+                                                    <span class="{{ ($port['ont_status']['oper-status'] ?? '') === 'present' ? 'text-danger' : 'text-success' }}">
+                                                        {{ ($port['ont_status']['oper-status'] ?? '') === 'present' ? 'Pause' : 'Enable' }}
+                                                    </span>
+                                                </a>
+
+                                                <!-- Edit profile -->
+                                                <a href="#"
+                                                    class="btn btn-xs btn-dark d-flex align-items-center gap-1">
+                                                    <i class="las la-user-edit text-warning"></i>
+                                                    <span class="text-warning">Edit Profile</span>
+                                                </a>
+
+                                                <!-- Delete device -->
+                                                <a href="#"
+                                                    class="btn btn-xs btn-dark d-flex align-items-center gap-1"
+                                                    onclick="return confirm('Delete this device?')">
+                                                    <i class="las la-trash text-danger"></i>
+                                                    <span class="text-danger">Delete Service</span>
+                                                </a>
+                                            </div>
+                                        </td>
+
+                                        <!-- End of Actions -->
+                                    </div>
+                                </div>
+                                <!-- End Ipv4 -->
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+
             </div>
         </div>
-        <div class="card-body">
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="kt_tab_pane_7" role="tabpanel">
-                    <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
-                        <!--begin::Col-->
-                        <div class="col">
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7 fv-plugins-icon-container">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold form-label mt-3">
-                                    <span class="required">Acc Name</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip" aria-label="The acc name on calix"
-                                        data-bs-original-title="The acc name on calix" data-kt-initialized="1">
-                                        <i class="ki-outline ki-information fs-7"></i>
-                                    </span>
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" class="form-control form-control-solid" name="subscriber_acc_name"
-                                    id="subscriber_acc_name" value="{{ $subscriber[0]['subscriber']['name'] }}">
-                                <!--end::Input-->
-                                <div
-                                    class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                </div>
-                            </div>
-                            <!--end::Input group-->
-                        </div>
-                        <!--end::Col-->
-                        <!--begin::Col-->
-                        <div class="col">
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold form-label mt-3">
-                                    <span>Custom ID</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip"
-                                        aria-label="Country where device is located"
-                                        data-bs-original-title="Country where device is located"
-                                        data-kt-initialized="1">
-                                        <i class="ki-outline ki-information fs-7"></i>
-                                    </span>
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" class="form-control form-control-solid" name="country"
-                                    value="{{ $subscriber[0]['subscriber']['customId'] }} ">
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                        </div>
-                        <!--end::Col-->
-                    </div>
-                    <!-- Begin Address -->
-                    <div class="fv-row mb-7">
-                        <!--begin::Label-->
-                        <label class="fs-6 fw-semibold form-label mt-3">
-                            <span>Address</span>
-                            <span class="ms-1" data-bs-toggle="tooltip" aria-label="Enter the Acc's address"
-                                data-bs-original-title="Enter the Acc's address" data-kt-initialized="1">
-                                <i class="ki-outline ki-information fs-7"></i>
-                            </span>
-                        </label>
-                        <!--end::Label-->
-                        <!--begin::Input-->
-                        <input type="text" class="form-control form-control-solid" name="address"
-                            value="{{ $subscriber[0]['subscriber']['locations'][0]['address'][0]['streetLine1'] }}">
-                        <!--end::Input-->
-                    </div>
-                    <!-- End Address -->
-                    <!-- Begin Cell fields -->
-                    <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
-                        <!--begin::Col-->
-                        <div class="col">
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7 fv-plugins-icon-container">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold form-label mt-3">
-                                    <span class="required">E-mail</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip"
-                                        aria-label="Enter the contact's email."
-                                        data-bs-original-title="Enter the contact's email." data-kt-initialized="1">
-                                        <i class="ki-outline ki-information fs-7"></i>
-                                    </span>
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" class="form-control form-control-solid" name="email"
-                                    value="{{ $subscriber[0]['subscriber']['locations'][0]['contacts'][0]['email'] }}">
-                                <!--end::Input-->
-                                <div
-                                    class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                </div>
-                            </div>
-                            <!--end::Input group-->
-                        </div>
-                        <!--end::Col-->
-                        <!--begin::Col-->
-                        <div class="col">
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold form-label mt-3">
-                                    <span>Acc Status</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip" aria-label="Enabled on calix"
-                                        data-bs-original-title="Enabled on calix" data-kt-initialized="1">
-                                        <i class="ki-outline ki-information fs-7"></i>
-                                    </span>
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <div class="form-check form-switch form-check-custom form-check-solid">
-                                    <input name="enable_notification" class="form-check-input h-40px w-60px"
-                                        type="checkbox" id="flexSwitchDefault" checked />
-                                    <label class="form-check-label" for="flexSwitchDefault">
-                                        Disabled Acc will suspend services
-                                    </label>
-                                </div>
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                        </div>
-                        <!--end::Col-->
-                    </div>
-                    <!-- End Cell Fields -->
-                </div>
-
-                <div class="tab-pane fade" id="kt_tab_pane_8" role="tabpanel">
-                    <!-- Begin Contacts -->
-                    <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
-                        <!--begin::Col-->
-                        <div class="col">
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7 fv-plugins-icon-container">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold form-label mt-3">
-                                    <span class="required">OLT Name</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip"
-                                        aria-label="The OLT where it connects to"
-                                        data-bs-original-title="The OLT where it connects to" data-kt-initialized="1">
-                                        <i class="ki-outline ki-information fs-7"></i>
-                                    </span>
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" class="form-control form-control-solid moz_mask"
-                                    name="subscriber_olt"
-                                    value="{{ $subscriber[0]['associate-port'][0]['network-name'] }}">
-                                <!--end::Input-->
-                                <div
-                                    class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                </div>
-                            </div>
-                            <!--end::Input group-->
-                        </div>
-                        <!--end::Col-->
-                        <!--begin::Col-->
-                        <div class="col">
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold form-label mt-3">
-                                    <span>Configured Port(s)</span>
-                                    <span class="ms-1" data-bs-toggle="tooltip"
-                                        aria-label="Which ports are configured"
-                                        data-bs-original-title="Which ports are configured" data-kt-initialized="1">
-                                        <i class="ki-outline ki-information fs-7"></i>
-                                    </span>
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" class="form-control form-control-solid moz_mask"
-                                    name="subscriber_ports" value="{{ $subscriber[0]['associate-port'][0]['port'] }}">
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                        </div>
-                        <!--end::Col-->
-                    </div>
-                    <!-- End Contacts -->
-                    <!-- Begin Telegram -->
-                    <div class="row row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
-                        <!--begin::Col-->
-                        <!--begin::Input group-->
-                        <div class="fv-row col-md-6">
-                            <!--begin::Label-->
-                            <label class="fs-6 fw-semibold form-label mt-3">
-                                <span>Device S/N</span>
-                                <span class="ms-1" data-bs-toggle="tooltip" aria-label="Devices Serial number / ID"
-                                    data-bs-original-title="Devices Serial number / ID" data-kt-initialized="1">
-                                    <i class="ki-outline ki-information fs-7"></i>
-                                </span>
-                            </label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <!--begin::Input group-->
-                            <div class="input-group">
-                                <input type="text" name="telegram_id" class="form-control" aria-label=""
-                                    aria-describedby="basic-addon2"
-                                    value="{{ $subscriber[0]['associate-port'][0]['device-serial'] }}" />
-                                <span class="input-group-text" id="basic-addon2">
-                                    <i class="fa-solid fa-barcode fs-4"><span class="path1"></span><span
-                                            class="path2"></span></i>
-                                </span>
-                            </div>
-
-                            <!--end::Input group-->
-                            <!--end::Input group-->
-                        </div>
-                        <div class="col-md-6">
-
-                            <label class="fs-6 fw-semibold form-label mt-3">
-                                <span>Device Profile</span>
-                                <span class="ms-1" data-bs-toggle="tooltip" aria-label="Devices Serial number / ID"
-                                    data-bs-original-title="Devices Serial number / ID" data-kt-initialized="1">
-                                    <i class="ki-outline ki-information fs-7"></i>
-                                </span>
-                            </label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <!--begin::Input group-->
-                            <div class="input-group col-md-4">
-                                <input type="text" name="telegram_id" class="form-control" placeholder=""
-                                    aria-label="" aria-describedby="basic-addon2"
-                                    value="{{ $subscriber[0]['associate-port'][0]['associate-service'][0]['serviceTemplate'] }}" />
-                                <span class="input-group-text" id="basic-addon2">
-                                    <i class="fa-solid fa-gear fs-4"><span class="path1"></span><span
-                                            class="path2"></span></i>
-                                </span>
-                            </div>
-                        </div>
-                        <!--end::Input group-->
-                        <!--end::Col-->
-                        <!--begin::Col-->
-
-                        <!--end::Col-->
-                    </div>
-                    <div class="row row-cols-sm-2 rol-cols-md-1 row-cols-lg-2 mt-6">
-                        <div class="col-md-4">
-                            <label class="fs-6 fw-semibold form-label mt-3">
-                                <span class="required">VLAN OLT</span>
-                                <span class="ms-1" data-bs-toggle="tooltip" aria-label="Configured Vln for service"
-                                    data-bs-original-title="Configured Vlan for service" data-kt-initialized="1">
-                                    <i class="ki-outline ki-information fs-7"></i>
-                                </span>
-                            </label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <input type="text" class="form-control form-control-solid" name="subscriber_acc_name"
-                                id="subscriber_acc_name" value="{{ $subscriber[0]['associate-port'][0]['associate-service'][0]['vlan']}}">
-                            <!--end::Input-->
-                            <div
-                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="fs-6 fw-semibold form-label mt-3">
-                                <span class="required">Service Tag</span>
-                                <span class="ms-1" data-bs-toggle="tooltip" aria-label="Ctag Vlan"
-                                    data-bs-original-title="Ctag Vlan" data-kt-initialized="1">
-                                    <i class="ki-outline ki-information fs-7"></i>
-                                </span>
-                            </label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <input type="text" class="form-control form-control-solid" name="subscriber_acc_name"
-                                id="subscriber_ctag" value="{{ $subscriber[0]['associate-port'][0]['associate-service'][0]['ctag']}}">
-                            <!--end::Input-->
-                            <div
-                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--begin::Actions-->
-    <div class="text-center pt-10">
-        <button type="reset" class="btn btn-light me-3" data-kt-users-modal-action="cancel">Discard</button>
-        <button type="submit" class="btn btn-primary" data-kt-users-modal-action="submit">
-            <span class="indicator-label">Submit</span>
-            <span class="indicator-progress">Please wait...
-                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-        </button>
-    </div>
-    <!--end::Actions-->
-</form>
+    @endforeach
+</div>

@@ -59,7 +59,7 @@ class CalixService
 
     // app/Services/CalixService.php
 
-    public function getSubscribers(int $limit = 5, int $offset = 0)
+    public function getSubscribers(int $limit = 0, int $offset = 0)
     {
         $endpoint = '/rest/v1/ems/subscriber';
         $params = [
@@ -83,15 +83,9 @@ class CalixService
 
         $params = [
             // ⚠️ Calix field name is case-sensitive
-            //'filter' => "customId={$customId}",
-            'filter' => "customId=ITC",
+            'filter' => "customId={$customId}",
+            //'filter' => "customId=Extended Service",
         ];
-
-        // 🔍 Log request details
-        Log::info('Calix getSubscriberByCustomId request', [
-            'endpoint' => $endpoint,
-            'params' => $params,
-        ]);
 
         try {
             $response = $this->get($endpoint, $params);
@@ -118,5 +112,48 @@ class CalixService
         }
 
     }
+
+    public function getOntStatus(
+        string $oltName,
+        string $ontName,
+        bool $refresh = false
+    ): array {
+        $endpoint = "/rest/v1/performance/device/{$oltName}/ont/{$ontName}/status";
+
+        $params = [
+            'refresh' => $refresh ? 'true' : 'false',
+        ];
+
+        // 🔍 Log request details
+        Log::info('Calix getOntStatus request', [
+            'endpoint' => $endpoint,
+            'params' => $params,
+        ]);
+
+        try {
+            $response = $this->get($endpoint, $params);
+
+            // 🔍 Log response summary
+            Log::info('Calix ONT status response received', [
+                'has_items' => isset($response['items']),
+                'items_count' => isset($response['items']) ? count($response['items']) : 0,
+            ]);
+
+            return $response;
+
+        } catch (\Throwable $e) {
+
+            Log::error('Calix ONT status API error', [
+                'endpoint' => $endpoint,
+                'params' => $params,
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ]);
+
+            throw $e;
+        }
+    }
+
+
 }
 

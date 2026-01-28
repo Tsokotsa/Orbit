@@ -20,7 +20,7 @@
                             {{ $client['name'] }}
                         </span>
                         <span class="fw-bold fs-9 text-gray-900 letter-spacing">
-                           Acc Number:  {{ $client['id'] }}
+                            Acc Number: {{ $client['id'] }}
                         </span>
                     </div>
                 </div>
@@ -123,6 +123,11 @@
                     success: function(response) {
                         $('#tab-content').html(response);
                         KTComponents.init();
+
+                        // THe tagify on the view
+                        var input1 = document.querySelector("#kt_tagify_1");
+                        new Tagify(input1);
+
                         if (tab === 'services') {
                             loadServiceTab('fiber');
                         }

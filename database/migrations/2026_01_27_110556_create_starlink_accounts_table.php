@@ -10,15 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('starlink_tokens', function (Blueprint $table) {
+        Schema::create('starlink_accounts', function (Blueprint $table) {
             $table->id();
-            $table->text('access_token');
-            $table->integer('expires_in');
-            $table->timestamp('expires_at');
-            $table->json('response')->nullable();
+            $table->string('name')->unique()->nullable();      // account1, account2, etc.
+            $table->string('client_id');
+            $table->string('client_secret');                    // optionally encrypted
+            $table->enum("active", ["y", "n"])->default("y");
             $table->timestamps();
         });
-
     }
 
     /**
@@ -26,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('starlink_tokens');
+        Schema::dropIfExists('starlink_accounts');
     }
 };

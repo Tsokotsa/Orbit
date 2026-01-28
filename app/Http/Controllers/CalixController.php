@@ -8,6 +8,7 @@ use Http;
 use DB;
 use Log;
 use Yajra\DataTables\DataTables;
+use Str;
 use function PHPUnit\Framework\returnArgument;
 
 class CalixController extends Controller
@@ -103,27 +104,83 @@ class CalixController extends Controller
 
     public function view_subscriber(string $customId)
     {
-        $calix_settings = DB::table(table: "calix_settings")->get();
-        $query = $calix_settings[0]->region;
-
+        $calix_settings = DB::table('calix_settings')->first();
         $cid = $customId;
 
-        Log::info("Trying to get subscribers for $cid");
+        Log::info("Trying to get subscribers for {$cid}");
 
-        $subscriber = $this->calix->getSubscriberByCustomId($cid);
+        $subscribers = $this->calix->getSubscriberByCustomId($cid);
 
-        // if (empty($subscriber)) {
-        //     return response()->view(
-        //         'calix.subscribers.partials.not-found',
-        //         [],
-        //         404
-        //     );
-        // }
+        if (
+            empty($subscribers) ||
+            !isset($subscribers[0]['associate-port'])
+        ) {
+            Log::warning('No associate-port data found');
+            return view(
+                'calix.modals.partials.subscriber-partial-modal',
+                compact('subscribers')
+            );
+        }
 
-        Log::info("Returned Subscriber:" .json_encode($subscriber));
+        Log::info('Starting subscriber enrichment loop', [
+            'ports_count' => count($subscribers[0]['associate-port']),
+        ]);
 
-        return view('calix.modals.partials.subscriber-partial-modal', compact('subscriber'));
+        // Loop ports of the FIRST subscriber
+        foreach ($subscribers[0]['associate-port'] as $index => &$port) {
+
+            // Extract ONT name from port (Some_text/g1 → Some_text)
+            $ontId = $port['port'] ?? null;
+            $ontName = $ontId ? Str::before($ontId, '/') : null;
+
+            // Resolve OLT
+            $oltName = $port['network-name'] ?? null;
+
+            Log::info('Resolved OLT / ONT', [
+                'olt' => $oltName,
+                'ont' => $ontName,
+            ]);
+
+            if (!$oltName || !$ontName) {
+                Log::warning('Missing OLT or ONT – skipping', [
+                    'index' => $index,
+                ]);
+
+                $port['ont_status'] = null;
+                continue;
+            }
+
+            try {
+                Log::info('Calling getOntStatus()', compact('oltName', 'ontName'));
+
+                $ontStatus = $this->calix->getOntStatus($oltName, $ontName);
+
+                // ✅ Attach status DIRECTLY to THIS associate-port
+                $port['ont_status'] = $ontStatus[0] ?? $ontStatus ?? null;
+
+            } catch (\Throwable $e) {
+
+                Log::error('ONT status fetch failed', [
+                    'olt' => $oltName,
+                    'ont' => $ontName,
+                    'error' => $e->getMessage(),
+                ]);
+
+                $port['ont_status'] = null;
+            }
+        }
+
+        // VERY IMPORTANT: unset reference
+        unset($port);
+
+        Log::info('Finished subscriber enrichment loop');
+
+        return view(
+            'calix.modals.partials.subscriber-partial-modal',
+            compact('subscribers')
+        );
     }
+
 
 
 }

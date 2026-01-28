@@ -48,3 +48,16 @@
         border-radius: 20px;
         padding: 4px 14px;
     }
+
+
+    #clients_dt tbody tr {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    }
+
+    #clients_d tbody tr:hover {
+    background-color: var(--kt-primary);
+    }
+
+
+    

@@ -16,8 +16,7 @@
                         </label>
                         <!--end::Label-->
                         <input type="hidden" id="client_id" value="{{ $client_id }}">
-                        <input type="text" class="form-control form-control-solid disabled"
-                            value="{{ $client['name'] ?? 'N/A' }}">
+                        <input type="text" class="form-control  disabled" value="{{ $client['name'] ?? 'N/A' }}">
                         <div
                             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                         </div>
@@ -26,8 +25,8 @@
                     <!--begin::Col-->
                     <div class="col-md-4 fv-row fv-plugins-icon-container">
                         <label class="required fs-6 fw-semibold mb-2">Client Type</label>
-                        <input type="text" class="form-control form-control-solid disabled"
-                            value="{{ $client['company_type'] ?? ' N/A' }}">
+                        <input type="text" class="form-control  disabled"
+                            value="{{ Str::ucfirst($client['company_type']) ?? ' N/A' }}">
                         <div
                             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                         </div>
@@ -43,8 +42,7 @@
                     <!--begin::Col-->
                     <div class="col-md-4 fv-row fv-plugins-icon-container">
                         <label class="required fs-6 fw-semibold mb-2">Phone #1</label>
-                        <input type="text" class="form-control form-control-solid disabled"
-                            value="{{ $client['phone'] ?? ' N/A' }}">
+                        <input type="text" class="form-control  disabled" value="{{ $client['phone'] ?? ' N/A' }}">
                         <div
                             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                         </div>
@@ -54,8 +52,7 @@
                     <!--begin::Col-->
                     <div class="col-md-4 fv-row fv-plugins-icon-container">
                         <label class="required fs-6 fw-semibold mb-2">Phone #2</label>
-                        <input type="text" class="form-control form-control-solid disabled"
-                            value="{{ $client['phone2'] ?? ' N/A' }}">
+                        <input type="text" class="form-control  disabled" value="{{ $client['phone2'] ?? ' N/A' }}">
                         <div
                             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                         </div>
@@ -73,7 +70,7 @@
                             <!--end::Icon-->
 
                             <!--begin::Datepicker-->
-                            <input class="form-control form-control-solid ps-12 flatpickr-input" readonly="readonly"
+                            <input class="form-control  ps-12 flatpickr-input" readonly="readonly"
                                 value="{{ $client['create_date'] ?? ' N/A' }}">
                             <!--end::Datepicker-->
                         </div>
@@ -85,9 +82,16 @@
 
                 <!--begin::Input group-->
                 <div class="d-flex flex-column mb-8">
-                    <label class="fs-6 fw-semibold mb-2">Special Notes</label>
-                    <textarea class="form-control form-control-solid" rows="3" name="target_details" placeholder="Some info we must note">
-                    </textarea>
+                    <label class="fs-6 fw-semibold mb-2 text-gray-700">
+                        Special Notes
+                    </label>
+
+                    <textarea class="form-control form-control-solid" rows="4" name="target_details"
+                        placeholder="Add any info regarding this client ...."></textarea>
+
+                    <small class="text-muted mt-1">
+                        Optional – visible to internal teams only
+                    </small>
                 </div>
                 <!--end::Input group-->
 
@@ -103,28 +107,8 @@
                             <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i></span> </label>
                     <!--end::Label-->
 
-                    <tags class="tagify  form-control form-control-solid" tabindex="-1">
-                        <tag title="Important" contenteditable="false" tabindex="-1" class="tagify__tag tagify--noAnim"
-                            value="Important">
-                            <x title="" tabindex="-1" class="tagify__tag__removeBtn" role="button"
-                                aria-label="remove tag">
-                            </x>
-                            <div><span autocapitalize="false" autocorrect="off" spellcheck="false"
-                                    class="tagify__tag-text">Important</span></div>
-                        </tag>
-                        <tag title="Urgent" contenteditable="false" tabindex="-1" class="tagify__tag tagify--noAnim"
-                            value="Urgent">
-                            <x title="" tabindex="-1" class="tagify__tag__removeBtn" role="button"
-                                aria-label="remove tag">
-                            </x>
-                            <div><span autocapitalize="false" autocorrect="off" spellcheck="false"
-                                    class="tagify__tag-text">Urgent</span></div>
-                        </tag><span contenteditable="" data-can-editable="" tabindex="0" data-placeholder="​"
-                            aria-placeholder="" class="tagify__input" role="textbox" autocapitalize="false"
-                            autocorrect="off" aria-autocomplete="both" aria-multiline="false"></span>
-                        ​
-                    </tags><input class="form-control form-control-solid" value="Important, Urgent" name="tags"
-                        tabindex="-1">
+                    <label class="form-label">Default input style</label>
+                    <input class="form-control" value="tag1, tag2, tag3" id="kt_tagify_1" />
                 </div>
                 <!--end::Input group-->
 
@@ -158,7 +142,7 @@
                         <div class="fw-semibold me-5">
                             <label class="fs-6">Notifications</label>
 
-                            <div class="fs-7 text-muted">Allow Notifications by Phone or Email</div>
+                            <div class="fs-7 text-muted">What channels should be used to notify this client</div>
                         </div>
                         <!--end::Label-->
 

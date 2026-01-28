@@ -16,13 +16,13 @@
     <meta property="og:site_name" content="Tsokotsa" />
     <link rel="canonical" href="http://paratus.co.mz" />
     <!-- Main ico -->
-    <link rel="shortcut icon" href="assets/media/logos/paratus-fav.ico"/>
+    <link rel="shortcut icon" href="assets/media/logos/paratus-fav.ico" />
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <!--end::Fonts-->
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
-    
-	<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+
+    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
     <script>
@@ -75,15 +75,20 @@
                 <div class="d-flex flex-column flex-center pb-0 pb-lg-10 p-10 w-100">
                     <!--begin::Image-->
                     <img class="theme-light-show mx-auto mw-100 w-150px w-lg-300px mb-10 mb-lg-20"
-                        src="assets/media/logos/orbit-eye.png" alt="" />
+                        src="assets/media/logos/orbit-logo.png" alt="" />
 
                     <!--end::Image-->
                     <!--begin::Title-->
-                    <h1 class="text-gray-800 fs-2qx fw-bold text-center mb-7">Unified, Intelligent and Reliable</h1>
+                    {{-- <h1 class="text-gray-800 fs-2qx fw-bold text-center mb-7">Unified, Intelligent and Reliable</h1> --}}
+                    <div class="text-center">
+                        <span id="orbit_title" class="fs-1 fw-bold d-inline-flex align-items-center"></span>
+                    </div>
                     <!--end::Title-->
                     <!--begin::Text-->
-                    <div class="text-gray-600 fs-base text-center fw-semibold">"When everything connects, clarity emerges.
-                        <a href="#" class="opacity-75-hover text-primary me-1">Integration</a> turns complexity into insight.
+                    <div class="text-gray-600 fs-base text-center fw-semibold">"When everything connects, clarity
+                        emerges.
+                        <a href="#" class="opacity-75-hover text-primary me-1">Integration</a> turns complexity
+                        into insight.
                         <br />Control begins with visibility. "
                         <a href="#" class="opacity-75-hover text-primary me-1"></br>
                             <br />
@@ -102,7 +107,8 @@
                         <!--begin::Wrapper-->
                         <div class="d-flex flex-center flex-column flex-column-fluid pb-15 pb-lg-20">
                             <!--begin::Form-->
-                            <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" method="POST" action="{{ route('login') }}" data-kt-redirect-url="/land">
+                            <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" method="POST"
+                                action="{{ route('login') }}" data-kt-redirect-url="/land">
                                 @csrf
                                 <!--begin::Heading-->
                                 <div class="text-center mb-11">
@@ -270,6 +276,19 @@
     <!--end::Global Javascript Bundle-->
     <!--begin::Custom Javascript(used for this page only)-->
     <script src="assets/js/custom/authentication/sign-in/general.js"></script>
+    <script src="assets/plugins/custom/typedjs/typedjs.bundle.js"></script>
+    <script>
+        var typed = new Typed("#orbit_title", {
+            strings: ["Unified.", "Integrated.", "Reliable."],
+            typeSpeed: 35,
+            backSpeed: 20,
+            backDelay: 1500,
+            loop: true,
+            smartBackspace: true,
+            showCursor: true,
+            cursorChar: "|"
+        });
+    </script>
     <!--end::Custom Javascript-->
     <!--end::Javascript-->
 </body>

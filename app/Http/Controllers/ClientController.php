@@ -61,24 +61,36 @@ class ClientController extends Controller
 
                 $client = $this->odooservice->get_client_by_id($client_id);
 
-                Log::info("Retrieved Many clients from DB " .json_encode($client));
+                Log::info("Retrieved Many clients from DB " . json_encode($client));
                 Log::info("This is the cliet ID that was passed on the [ $tab ] TAB $client_id");
 
                 return view('clients.tabs.overview')->with(['client_id' => $client_id, 'client' => $client]);
 
             case 'assets':
                 $clientId = $request->query('client_id');
-                $assets = DB::table("client_assets")
-                    ->where("client_id", $clientId)
+
+                $assets = DB::table('client_assets as c')
+                    ->join('assets as a', 'c.asset_id', '=', 'a.id')
+                    ->join('vendor as v', 'a.vendor_id', '=', 'v.id')
+                    ->join('vendor_models as m', 'a.model', '=', 'm.id')
+                    ->where('c.client_id', $clientId)
+                    ->select(
+                        'c.*',         // all columns from client_assets
+                        'a.serial as asset_serial',
+                        'a.asset_name as asset_name',
+                        'a.created_at as created_at',
+                        'v.name as vendor_name',
+                        'm.name as model_name'
+                    )
                     ->get();
 
-                Log::info("Retrieved Many clients from DB $assets");
-                Log::info("This is the cliet ID that was passed on the [ $tab ] TAB $clientId");
+                Log::info("Retrieved assets for client $clientId: " . $assets->count());
 
                 return view('clients.tabs.assets', [
                     'assets' => $assets,
                     'cid' => $clientId
                 ]);
+
 
             case 'services':
 

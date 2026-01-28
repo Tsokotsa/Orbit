@@ -42,20 +42,63 @@
                         <th>Product Name</th>
                         <th>Model</th>
                         <th>Created Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th class="text-center">Status</th>
                     </tr>
                 </thead>
                 @if ($assets->count())
                     @foreach ($assets as $asset)
                         <tbody>
                             <tr>
-                                <td>{{ $asset->asset_id ?? 'NA' }}</td>
-                                <td>{{ $asset->asset_id ?? 'NA' }}</td>
-                                <td>{{ $asset->name ?? 'NA' }}</td>
-                                <td>{{ $asset->name ?? 'NA' }}</td>
-                                <td>{{ $asset->name ?? 'NA' }}</td>
-                                <td>{{ $asset->name ?? 'NA' }}</td>
+                                <td>
+                                    <div class="px-3 py-0 border border-dashed rounded border-warning d-inline-block">
+                                        {{ $asset->asset_serial ?? 'NA' }}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="px-3 py-0 border-start border-3 border-primary">
+                                        <strong>{{ $asset->asset_name ?? 'NA' }}</strong>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="px-3 py-0 border-start border-3 border-info">
+                                        {{ $asset->model_name ?? 'NA' }}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span
+                                        class="px-3 py-1 border border-dashed rounded border-secondary d-inline-flex align-items-center gap-2">
+                                        <i class="fa-regular fa-calendar text-muted"></i>
+                                        {{ $asset->created_at?->format('Y-m-d') ?? 'NA' }}
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="d-inline-flex align-items-center gap-3">
+
+                                        {{-- Link --}}
+                                        <a href="#" class="text-primary"
+                                            title="Link Asset">
+                                            <i class="fa-solid fs-4 fa-link fa-lg text-success"></i>
+                                        </a>
+
+                                        {{-- Approve / Thumbs up --}}
+                                        <a href="#" class="text-success"
+                                            title="Approve Asset">
+                                            <i class="fa-regular fs-4 fa-thumbs-up fa-lg"></i>
+                                        </a>
+
+                                        {{-- Ethernet / Network --}}
+                                        <a href="#" class="text-dark"
+                                            title="Network Port">
+                                            <i class="fa-solid fs-4 fa-ethernet fa-lg"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+
                             </tr>
                         </tbody>
                     @endforeach

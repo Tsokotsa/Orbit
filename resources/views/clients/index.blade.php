@@ -57,8 +57,9 @@
                                             dir="ltr" data-select2-id="select2-data-2-asiz" style="width: 100%;"><span
                                                 class="selection"><span
                                                     class="select2-selection select2-selection--single form-select form-select-solid fw-bold"
-                                                    role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0"
-                                                    aria-disabled="false" aria-labelledby="select2-hrk9-container"
+                                                    role="combobox" aria-haspopup="true" aria-expanded="false"
+                                                    tabindex="0" aria-disabled="false"
+                                                    aria-labelledby="select2-hrk9-container"
                                                     aria-controls="select2-hrk9-container"><span
                                                         class="select2-selection__rendered" id="select2-hrk9-container"
                                                         role="textbox" aria-readonly="true" title="Select option"><span
@@ -83,8 +84,9 @@
                                             dir="ltr" data-select2-id="select2-data-5-nc24" style="width: 100%;"><span
                                                 class="selection"><span
                                                     class="select2-selection select2-selection--single form-select form-select-solid fw-bold"
-                                                    role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0"
-                                                    aria-disabled="false" aria-labelledby="select2-1ybn-container"
+                                                    role="combobox" aria-haspopup="true" aria-expanded="false"
+                                                    tabindex="0" aria-disabled="false"
+                                                    aria-labelledby="select2-1ybn-container"
                                                     aria-controls="select2-1ybn-container"><span
                                                         class="select2-selection__rendered" id="select2-1ybn-container"
                                                         role="textbox" aria-readonly="true" title="Select option"><span
@@ -117,16 +119,16 @@
                             <!--begin::Add user-->
                             {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#modal_add_contact"> --}}
-                                <button class="btn btn-primary " type="button" id="dropdownMenuButton"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="ki-outline ki-plus fs-2"></i>New Contact</button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                            data-bs-target="#modal_add_contact">Add Contact</a></li>
-                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                            data-bs-target="#modal_add_contact-bulk">Add Bulk (csv)</a></li>
-                                </ul>
-                                <!--end::Add user-->
+                            <button class="btn btn-primary " type="button" id="dropdownMenuButton"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ki-outline ki-plus fs-2"></i>New Contact</button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#modal_add_contact">Add Contact</a></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#modal_add_contact-bulk">Add Bulk (csv)</a></li>
+                            </ul>
+                            <!--end::Add user-->
                         </div>
                         <!--end::Toolbar-->
                         <!--begin::Group actions-->
@@ -135,7 +137,8 @@
                             <div class="fw-bold me-5">
                                 <span class="me-2" data-kt-user-table-select="selected_count"></span>Selected
                             </div>
-                            <button type="button" class="btn btn-danger" data-kt-user-table-select="delete_selected">Delete
+                            <button type="button" class="btn btn-danger"
+                                data-kt-user-table-select="delete_selected">Delete
                                 Selected</button>
                         </div>
                         <!--end::Group actions-->
@@ -169,11 +172,11 @@
                                                 <label class="fs-6 fw-semibold form-label mb-2">Select Roles:</label>
                                                 <!--end::Label-->
                                                 <!--begin::Input-->
-                                                <select name="role" data-control="select2" data-placeholder="Select a role"
-                                                    data-hide-search="true"
+                                                <select name="role" data-control="select2"
+                                                    data-placeholder="Select a role" data-hide-search="true"
                                                     class="form-select form-select-solid fw-bold select2-hidden-accessible"
-                                                    data-select2-id="select2-data-7-538l" tabindex="-1" aria-hidden="true"
-                                                    data-kt-initialized="1">
+                                                    data-select2-id="select2-data-7-538l" tabindex="-1"
+                                                    aria-hidden="true" data-kt-initialized="1">
                                                     <option data-select2-id="select2-data-9-rfs7"></option>
                                                     <option value="Administrator">Administrator</option>
                                                     <option value="Analyst">Analyst</option>
@@ -193,8 +196,8 @@
                                                                 id="select2-role-4a-container" role="textbox"
                                                                 aria-readonly="true" title="Select a role"><span
                                                                     class="select2-selection__placeholder">Select a
-                                                                    role</span></span><span class="select2-selection__arrow"
-                                                                role="presentation"><b
+                                                                    role</span></span><span
+                                                                class="select2-selection__arrow" role="presentation"><b
                                                                     role="presentation"></b></span></span></span><span
                                                         class="dropdown-wrapper" aria-hidden="true"></span></span>
                                                 <!--end::Input-->
@@ -210,8 +213,8 @@
                                                 <select name="format" data-control="select2"
                                                     data-placeholder="Select a format" data-hide-search="true"
                                                     class="form-select form-select-solid fw-bold select2-hidden-accessible"
-                                                    data-select2-id="select2-data-10-xep0" tabindex="-1" aria-hidden="true"
-                                                    data-kt-initialized="1">
+                                                    data-select2-id="select2-data-10-xep0" tabindex="-1"
+                                                    aria-hidden="true" data-kt-initialized="1">
                                                     <option data-select2-id="select2-data-12-s4r8"></option>
                                                     <option value="excel">Excel</option>
                                                     <option value="pdf">PDF</option>
@@ -274,7 +277,7 @@
                     <!--begin::Table-->
                     <div id="kt_table_users_wrapper" class="dt-container dt-bootstrap5 dt-empty-footer">
                         <div id="" class="table-responsive">
-                            <table class="table table-row-bordered gy-5" id="clients_dt">
+                            <table class="table table-row-bordered gy-5 tsk-tr-hover" id="clients_dt">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -355,7 +358,7 @@
         "use strict";
 
         // Class definition
-        var KTUsersAddUser = function () {
+        var KTUsersAddUser = function() {
             // Shared variables
             const element = document.getElementById('modal_add_contact');
             const form = element.querySelector('#modal_add_contact_form');
@@ -367,46 +370,46 @@
                 // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
                 var validator = FormValidation.formValidation(
                     form, {
-                    fields: {
-                        'name': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Name is required'
+                        fields: {
+                            'name': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Name is required'
+                                    }
                                 }
-                            }
-                        },
-                        'surname': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Surname is required'
+                            },
+                            'surname': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Surname is required'
+                                    }
                                 }
-                            }
-                        },
-                        'email': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Valid email address is required'
+                            },
+                            'email': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Valid email address is required'
+                                    }
                                 }
-                            }
-                        },
-                        'cell1': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Atleast one cellphone must be selected'
+                            },
+                            'cell1': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Atleast one cellphone must be selected'
+                                    }
                                 }
-                            }
+                            },
                         },
-                    },
 
-                    plugins: {
-                        trigger: new FormValidation.plugins.Trigger(),
-                        bootstrap: new FormValidation.plugins.Bootstrap5({
-                            rowSelector: '.fv-row',
-                            eleInvalidClass: '',
-                            eleValidClass: ''
-                        })
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap: new FormValidation.plugins.Bootstrap5({
+                                rowSelector: '.fv-row',
+                                eleInvalidClass: '',
+                                eleValidClass: ''
+                            })
+                        }
                     }
-                }
                 );
 
                 // Submit button handler
@@ -416,7 +419,7 @@
 
                     // Validate form before submit
                     if (validator) {
-                        validator.validate().then(function (status) {
+                        validator.validate().then(function(status) {
                             console.log('validated!');
 
                             if (status == 'Valid') {
@@ -433,7 +436,7 @@
                                     type: "POST",
                                     url: "/contact/add",
                                     data: form_data, // serializes the form's elements.
-                                    success: function (response) {
+                                    success: function(response) {
                                         Swal.fire({
                                             title: "Woohoooo!",
                                             text: "Message Sent",
@@ -446,7 +449,7 @@
                                             'data-kt-indicator');
                                         submitButton.disabled = false;
                                     },
-                                    error: function (xhr, status, error) {
+                                    error: function(xhr, status, error) {
                                         var responseJson = JSON.parse(xhr.responseText);
                                         // Access the message property from the response
                                         var errorMessage = responseJson.message;
@@ -509,7 +512,7 @@
                             confirmButton: "btn btn-primary",
                             cancelButton: "btn btn-active-light"
                         }
-                    }).then(function (result) {
+                    }).then(function(result) {
                         if (result.value) {
                             form.reset(); // Reset form			
                             modal.hide();
@@ -543,7 +546,7 @@
                             confirmButton: "btn btn-primary",
                             cancelButton: "btn btn-active-light"
                         }
-                    }).then(function (result) {
+                    }).then(function(result) {
                         if (result.value) {
                             form.reset(); // Reset form			
                             modal.hide();
@@ -564,95 +567,114 @@
 
             return {
                 // Public functions
-                init: function () {
+                init: function() {
                     initAddUser();
                 }
             };
         }();
 
         // On document ready
-        KTUtil.onDOMContentLoaded(function () {
+        KTUtil.onDOMContentLoaded(function() {
             KTUsersAddUser.init();
         });
     </script>
     <script>
-
         // Here i create the clients DT 
-        var KTDatatablesServerSide = function () {
+        var KTDatatablesServerSide = function() {
             var dt;
 
-            var initDatatable = function () {
+            var initDatatable = function() {
                 dt = $("#clients_dt").DataTable({
                     searchDelay: 500,
                     processing: true,
                     serverSide: true,
-                    order: [[5, 'desc']],
+                    order: [
+                        [5, 'desc']
+                    ],
                     stateSave: true,
-                    //select: {
-                    //    style: 'multi',
-                    //selector: 'td:first-child input[type="checkbox"]',
-                    //className: 'row-selected'
-                    //   },
+
                     ajax: {
                         url: "/clients/data",
-                        type: 'GET'
+                        type: "GET"
                     },
-                    columnDefs: [
+
+                    columns: [{
+                            data: "id",
+                            className: "client_id fw-semibold"
+                        },
                         {
-                            targets: 0,
-                            createdCell: function (td, cellData) {
-                                td.classList.add('client_id');
-                                td.setAttribute('data-id', cellData); // optional but recommended
+                            data: "name",
+                            render: function(data, type, row) {
+                                return `
+                <div class="d-flex flex-column">
+                    <span class="client-name">${data}</span>
+                </div>
+            `;
                             }
                         },
-                        // keep your other columnDefs here
+                        {
+                            data: "email",
+                            visible: false
+                        }, // 👈 hidden but keeps index
+                        {
+                            data: "phone",
+                            render: function(data) {
+                                return `<span class="badge badge-light-primary">${data ?? "—"}</span>`;
+                            }
+                        },
+                        {
+                            data: "company_type",
+                            render: function(data) {
+                                return data === "company" ?
+                                    `<span class="badge badge-light-primary">
+                     <i class="ki-duotone ki-office-bag"></i> Company
+                   </span>` :
+                                    `<span class="badge badge-light-success">
+                     <i class="ki-duotone ki-user"></i> Person
+                   </span>`;
+                            }
+                        },
+                        {
+                            data: "create_date",
+                            render: function(data) {
+                                return `<span class="text-muted fs-8">${data}</span>`;
+                            }
+                        }
                     ],
+                    order: [
+                        [5, 'desc']
+                    ], // ✅ now valid again
 
-                    columns: [
-                        { data: 'id' },
-                        { data: 'name' },
-                        { data: 'email' },
-                        { data: 'phone' },
-                        { data: 'company_type' },
-                        { data: 'create_date' }
-                    ],
-                    pageLength: 10, // rows per page
-                    lengthMenu: [5, 10, 20, 50], // page size options
-                    paging: true, // ✅ enable pagination
+                    pageLength: 10,
+                    lengthMenu: [5, 10, 20, 50],
+                    paging: true
                 });
-                $('#clients_dt tbody').on('click', 'tr', function (e) {
 
-                    // Prevent row click when clicking buttons / inputs / links
+                // ✅ Row click navigation (unchanged logic, safer selector)
+                $("#clients_dt tbody").on("click", "tr", function(e) {
                     if (
-                        $(e.target).closest('a, button, input, label, .form-check, [data-kt-menu]').length
+                        $(e.target).closest("a, button, input, label, .form-check, [data-kt-menu]").length
                     ) {
                         return;
                     }
 
-                    // ✅ Get client_id from td.client_id
-                    const client_id = $(this).find('td.client_id').data('id')
-                        || $(this).find('td.client_id').text().trim();
-
+                    const client_id = $(this).find("td.client_id").text().trim();
                     if (!client_id) return;
 
-                   window.location.href = `/client/view?client_id=${client_id}`;
-
+                    window.location.href = `/client/view?client_id=${client_id}`;
                 });
-
-            }
+            };
 
             return {
-                init: function () {
+                init: function() {
                     initDatatable();
                 }
-            }
+            };
         }();
 
         // On document ready
-        KTUtil.onDOMContentLoaded(function () {
+        KTUtil.onDOMContentLoaded(function() {
             KTDatatablesServerSide.init();
         });
-
-
     </script>
 @endpush

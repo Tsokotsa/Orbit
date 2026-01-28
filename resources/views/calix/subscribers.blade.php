@@ -295,7 +295,7 @@
     `);
 
             $('#subscriberModalBody').html(
-                '<div class="text-center py-4">Loading subscriber...</div>'
+                '<div class="text-center py-4">Loading Orbit subscriber...</div>'
             );
 
             $('#subscriberModal').modal('show');
