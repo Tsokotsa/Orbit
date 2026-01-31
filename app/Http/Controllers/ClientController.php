@@ -164,7 +164,9 @@ class ClientController extends Controller
                 ]);
 
             default:
-                return response('Invalid tab', 404);
+                return response()
+                    ->view('clients.tabs.default', [], 404);
+            //  return response('Invalid tab', 404);
         }
     }
 

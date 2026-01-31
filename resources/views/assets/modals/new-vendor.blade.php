@@ -30,44 +30,82 @@
                     <!--end::Wrapper-->
                 </div>
                 <!--begin::Input group-->
-                <form class="form" id="add_model_form" method="POST" action="/add-model">
+                <form class="form" id="add_vendor_form" method="POST" action="/add-vendor">
                     @csrf
+
+                    <!--begin::Image input-->
+                    <label class="d-flex align-items-center fs-6 fw-semibold mb-4">
+                        <span class="required">Vendor Logo</span>
+                        <span class="ms-1" data-bs-toggle="tooltip" aria-label="Default logo will be paratus"
+                            data-bs-original-title="Default logo will be paratus" data-kt-initialized="1">
+                            <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i>
+                        </span>
+                    </label>
+                    <div class="image-input image-input-circle mb-4" data-kt-image-input="true"
+                        style="background-image: url(/assets/media/svg/avatars/blank.svg)">
+                        <!--begin::Image preview wrapper-->
+                        <div class="image-input-wrapper w-125px h-125px"
+                            style="background-image: url(/assets/media/logos/Paratus_P_Only.png"></div>
+                        <!--end::Image preview wrapper-->
+
+                        <!--begin::Edit button-->
+                        <label
+                            class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                            data-kt-image-input-action="change" data-bs-toggle="tooltip" data-bs-dismiss="click"
+                            title="Change avatar">
+                            <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
+                                    class="path2"></span></i>
+
+                            <!--begin::Inputs-->
+                            <input type="file" name="avatar" accept=".png, .jpg, .jpeg" />
+                            <input type="hidden" name="avatar_remove" />
+                            <!--end::Inputs-->
+                        </label>
+                        <!--end::Edit button-->
+
+                        <!--begin::Cancel button-->
+                        <span
+                            class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                            data-kt-image-input-action="cancel" data-bs-toggle="tooltip" data-bs-dismiss="click"
+                            title="Cancel logo">
+                            <i class="ki-outline ki-cross fs-3"></i>
+                        </span>
+                        <!--end::Cancel button-->
+
+                        <!--begin::Remove button-->
+                        <span
+                            class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                            data-kt-image-input-action="remove" data-bs-toggle="tooltip" data-bs-dismiss="click"
+                            title="Remove logo">
+                            <i class="ki-outline ki-cross fs-3"></i>
+                        </span>
+                        <!--end::Remove button-->
+                    </div>
+                    <!--end::Image input-->
+
                     <div class="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
                         <!--begin::Label-->
                         <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                             <span class="required">Vendors</span>
                             <span class="ms-1" data-bs-toggle="tooltip"
-                                aria-label="Make sure you select correct vendor"
-                                data-bs-original-title="Make sure you select correct vendor" data-kt-initialized="1">
+                                aria-label="Default logo will be paratus"
+                                data-bs-original-title="Default logo will be paratus" data-kt-initialized="1">
                                 <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i>
                             </span>
                         </label>
                         <!--end::Label-->
-                        <select class="form-select" name="vendor_id" data-control="model_select" data-placeholder="Select Vendor ..."
-                            id="vendorSelect">
-                            <option></option>
-                        </select>
+                        <input class="form-control fs-12" value="" name="vendor_name" id="vendor_name"
+                            placeholder="Vendor name" />
                         <div
                             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                         </div>
                     </div>
 
-                    <div class="mb-10">
-                        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                            <span class="required">Vendors Model</span>
-                            <span class="ms-1" data-bs-toggle="tooltip"
-                                aria-label="Multiple models will get same description"
-                                data-bs-original-title="Multiple models will get same description" data-kt-initialized="1">
-                                <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i>
-                            </span>
-                        </label>
-                        <input class="form-control fs-12" value="" name="vendor_model" id="vendor_model" placeholder="Type one or more models then press enter"/>
-                    </div>
 
                     <div class="form-floating">
                         <textarea class="form-control" placeholder="Leave a comment here" name="model_desc" id="model_desc" maxlength="160"
                             style="min-height: 150px !important; max-height: 150px !important"></textarea>
-                        <label class="fs-8" for="floatingTextarea2">Model short description... e.g: Wi-fi Router</label>
+                        <label class="fs-8" for="floatingTextarea2">Vendor description... e.g: Paratus</label>
                     </div>
                 </form>
             </div>
@@ -87,14 +125,14 @@
             //alert('olaaaaa');
             e.preventDefault(); // avoid to execute the actual submit of the form.
 
-            var form_data = $('#add_model_form').serialize();
+            var form_data = $('#add_vendor_form').serialize();
             $.ajax({
                 type: "POST",
                 url: "/vendor_model/add",
                 data: form_data, // serializes the form's elements.
                 success: function(response) {
                     Swal.fire({
-                        title: "Good job!",
+                        title: "Woowooooo!",
                         text: response.message,
                         icon: "success",
                         showConfirmButton: false,

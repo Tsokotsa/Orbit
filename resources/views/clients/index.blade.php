@@ -645,7 +645,7 @@
                         [5, 'desc']
                     ], // ✅ now valid again
 
-                    pageLength: 10,
+                    pageLength: 5,
                     lengthMenu: [5, 10, 20, 50],
                     paging: true
                 });

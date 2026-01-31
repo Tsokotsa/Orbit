@@ -80,7 +80,7 @@
                     <!--end::Image-->
                     <!--begin::Title-->
                     {{-- <h1 class="text-gray-800 fs-2qx fw-bold text-center mb-7">Unified, Intelligent and Reliable</h1> --}}
-                    <div class="text-center">
+                    <div class="text-center" style="width: 400px !important; height: 30px !important">
                         <span id="orbit_title" class="fs-1 fw-bold d-inline-flex align-items-center"></span>
                     </div>
                     <!--end::Title-->

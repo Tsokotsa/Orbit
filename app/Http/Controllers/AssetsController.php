@@ -157,13 +157,13 @@ class AssetsController extends Controller
     public function store(Request $request)
     {
         DB::table('assets')->insert([
-            'vendor_id'             => $request->vendor_id,
-            'media_type'            => $request->medium_id,
-            'serial'                => $request->asset_serial,
-            'asset_name'            => $request->asset_description,
-            'description'           => $request->asset_description,
-            'created_at'            => now(),
-            'updated_at'            => now(),
+            'vendor_id' => $request->vendor_id,
+            'media_type' => $request->medium_id,
+            'serial' => $request->asset_serial,
+            'asset_name' => $request->asset_description,
+            'description' => $request->asset_description,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         return response()->json([

@@ -36,7 +36,7 @@
 
             <!-- Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="confirmActivation">Suspend</button>
+                <button type="button" class="btn btn-success" id="confirmActivation">Activate</button>
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>

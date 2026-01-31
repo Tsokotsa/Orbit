@@ -80,6 +80,14 @@
                             <span class="menu-title">List</span>
                         </a>
                         <!--end:Menu link-->
+                        <!--begin:Menu link-->
+                        <a class="menu-link active" href="/client/sales-orders">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                            <span class="menu-title">Sales Orders</span>
+                        </a>
+                        <!--end:Menu link-->
                     </div>
                     <!--end:Menu item-->
                 </div>
@@ -87,7 +95,7 @@
             </div>
             <!--end:Menu item-->
 
-                        <!--begin:Menu item-->
+            <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
                 class="menu-item here show py-2">
                 <!--begin:Menu link-->
@@ -126,12 +134,20 @@
                             <span class="menu-title">Calix</span>
                         </a>
                         <!--end:Menu link-->
-                                                <!--begin:Menu link-->
+                        <!--begin:Menu link-->
                         <a class="menu-link" href="/starlink">
                             <span class="menu-bullet">
                                 <span class="bullet bullet-dot"></span>
                             </span>
                             <span class="menu-title">Starlink</span>
+                        </a>
+                        <!--end:Menu link-->
+                        <!--begin:Menu link-->
+                        <a class="menu-link" href="/billing">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                            <span class="menu-title">Billing</span>
                         </a>
                         <!--end:Menu link-->
                     </div>

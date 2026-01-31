@@ -616,8 +616,8 @@
                             render: function(data, type, row) {
 
                                 return `<div class="actions">
-                                            <a href="/user/${data}/edit"><i class="las la-user-edit fs-1 text-dark" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#edit-contact"></i></a>
-                                            <i class="las la-trash-alt text-danger fs-1 delete-contact" style="cursor: pointer;"></i>
+                                            <a href="/asset/${data}/edit"><i class="las la-edit fs-1 text-dark" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#edit-contact"></i></a>
+                                            <i class="las la-trash-alt text-danger fs-1 delete-asset" style="cursor: pointer;"></i>
                                         </div>`;
                             },
                         },
@@ -884,9 +884,16 @@
         });
 
 
+        // Loading Vendor to add Model
         $('#modelModal').on('shown.bs.modal', function() {
 
             const $select = $('#vendorSelect');
+            const $loading = $('#vendorLoading');
+            const $content = $('#vendorContent');
+
+            // Show loader, hide content
+            $loading.removeClass('d-none');
+            $content.addClass('d-none');
 
             if ($select.hasClass('select2-hidden-accessible')) {
                 $select.select2('destroy');
@@ -901,7 +908,7 @@
 
                     vendors.forEach(vendor => {
                         const option = new Option(vendor.name, vendor.id, false, false);
-                        $(option).data('logo', vendor.logo_path); // 👈 attach logo
+                        $(option).data('logo', vendor.logo_path);
                         $select.append(option);
                     });
 
@@ -912,13 +919,22 @@
                         width: '100%',
                         templateResult: formatVendor,
                         templateSelection: formatVendorSelection,
-                        escapeMarkup: function(markup) {
-                            return markup;
-                        }
+                        escapeMarkup: markup => markup
                     });
+
+                    // Hide loader, show content
+                    $loading.addClass('d-none');
+                    $content.removeClass('d-none');
+                },
+                error: function() {
+                    $loading.html('<div class="text-danger">Failed to load vendors</div>');
                 }
             });
         });
+
+
+        // END of Loading Vendor
+
 
         // Dropdown item template
         function formatVendor(vendor) {
@@ -954,6 +970,13 @@
 
             const $vendorSelect = $('#asset_vendor_select');
             const $mediumSelect = $('#asset_medium_select');
+
+            const $loading = $('#assetLoading');
+            const $content = $('#assetContent');
+
+            // Show loader, hide content
+            $loading.removeClass('d-none');
+            $content.addClass('d-none');
 
             /* ---- Destroy if already initialized ---- */
             if ($vendorSelect.hasClass('select2-hidden-accessible')) {
@@ -1002,9 +1025,19 @@
                         allowClear: true,
                         width: '100%'
                     });
+
+                    // Hide loader, show content
+                    $loading.addClass('d-none');
+                    $content.removeClass('d-none');
+                },
+                error: function() {
+                    $loading.html(
+                        '<div class="text-danger">Failed to load asset data</div>'
+                    );
                 }
             });
         });
+
 
         function formatVendor(vendor) {
             if (!vendor.id) return vendor.text;

@@ -43,10 +43,30 @@
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="assets"
                                 href="#">Assets</a>
                         </li>
+                        <!--begin::Nav item-->
                         <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="services"
                                 href="#">Services</a>
                         </li>
+                        <!--end::Nav item-->
+                        <!--begin::Nav item-->
+                        <li class="nav-item mt-2">
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="billing"
+                                href="#">Billing</a>
+                        </li>
+                        <!--end::Nav item-->
+                        <!--begin::Nav item-->
+                        <li class="nav-item mt-2">
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="contacts"
+                                href="#">Contacts</a>
+                        </li>
+                        <!--end::Nav item-->
+                        <!--begin::Nav item-->
+                        <li class="nav-item mt-2">
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab"
+                                data-tab="addresses" href="#">Adresses</a>
+                        </li>
+                        <!--end::Nav item-->
                         <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="logs"
                                 href="#">Logs</a>
@@ -132,8 +152,18 @@
                             loadServiceTab('fiber');
                         }
                     },
-                    error: function() {
-                        $('#tab-content').html('Failed to load data');
+                    error: function(xhr) {
+                        // 👇 THIS is the magic
+                        if (xhr.responseText) {
+                            $('#tab-content').html(xhr.responseText);
+                        } else {
+                            $('#tab-content').html(`
+                <div class="text-center text-muted py-10">
+                    <h3>🚀 Lost in Orbit</h3>
+                    <p>This tab does not exist.</p>
+                </div>
+            `);
+                        }
                     }
                 });
             }

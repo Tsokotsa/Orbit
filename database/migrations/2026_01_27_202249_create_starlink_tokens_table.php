@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->integer("account_id")->nullable();
             $table->text('access_token')->nullable();
             $table->integer('expires_in')->nullable();
-            $table->timestamp('expires_at');
+            $table->timestamp('expires_at')->nullable();
             $table->json('response')->nullable();
             $table->enum("is_default", ["y", "n"])->default("n");
             $table->timestamps();

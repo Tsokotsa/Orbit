@@ -1,120 +1,145 @@
 @extends('layouts.master')
 
 @section('content')
-<div id="kt_app_content" class="app-content flex-column-fluid">
-    <!--begin::Content container-->
-    <div id="kt_app_content_container" class="app-container container-fluid">
-        <!--begin::Row-->
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <!--begin::Content container-->
         <div id="kt_app_content_container" class="app-container container-fluid">
-            <div class="row gy-5 gx-xl-10">
-                <!--begin::Col-->
-                <div class="col-sm-6 col-xl-2 mb-xl-10">
-                    <!--begin::Card widget 2-->
-                    <div class="card h-lg-100">
-                        <!--begin::Body-->
-                        <div class="card-body d-flex justify-content-between align-items-start flex-column">
-                            <!--begin::Icon-->
-                            <div class="m-0">
-                                <i class="ki-outline ki-sms fs-2hx text-gray-600"></i>
-                            </div>
-                            <!--end::Icon-->
-                            <!--begin::Section-->
-                            <div class="d-flex flex-column my-7">
-                                <!--begin::Number-->
-                                <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">{{ $total_emails ?? "-" }}</span>
-                                <!--end::Number-->
-                                <!--begin::Follower-->
-                                <div class="m-0">
-                                    <span class="fw-semibold fs-6 text-gray-500">Emails</span>
+            <!--begin::Row-->
+            <div id="kt_app_content_container" class="app-container container-fluid">
+                <div class="row g-5 gx-xl-10 mb-5 mb-xl-10">
+                    <!--begin::Col-->
+                    <div class="col-xl-3">
+                        <!--begin::Card widget 3-->
+                        <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-xl-100"
+                            style="background-color: #0d0708;background-image:url('assets/media/svg/shapes/wave-bg-red.svg')">
+                            <!--begin::Header-->
+                            <div class="card-header pt-5 mb-3">
+                                <!--begin::Icon-->
+                                <div class="d-flex flex-center rounded-circle h-80px w-80px"
+                                    style="border: 1px dashed rgba(255, 255, 255, 0.4);background-color: #0d0708">
+                                    <i class="ki-outline ki-technology-4 text-white fs-2qx lh-0"></i>
                                 </div>
-                                <!--end::Follower-->
+                                <!--end::Icon-->
                             </div>
-                            <!--end::Section-->
-                            <!--begin::Badge-->
-                            <span class="badge badge-light-success fs-base">
-                            <i class="ki-outline ki-arrow-up fs-5 text-success ms-n1"></i>2.1%</span>
-                            <!--end::Badge-->
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                    <!--end::Card widget 2-->
-                </div>
-                <!--end::Col-->
-                <!--begin::Col-->
-                <div class="col-sm-6 col-xl-2 mb-xl-10">
-                    <!--begin::Card widget 2-->
-                    <div class="card h-lg-100">
-                        <!--begin::Body-->
-                        <div class="card-body d-flex justify-content-between align-items-start flex-column">
-                            <!--begin::Icon-->
-                            <div class="m-0">
-                                <i class="ki-outline ki-message-text fs-2hx text-gray-600"></i>
-                            </div>
-                            <!--end::Icon-->
-                            <!--begin::Section-->
-                            <div class="d-flex flex-column my-7">
-                                <!--begin::Number-->
-                                <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">{{ $total_sms ?? "-" }}</span>
-                                <!--end::Number-->
-                                <!--begin::Follower-->
-                                <div class="m-0">
-                                    <span class="fw-semibold fs-6 text-gray-500">Text Messages</span>
+                            <!--end::Header-->
+                            <!--begin::Card body-->
+                            <div class="card-body d-flex align-items-end mb-3">
+                                <!--begin::Info-->
+                                <div class="d-flex align-items-center">
+                                    <span class="fs-4hx text-white fw-bold me-6">273</span>
+                                    <div class="fw-bold fs-6 text-white">
+                                        <span class="d-block">Provisioned</span>
+                                        <span class="">ONTs</span>
+                                    </div>
                                 </div>
-                                <!--end::Follower-->
+                                <!--end::Info-->
                             </div>
-                            <!--end::Section-->
-                            <!--begin::Badge-->
-                            <span class="badge badge-light-success fs-base">
-                            <i class="ki-outline ki-arrow-up fs-5 text-success ms-n1"></i>2.1%</span>
-                            <!--end::Badge-->
-                        </div>
-                        <!--end::Body-->
-                    </div>
-                    <!--end::Card widget 2-->
-                </div>
-                <!--end::Col-->
-                <!--begin::Col-->
-                <div class="col-sm-6 col-xl-2 mb-xl-10">
-                    <!--begin::Card widget 2-->
-                    <div class="card h-lg-100">
-                        <!--begin::Body-->
-                        <div class="card-body d-flex justify-content-between align-items-start flex-column">
-                            <!--begin::Icon-->
-                            <div class="m-0">
-                                <i class="ki-outline ki-send fs-2hx text-gray-600"></i>
-                            </div>
-                            <!--end::Icon-->
-                            <!--begin::Section-->
-                            <div class="d-flex flex-column my-7">
-                                <!--begin::Number-->
-                                <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">{{ $total_telegram ?? "-"}}</span>
-                                <!--end::Number-->
-                                <!--begin::Follower-->
-                                <div class="m-0">
-                                    <span class="fw-semibold fs-6 text-gray-500">Telegram</span>
+                            <!--end::Card body-->
+                            <!--begin::Card footer-->
+                            <div class="card-footer"
+                                style="border-top: 1px solid rgba(255, 255, 255, 0.3);background: rgba(0, 0, 0, 0.15);">
+                                <!--begin::Progress-->
+                                <div class="fw-bold text-white py-2">
+                                    <span class="fs-1 d-block">31</span>
+                                    <span class="opacity-50">Missed Devices</span>
                                 </div>
-                                <!--end::Follower-->
+                                <!--end::Progress-->
                             </div>
-                            <!--end::Section-->
-                            <!--begin::Badge-->
-                            <span class="badge badge-light-danger fs-base">
-                            <i class="ki-outline ki-arrow-down fs-5 text-danger ms-n1"></i>0.47%</span>
-                            <!--end::Badge-->
+                            <!--end::Card footer-->
                         </div>
-                        <!--end::Body-->
+                        <!--end::Card widget 3-->
                     </div>
-                    <!--end::Card widget 2-->
+                    <!--end::Col-->
+                    <!--begin::Col-->
+                    <div class="col-xl-3">
+                        <!--begin::Card widget 3-->
+                        <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-xl-100"
+                            style="background-color: #7239EA;background-image:url('assets/media/svg/shapes/wave-bg-purple.svg')">
+                            <!--begin::Header-->
+                            <div class="card-header pt-5 mb-3">
+                                <!--begin::Icon-->
+                                <div class="d-flex flex-center rounded-circle h-80px w-80px"
+                                    style="border: 1px dashed rgba(255, 255, 255, 0.4);background-color: #7239EA">
+                                    <i class="ki-outline ki-basket-ok text-white fs-2qx lh-0"></i>
+                                </div>
+                                <!--end::Icon-->
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Card body-->
+                            <div class="card-body d-flex align-items-end mb-3">
+                                <!--begin::Info-->
+                                <div class="d-flex align-items-center">
+                                    <span class="fs-4hx text-white fw-bold me-6">10</span>
+                                    <div class="fw-bold fs-6 text-white">
+                                        <span class="d-block">Stock</span>
+                                        <span class="">Assets in warehouse</span>
+                                    </div>
+                                </div>
+                                <!--end::Info-->
+                            </div>
+                            <!--end::Card body-->
+                            <!--begin::Card footer-->
+                            <div class="card-footer"
+                                style="border-top: 1px solid rgba(255, 255, 255, 0.3);background: rgba(0, 0, 0, 0.15);">
+                                <!--begin::Progress-->
+                                <div class="fw-bold text-white py-2">
+                                    <span class="fs-1 d-block">5</span>
+                                    <span class="opacity-50">Broken units</span>
+                                </div>
+                                <!--end::Progress-->
+                            </div>
+                            <!--end::Card footer-->
+                        </div>
+                        <!--end::Card widget 3-->
+                    </div>
+                    <!--end::Col-->
+                    <!--begin::Col-->
+                    <div class="col-xl-3">
+                        <!--begin::Card widget 3-->
+                        <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-xl-100"
+                            style="background-color: #222025;background-image:url('assets/media/svg/shapes/wave-bg-purple.svg')">
+                            <!--begin::Header-->
+                            <div class="card-header pt-5 mb-3">
+                                <!--begin::Icon-->
+                                <div class="d-flex flex-center rounded-circle h-80px w-80px"
+                                    style="border: 1px dashed rgba(255, 255, 255, 0.4);background-color: #222025">
+                                    <i class="ki-outline ki-user text-white fs-2qx lh-0"></i>
+                                </div>
+                                <!--end::Icon-->
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Card body-->
+                            <div class="card-body d-flex align-items-end mb-3">
+                                <!--begin::Info-->
+                                <div class="d-flex align-items-center">
+                                    <span class="fs-4hx text-white fw-bold me-6">363</span>
+                                    <div class="fw-bold fs-6 text-white">
+                                        <span class="d-block">Clients</span>
+                                        <span class="">Loaded on ODOO</span>
+                                    </div>
+                                </div>
+                                <!--end::Info-->
+                            </div>
+                            <!--end::Card body-->
+                            <!--begin::Card footer-->
+                            <div class="card-footer"
+                                style="border-top: 1px solid rgba(255, 255, 255, 0.3);background: rgba(0, 0, 0, 0.15);">
+                                <!--begin::Progress-->
+                                <div class="fw-bold text-white py-2">
+                                    <span class="fs-1 d-block">179</span>
+                                    <span class="opacity-50">Missing data Email / Phone</span>
+                                </div>
+                                <!--end::Progress-->
+                            </div>
+                            <!--end::Card footer-->
+                        </div>
+                        <!--end::Card widget 3-->
+                    </div>
+                    <!--end::Col-->
                 </div>
-                <!--end::Col-->
-                <!--begin::Col-->
-                
-                <!-- Adicionar aqui -->
-
-                <!--end::Col-->
             </div>
+            <!--end::Row-->
         </div>
-        <!--end::Row-->
+        <!--end::Content container-->
     </div>
-    <!--end::Content container-->
-</div>
 @endsection

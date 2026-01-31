@@ -77,11 +77,11 @@ class OdooController extends Controller
         ]);
     }
 
-  //  public function viewClient(OdooService $odoo, Request $request)
-  public function viewCLient()  
-  {
-    $client = "";
-     //   $client_id = $request->query('client_id'); // retrieves 6170
+    //  public function viewClient(OdooService $odoo, Request $request)
+    public function viewCLient()
+    {
+        $client = "";
+        //   $client_id = $request->query('client_id'); // retrieves 6170
 
         // $client_query = $odoo->execute(
         //     'res.partner',
@@ -95,7 +95,122 @@ class OdooController extends Controller
         //     ]
         // );
         // $client = $client_query[0];
-    //    Log::info("Retrieving Client wih ID:  $client_id");
+        //    Log::info("Retrieving Client wih ID:  $client_id");
         return view('clients.view', compact('client'));
+    }
+
+    public function billing()
+    {
+        Log::info("Accessing the ===        BILLING     ===     Zone");
+        return view("billing.index");
+    }
+
+
+    public function get_all_ajax(Request $request, OdooService $odoo)
+    {
+        try {
+            Log::info('BillingContractController@index called', [
+                'ip' => $request->ip()
+            ]);
+
+            $contracts = $odoo->getBillingContracts();
+
+            $data = collect($contracts)->map(function ($c) {
+                return [
+                    'name' => $c['name'] ?? null,
+
+                    // Odoo many2one fields: [id, name]
+                    'account_name' => $c['partner_id'][1] ?? null,
+                    'account_id' => $c['partner_id'][0] ?? null,
+
+                    'billing_method' => $c['billing_method'] ?? null,
+                    'billing_cycle_period' => $c['billing_cycle_period'] ?? null,
+                    'start_date' => $c['start_date'] ?? null,
+                    'next_billing_date' => $c['next_billing_date'] ?? null,
+                    'amount_total_bill' => $c['amount_total_bill'] ?? 0,
+
+                    'username' => $c['user'][1] ?? null,
+                    'user_id' => $c['user'][0] ?? null,
+
+                    'state' => $c['state'] ?? null,
+
+                    'created_by' => $c['create_uid'][1] ?? null,
+                ];
+            });
+
+            return response()->json([
+                'data' => $data
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('BillingContractController@index failed', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'message' => 'Failed to load billing contracts'
+            ], 500);
+        }
+    }
+
+    // Test quotes retrieval
+    public function quotes(OdooService $odoo)
+    {
+        $quotes = $odoo->getQuotes();
+        dd($quotes); // dump & die for testing
+    }
+
+    // Test last 3 invoices for a specific customer
+    public function lastInvoices(Request $request, OdooService $odoo)
+    {
+        $request->validate([
+            'partner_id' => 'required|integer',
+        ]);
+
+        $invoices = $odoo->getLastInvoices($request->partner_id, 3);
+        dd($invoices); // dump & die for testing
+    }
+
+    // Test last 3 billings for a specific customer
+    public function lastBillings(Request $request, OdooService $odoo)
+    {
+        $request->validate([
+            'partner_id' => 'required|integer',
+        ]);
+
+        $billings = $odoo->getLastBillings($request->partner_id, 3);
+        dd($billings); // dump & die for testing
+    }
+
+
+
+    public function logAllModels()
+    {
+        try {
+            $odoo = new OdooService();
+
+            // Retrieve all models
+            $models = $odoo->getAllModels();
+
+            Log::info("Retrieved " . count($models) . " Odoo models.");
+
+            foreach ($models as $model) {
+                Log::info('Odoo Model: ' . $model['model'] . ' - ' . $model['name']);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Odoo models logged successfully',
+                'count' => count($models)
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Odoo models retrieval error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

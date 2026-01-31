@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Exception;
+use Log;
 
 class OdooService
 {
@@ -118,4 +119,121 @@ class OdooService
         return $query[0];
 
     }
+
+    public function searchRead(string $model, array $domain = [], array $fields = [], int $limit = 100)
+    {
+        return $this->execute(
+            $model,
+            'search_read',
+            [$domain],
+            [
+                'fields' => $fields,
+                'limit' => $limit,
+            ]
+        );
+    }
+
+
+    public function getBillingContracts(array $filters = [])
+    {
+        try {
+            Log::info('Odoo: Fetching billing contracts', [
+                'filters' => $filters
+            ]);
+
+            $result = $this->execute(
+                'billing.contract',
+                'search_read',
+                [$filters],
+                [
+                    'fields' => [
+                        'name',
+                        'partner_id',
+                        'billing_method',
+                        'billing_cycle_period',
+                        'start_date',
+                        'next_billing_date',
+                        'amount_total_bill',
+                        'user',
+                        'state',
+                        'create_uid',
+                    ],
+                ]
+            );
+
+            Log::info('Odoo: Billing contracts fetched', [
+                'count' => count($result)
+            ]);
+
+            return $result;
+
+        } catch (\Throwable $e) {
+            Log::error('Odoo: Failed to fetch billing contracts', [
+                'error' => $e->getMessage()
+            ]);
+
+            throw $e;
+        }
+    }
+
+    public function getAllModels(): array
+    {
+        // Search all models
+        $domain = []; // empty domain = all
+        $params = [
+            'fields' => ['model', 'name'], // model technical name + human readable name
+            'limit' => 0,                  // 0 = no limit
+            'order' => 'name asc'
+        ];
+
+        return $this->execute('ir.model', 'search_read', $domain, $params);
+    }
+
+    /**
+     * Retrieve all quotes (draft or sent)
+     */
+    public function getQuotes()
+    {
+        return $this->searchRead(
+            'sale.order',
+            [['state', 'in', ['draft', 'sent']]],
+            ['name', 'partner_id', 'amount_total', 'date_order', 'state'],
+            100
+        );
+    }
+
+
+    /**
+     * Get the last N billings for a specific customer
+     */
+    public function getLastBillings(int $partnerId, int $limit = 3)
+    {
+        return $this->searchRead(
+            'billing.contract',
+            [
+                ['partner_id', '=', $partnerId],
+                ['state', 'in', ['open', 'done']], // adjust if needed
+            ],
+            ['name', 'amount_total_bill', 'next_billing_date', 'billing_cycle_period', 'state'],
+            $limit
+        );
+    }
+
+
+    /**
+     * Retrieve last N invoices for a specific customer
+     */
+    public function getLastInvoices(int $partnerId, int $limit = 3)
+    {
+        return $this->searchRead(
+            'account.move',
+            [
+                ['partner_id', '=', $partnerId],
+                ['move_type', '=', 'out_invoice']
+            ],
+            ['name', 'amount_total', 'invoice_date', 'state'],
+            $limit
+        );
+    }
+
 }

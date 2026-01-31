@@ -164,7 +164,7 @@
                                                 <!-- Menu item 1 -->
                                                 <div class="menu-item px-3">
                                                     <a href="javascript:void(0);" class="menu-link px-3"
-                                                        data-bs-toggle="modal" data-bs-target="#service-top-up">
+                                                        data-bs-toggle="modal" data-bs-target="#topupModal" data-service="{{ $sub['serviceLineNumber'] }}">
                                                         <span class="menu-icon">
                                                             <i class="ki-outline ki-arrow-up fs-5 text-success"></i>
                                                         </span>
@@ -225,6 +225,23 @@
 
 @push('scripts')
     <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toastr-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
         const table = $('#subscribersTable').DataTable({
             // $('#subscribersTable').DataTable({
             processing: true,
@@ -306,42 +323,63 @@
         });
 
 
-        document.getElementById('confirmSuspend').addEventListener('click', () => {
+
+
+        // Suspend Starlink 
+        const button = document.getElementById('confirmSuspend');
+
+        button.addEventListener('click', e => {
+            e.preventDefault();
+
             const serviceLine = document.getElementById('serviceLineNumber').value;
-
-            // Get the form element
             const form = document.getElementById('suspendForm');
-
-            // Get CSRF token from the hidden input
             const token = form.querySelector('input[name="_token"]').value;
 
-            fetch(`/starlink/service-line/${serviceLine}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': token // Pass CSRF from form
-                    }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Service line suspended successfully');
-                        location.reload();
-                    } else {
-                        alert('Failed to suspend service line: ' + data.error);
-                    }
+            Swal.fire({
+                text: "Are you sure you want to proceed?",
+                icon: "warning",
+                showCancelButton: true,
+                buttonsStyling: false,
+                confirmButtonText: "Yes, suspend!",
+                cancelButtonText: "No, cancel",
+                customClass: {
+                    confirmButton: "btn fw-bold btn-danger",
+                    cancelButton: "btn fw-bold btn-active-light-primary"
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch(`/starlink/service-line/${serviceLine}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': token
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                toastr.success("Service line suspended successfully", "Success");
+                                location.reload();
+                            } else {
+                                toastr.error("Failed to suspend service line: " + data.error, "Error");
+                            }
 
-                    const modalInstance = bootstrap.Modal.getOrCreateInstance(suspendModal);
-                    modalInstance.hide();
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Error suspending service line');
+                            const modalInstance = bootstrap.Modal.getOrCreateInstance(suspendModal);
+                            modalInstance.hide();
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            toastr.error("Error suspending service line", "Error");
 
-                    const modalInstance = bootstrap.Modal.getOrCreateInstance(suspendModal);
-                    modalInstance.hide();
-                });
+                            const modalInstance = bootstrap.Modal.getOrCreateInstance(suspendModal);
+                            modalInstance.hide();
+                        });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    toastr.info("Action cancelled. Service line was not suspended.", "Cancelled");
+                }
+            });
         });
+
 
         // Activate Service 
         const activateModal = document.getElementById('activateModal');
@@ -351,42 +389,82 @@
             const serviceLine = button.getAttribute('data-service');
             activateModal.querySelector('#serviceLineNumber2').value = serviceLine;
         });
-
         document.getElementById('confirmActivation').addEventListener('click', () => {
             const serviceLine = document.getElementById('serviceLineNumber2').value;
-
-            // Get the form element
             const form = document.getElementById('activateForm');
-
-            // Get CSRF token from the hidden input
             const token = form.querySelector('input[name="_token"]').value;
 
-            fetch(`/starlink/service-line/${serviceLine}/product`, {
-                    method: 'PUT',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': token // Pass CSRF from form
-                    }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Service line Successfully Activated');
-                        location.reload();
-                    } else {
-                        alert('Failed to Activate service line: ' + data.error);
-                    }
+            Swal.fire({
+                text: "Are you sure you want to activate this service line?",
+                icon: "warning",
+                showCancelButton: true,
+                buttonsStyling: false,
+                confirmButtonText: "Yes, activate!",
+                cancelButtonText: "No, cancel",
+                customClass: {
+                    confirmButton: "btn fw-bold btn-success",
+                    cancelButton: "btn fw-bold btn-active-light-primary"
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch(`/starlink/service-line/${serviceLine}/product`, {
+                            method: 'PUT',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': token
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                toastr.success("Service line successfully activated", "Success");
+                                location.reload();
+                            } else {
+                                toastr.error("Failed to activate service line: " + data.error, "Error");
+                            }
 
-                    const modalInstance = bootstrap.Modal.getOrCreateInstance(suspendModal);
-                    modalInstance.hide();
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Error Activating service line');
+                            const modalInstance = bootstrap.Modal.getOrCreateInstance(activateModal);
+                            modalInstance.hide();
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            toastr.error("Error activating service line", "Error");
 
-                    const modalInstance = bootstrap.Modal.getOrCreateInstance(suspendModal);
-                    modalInstance.hide();
-                });
+                            const modalInstance = bootstrap.Modal.getOrCreateInstance(activateModal);
+                            modalInstance.hide();
+                        });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    toastr.info("Action cancelled. Service line was not activated.", "Cancelled");
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const topupModal = document.getElementById('topupModal');
+
+            topupModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+
+                if (!button) {
+                    console.warn('Topup modal opened without trigger button');
+                    return;
+                }
+
+                const serviceLine = button.getAttribute('data-service');
+
+                const input = topupModal.querySelector('#topup-serviceLine');
+
+                if (!input) {
+                    console.error('Service line input not found');
+                    return;
+                }
+
+                input.value = serviceLine;
+            });
+
         });
     </script>
 @endpush

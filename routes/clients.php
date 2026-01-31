@@ -30,6 +30,13 @@ Route::get('/assets/get_all', [ServiceController::class, 'get_ajax'])->name('Get
 Route::post('/assets/store', [ClientController::class, 'store_asset'])->name('client-asset-store');
 
 
+// Logging TESTS
+Route::get('/odoo/test-open-invoices', [OdooController::class, 'logInvoices']);
+Route::get('/odoo/test-models', [OdooController::class, 'logAllModels']);
+
+
+
+
 //Route::get('/client/services/{service}', [ServiceController::class, 'load']);
 
 

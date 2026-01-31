@@ -30,7 +30,15 @@
                     <!--end::Wrapper-->
                 </div>
                 <!--begin::Input group-->
-                <form class="form" id="add_model_form" method="POST" action="/add-model">
+
+                <div class="modal-body">
+                    <div id="vendorLoading" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="mt-2">Loading Orbit vendors…</div>
+                    </div>
+
+                    <div id="vendorContent" class="d-none">
+                        <form class="form" id="add_model_form" method="POST" action="/add-model">
                     @csrf
                     <div class="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
                         <!--begin::Label-->
@@ -43,8 +51,8 @@
                             </span>
                         </label>
                         <!--end::Label-->
-                        <select class="form-select" name="vendor_id" data-control="model_select" data-placeholder="Select Vendor ..."
-                            id="vendorSelect">
+                        <select class="form-select" name="vendor_id" data-control="model_select"
+                            data-placeholder="Select Vendor ..." id="vendorSelect">
                             <option></option>
                         </select>
                         <div
@@ -57,19 +65,27 @@
                             <span class="required">Vendors Model</span>
                             <span class="ms-1" data-bs-toggle="tooltip"
                                 aria-label="Multiple models will get same description"
-                                data-bs-original-title="Multiple models will get same description" data-kt-initialized="1">
+                                data-bs-original-title="Multiple models will get same description"
+                                data-kt-initialized="1">
                                 <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i>
                             </span>
                         </label>
-                        <input class="form-control fs-12" value="" name="vendor_model" id="vendor_model" placeholder="Type one or more models then press enter"/>
+                        <input class="form-control fs-12" value="" name="vendor_model" id="vendor_model"
+                            placeholder="Type one or more models then press enter" />
                     </div>
 
                     <div class="form-floating">
                         <textarea class="form-control" placeholder="Leave a comment here" name="model_desc" id="model_desc" maxlength="160"
                             style="min-height: 150px !important; max-height: 150px !important"></textarea>
-                        <label class="fs-8" for="floatingTextarea2">Model short description... e.g: Wi-fi Router</label>
+                        <label class="fs-8" for="floatingTextarea2">Model short description... e.g: Wi-fi
+                            Router</label>
                     </div>
                 </form>
+                    </div>
+                </div>
+
+
+                
             </div>
             <!-- End to -->
 

@@ -50,7 +50,7 @@ class StarlinkService
     /**
      * Generic API request handler
      */
-    protected function request(
+    public function request(
         string $method,
         string $endpoint,
         array $payload = [],
@@ -83,6 +83,11 @@ class StarlinkService
     public function account(?int $accountId = null): array
     {
         return $this->request('get', '/account', [], $accountId);
+    }
+
+    public function allUserTerminals(?int $accountId = null): array
+    {
+        return $this->request('get', '/user-terminals', [], $accountId);
     }
 
     public function allSubscribers(?int $accountId = null): array
@@ -120,12 +125,12 @@ class StarlinkService
         ?int $accountId = null
     ): array {
         // 1. Fetch service line details
-        Log::info("Fetching the product for  " .$serviceLineNumber);
+        Log::info("Fetching the product for  " . $serviceLineNumber);
         $serviceLine = $this->getServiceLine($serviceLineNumber, $accountId);
 
         // 2. Extract productReferenceId
-        Log::info("The Product Reference is " .json_encode($serviceLine));
-        
+        Log::info("The Product Reference is " . json_encode($serviceLine));
+
         $productReferenceId = $serviceLine['content']['productReferenceId']
             ?? null;
 
@@ -158,7 +163,50 @@ class StarlinkService
         return $this->request('put', $endpoint, $payload, $accountId);
     }
 
+    public function streamTelemetry(
+        int $batchSize = 1000,
+        int $maxLingerMs = 15000,
+        ?int $accountId = null
+    ): array {
+        return $this->request(
+            'post',
+            '/telemetry/stream',
+            [
+                'batchSize' => $batchSize,
+                'maxLingerMs' => $maxLingerMs,
+            ],
+            $accountId
+        );
+    }
 
+    // This is to normalise the values we save for the telemetry. 
+    public function normalizeValues(array $response): array
+    {
+        $rows = [];
+
+        Log::info("Starlink normalising values for DB storing");
+
+        $values = $response['data']['values'] ?? [];
+        $columns = $response['data']['columnNamesByDeviceType'] ?? [];
+
+        foreach ($values as $row) {
+            $deviceType = $row[0] ?? null;
+
+            if (!$deviceType || !isset($columns[$deviceType])) {
+                continue;
+            }
+
+            $assoc = array_combine($columns[$deviceType], $row);
+
+            if (isset($assoc['DeviceId'])) {
+                $assoc['DeviceId'] = preg_replace('/^(ut|r|i)/', '', $assoc['DeviceId']);
+            }
+
+            $rows[] = $assoc;
+        }
+
+        return $rows;
+    }
 
 
     public function dataUsage(array $payload, ?int $accountId = null): array
