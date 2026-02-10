@@ -210,22 +210,22 @@
                 <!--end::Card header-->
                 <!--begin::Card body-->
                 <div class="card-body pt-0">
-                    <!--begin::Table-->     
-                        <div id="" class="table-responsive">
-                            <table id="billingTable" class="table align-middle table-row-dashed fs-6 gy-5">
-                                <thead>
-                                    <tr>
-                                        <th>Contract</th>
-                                        <th>Account</th>
-                                        <th>Billing</th>
-                                        <th>Period</th>
-                                        <th>User</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    
+                    <!--begin::Table-->
+                    <div id="" class="table-responsive">
+                        <table id="billingTable" class="table align-middle table-row-dashed fs-6 gy-5">
+                            <thead>
+                                <tr>
+                                    <th>Contract</th>
+                                    <th>Account</th>
+                                    <th>Billing</th>
+                                    <th>Period</th>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+
                     <!--end::Table-->
                 </div>
                 <!--end::Card body-->
@@ -263,23 +263,29 @@
                             if (!row.account_name) return '';
 
                             let initial = row.account_name.charAt(0).toUpperCase();
-                            let amount = parseFloat(row.amount_total_bill || 0).toFixed(2);
+
+                            let amount = Number(row.amount_total_bill || 0).toLocaleString(
+                                'en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
 
                             return `
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="symbol-label fs-6 fw-semibold bg-light-success text-success rounded-circle"
-                                     style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">
-                                    ${initial}
-                                </div>
-                                <div>
-                                    <div class="fw-medium text-body">${row.account_name}</div>
-                                    <small class="text-muted">
-                                        <i class="fa fa-coins me-1"></i>${amount}
-                                    </small>
-                                </div>
-                            </div>
-                        `;
+            <div class="d-flex align-items-center gap-3">
+                <div class="symbol-label fs-6 fw-semibold bg-light-success text-success rounded-circle"
+                     style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">
+                    ${initial}
+                </div>
+                <div>
+                    <div class="fw-medium text-body">${row.account_name}</div>
+                    <small class="text-muted">
+                        <i class="fa fa-coins me-1"></i>${amount}
+                    </small>
+                </div>
+            </div>
+        `;
                         }
+
                     },
                     {
                         data: 'billing_method',
@@ -293,10 +299,10 @@
                         data: null,
                         render: function(row) {
                             return `
-                            <i class="fa fa-calendar-alt text-muted me-1"></i>
-                            <span class="fw-medium">${row.start_date}</span><br>
-                            <small class="text-muted">→ ${row.next_billing_date}</small>
-                        `;
+                                <i class="fa fa-calendar-alt text-muted me-1"></i>
+                                <span class="fw-medium">${row.start_date}</span><br>
+                                <small class="text-muted">→ ${row.next_billing_date}</small>
+                            `;
                         }
                     },
                     {
@@ -305,11 +311,11 @@
                             if (!data) return '';
 
                             return `
-                            <div class="d-flex align-items-center ps-2"
-                                 style="border-left:2px solid var(--bs-primary);">
-                                <div class="text-muted">${data}</div>
-                            </div>
-                        `;
+                                <div class="d-flex align-items-center ps-2"
+                                     style="border-left:2px solid var(--bs-primary);">
+                                    <div class="text-muted">${data}</div>
+                                </div>
+                            `;
                         }
                     },
                     {

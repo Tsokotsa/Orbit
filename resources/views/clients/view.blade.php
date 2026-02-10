@@ -17,10 +17,10 @@
                 <div class="card-header py-4">
                     <div class="card-title d-flex flex-column">
                         <span class="text-muted text-uppercase fw-semibold fs-6 mb-1">
-                            {{ $client['name'] }}
+                            {{ $client->name }}
                         </span>
                         <span class="fw-bold fs-9 text-gray-900 letter-spacing">
-                            Acc Number: {{ $client['id'] }}
+                            Acc Number: {{ $client->odoo_id }}
                         </span>
                     </div>
                 </div>
@@ -58,13 +58,13 @@
                         <!--begin::Nav item-->
                         <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="contacts"
-                                href="#">Contacts</a>
+                                href="#">Contacts & Adress</a>
                         </li>
                         <!--end::Nav item-->
                         <!--begin::Nav item-->
                         <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab"
-                                data-tab="addresses" href="#">Adresses</a>
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="finance"
+                                href="#">Finance Data</a>
                         </li>
                         <!--end::Nav item-->
                         <li class="nav-item mt-2">
@@ -159,7 +159,7 @@
                         } else {
                             $('#tab-content').html(`
                 <div class="text-center text-muted py-10">
-                    <h3>🚀 Lost in Orbit</h3>
+                    <h3> Lost in Orbit</h3>
                     <p>This tab does not exist.</p>
                 </div>
             `);

@@ -120,18 +120,45 @@ class OdooService
 
     }
 
-    public function searchRead(string $model, array $domain = [], array $fields = [], int $limit = 100)
-    {
+    // public function searchRead(string $model, array $domain = [], array $fields = [], int $limit = 100)
+    // {
+    //     return $this->execute(
+    //         $model,
+    //         'search_read',
+    //         [$domain],
+    //         [
+    //             'fields' => $fields,
+    //             'limit' => $limit,
+    //         ]
+    //     );
+    // }
+
+    public function searchRead(
+        string $model,
+        array $domain = [],
+        array $fields = [],
+        int $limit = 100,
+        int $offset = 0,
+        ?string $order = null
+    ) {
+        $kwargs = [
+            'fields' => $fields,
+            'limit' => $limit,
+            'offset' => $offset,
+        ];
+
+        if ($order) {
+            $kwargs['order'] = $order;
+        }
+
         return $this->execute(
             $model,
             'search_read',
             [$domain],
-            [
-                'fields' => $fields,
-                'limit' => $limit,
-            ]
+            $kwargs
         );
     }
+
 
 
     public function getBillingContracts(array $filters = [])
@@ -175,6 +202,59 @@ class OdooService
             throw $e;
         }
     }
+
+    /**
+     * Get billing contracts by client (partner) ID
+     */
+    public function getBillingByClientID(int $clientId, int $limit = null)
+    {
+        try {
+            Log::info('Odoo: Fetching billing contracts by client', [
+                'client_id' => $clientId,
+                'limit' => $limit,
+            ]);
+
+            $params = [
+                'fields' => [
+                    'name',
+                    'partner_id',
+                    'billing_method',
+                    'billing_cycle_period',
+                    'start_date',
+                    'next_billing_date',
+                    'amount_total_bill',
+                    'user',
+                    'state',
+                    'create_uid',
+                ],
+                'order' => 'create_date desc',
+            ];
+
+            if ($limit !== null) {
+                $params['limit'] = $limit;
+            }
+
+            return $this->execute(
+                'billing.contract',
+                'search_read',
+                [
+                    [
+                        ['partner_id', 'child_of', $clientId],
+                    ]
+                ],
+                $params
+            );
+
+        } catch (\Throwable $e) {
+            Log::error('Odoo: Failed to fetch billing by client ID', [
+                'client_id' => $clientId,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
+    }
+
 
     public function getAllModels(): array
     {

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\OdooController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\OdooInvoiceController;
 
 
 
@@ -34,10 +35,9 @@ Route::post('/assets/store', [ClientController::class, 'store_asset'])->name('cl
 Route::get('/odoo/test-open-invoices', [OdooController::class, 'logInvoices']);
 Route::get('/odoo/test-models', [OdooController::class, 'logAllModels']);
 
+// INVOICE 
+Route::get('/odoo/invoices', [OdooInvoiceController::class, 'index'])->name('odoo.invoices.index');
 
-
-
-//Route::get('/client/services/{service}', [ServiceController::class, 'load']);
 
 
 

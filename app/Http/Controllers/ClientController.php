@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use ActivityHelper;
 use Spatie\Activitylog\Models\Activity;
 use Log;
+use App\Models\OdooPartner;
+use App\Models\OdooInvoice;
 
 class ClientController extends Controller
 {
@@ -27,9 +29,14 @@ class ClientController extends Controller
     {
         $client_id = $request->query('client_id'); // retrieves 6170
 
-        $client = $this->odooservice->get_client_by_id($client_id);
+        // $client = $this->odooservice->get_client_by_id($client_id);
+        $client = OdooPartner::query()
+            ->where('odoo_id', $client_id)
+            ->first();
 
         Log::info("Retrieving Client wih ID:  $client_id");
+        Log::info("This is the client found " . json_encode($client));
+
         return view('clients.view')->with(['client_id' => $client_id, 'client' => $client]);
     }
 
@@ -81,8 +88,7 @@ class ClientController extends Controller
                         'a.created_at as created_at',
                         'v.name as vendor_name',
                         'm.name as model_name'
-                    )
-                    ->get();
+                    )->get();
 
                 Log::info("Retrieved assets for client $clientId: " . $assets->count());
 
@@ -144,6 +150,20 @@ class ClientController extends Controller
                     'client_services' => $clientServices
                 ]);
 
+            case 'billing':
+                $clientId = $request->query('client_id');
+                $userId = auth()->id(); // currently logged-in user
+
+                Log::info("This is the cliet ID that was passed on the [ $tab ] TAB $clientId");
+                $invoices = OdooInvoice::where('partner_odoo_id', $clientId)
+                    ->orderByDesc('invoice_date')
+                    ->paginate(5);
+
+                return view('clients.tabs.billing', [
+                    'client_id' => $clientId,
+                    'invoices' => $invoices
+                ]);
+
 
             case 'logs':
                 $clientId = $request->query('client_id');
@@ -161,6 +181,67 @@ class ClientController extends Controller
                 return view('clients.tabs.logs', [
                     'client_id' => $clientId,
                     'activity' => $logs
+                ]);
+
+            case 'contacts':
+
+                $clientId = $request->query('client_id');
+                $userId = auth()->id(); // currently logged-in user
+
+                $contacts = OdooPartner::query()
+                    ->where('parent_odoo_id', $clientId)
+                    ->get();
+
+                //dd($contacts);
+                Log::info("Retrieving Contacts for client $clientId: " . $contacts->count());
+
+                return view('clients.tabs.contacts', [
+                    'contacts' => $contacts,
+                    'cid' => $clientId
+                ]);
+
+            case 'finance':
+
+                $clientId = $request->query('client_id');
+                $userId = auth()->id(); // currently logged-in user
+
+                $partner = OdooPartner::where('odoo_id', $clientId)
+                    ->first([
+                        'invoice_ids',
+                        'prim_invoices_ids',
+                        'sale_order_ids',
+                        'subscription_ids',
+                        'opportunity_ids'
+                    ]);
+
+                $docs = [];
+
+                foreach ($partner->invoice_ids ?? [] as $id) {
+                    $docs[] = ['id' => $id, 'type' => 'Invoice'];
+                }
+
+                foreach ($partner->prim_invoices_ids ?? [] as $id) {
+                    $docs[] = ['id' => $id, 'type' => 'Primary Invoice'];
+                }
+
+                foreach ($partner->sale_order_ids ?? [] as $id) {
+                    $docs[] = ['id' => $id, 'type' => 'Sales Order'];
+                }
+
+                foreach ($partner->subscription_ids ?? [] as $id) {
+                    $docs[] = ['id' => $id, 'type' => 'Subscription'];
+                }
+
+                foreach ($partner->opportunity_ids ?? [] as $id) {
+                    $docs[] = ['id' => $id, 'type' => 'Opportunity'];
+                }
+
+                //dd($contacts);
+                Log::info("Retrieving Finance Data for client $clientId: ");
+
+                return view('clients.tabs.finance-data', [
+                    'docs' => $docs,
+                    'cid' => $clientId
                 ]);
 
             default:

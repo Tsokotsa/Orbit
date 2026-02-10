@@ -164,7 +164,8 @@
                                                 <!-- Menu item 1 -->
                                                 <div class="menu-item px-3">
                                                     <a href="javascript:void(0);" class="menu-link px-3"
-                                                        data-bs-toggle="modal" data-bs-target="#topupModal" data-service="{{ $sub['serviceLineNumber'] }}">
+                                                        data-bs-toggle="modal" data-bs-target="#topupModal"
+                                                        data-service="{{ $sub['serviceLineNumber'] }}">
                                                         <span class="menu-icon">
                                                             <i class="ki-outline ki-arrow-up fs-5 text-success"></i>
                                                         </span>
@@ -176,7 +177,8 @@
                                                 <!-- Menu item 2 -->
                                                 <div class="menu-item px-3">
                                                     <a href="javascript:void(0);" class="menu-link px-3"
-                                                        data-bs-toggle="modal" data-bs-target="#view-subscriber">
+                                                        data-bs-toggle="modal" data-bs-target="#view-subscriber"
+                                                        data-service="{{ $sub['serviceLineNumber'] }}">
                                                         <span class="menu-icon"><i
                                                                 class="ki-outline ki-eye fs-5 text-success"></i></span>
                                                         <span class="menu-title">View Subscriber</span>
@@ -267,50 +269,45 @@
             table.search(e.target.value).draw();
         });
 
-        // On document ready
-        KTUtil.onDOMContentLoaded(function() {
-            KTUsersList.init();
+        // Show and Hide IP Field       
+        $(document).on('change', '#ip_policy', function() {
+            if ($(this).val() === '2') {
+                $('#ip_field').removeClass('d-none');
+            } else {
+                $('#ip_field').addClass('d-none');
+                $('#ip_field input').val('');
+            }
         });
 
-        // Show and Hide IP Field       
-        $(document).ready(function() {
-            $('#ip_policy').on('change', function() {
-                if ($(this).val() === '2') {
-                    $('#ip_field').removeClass('d-none');
-                } else {
-                    $('#ip_field').addClass('d-none');
-                    $('#ip_field input').val(''); // optional: clear value //
-                }
-            });
-        });
 
 
         // I Understand Checkbox
-        $(document).ready(function() {
+        function toggleForm(enabled) {
+            const $form = $('#starlink-subscriber-form');
+            const $understand = $('#understand');
 
-            const $formContent = $('#starlink-subscriber-form');
+            if (!$form.length) return;
 
-            // Start disabled
-            toggleForm(false);
+            // Sync checkbox state
+            $understand.prop('checked', enabled);
 
-            $('#understand').on('change', function() {
-                toggleForm(this.checked);
-            });
-
-            function toggleForm(enabled) {
-                if (enabled) {
-                    $formContent.removeClass('form-disabled');
-                    $formContent.find(':input').prop('disabled', false);
-                } else {
-                    $formContent.addClass('form-disabled');
-                    $formContent.find(':input').prop('disabled', true);
-                }
-
-                // Refresh select2
-                $formContent.find('select[data-control="select2"]').each(function() {
-                    $(this).trigger('change.select2');
-                });
+            if (enabled) {
+                $form.removeClass('form-disabled');
+                $form.find(':input').prop('disabled', false);
+            } else {
+                $form.addClass('form-disabled');
+                $form.find(':input').prop('disabled', true);
             }
+
+            // Refresh select2
+            $form.find('select[data-control="select2"]').each(function() {
+                $(this).trigger('change.select2');
+            });
+        }
+
+        // Start disabled when form appears
+        $(document).on('change', '#understand', function() {
+            toggleForm(this.checked);
         });
 
         // Suspend Subscriber Modal
@@ -321,9 +318,6 @@
             const serviceLine = button.getAttribute('data-service');
             suspendModal.querySelector('#serviceLineNumber').value = serviceLine;
         });
-
-
-
 
         // Suspend Starlink 
         const button = document.getElementById('confirmSuspend');
@@ -465,6 +459,75 @@
                 input.value = serviceLine;
             });
 
+        });
+
+
+        // View Subscriber Modal
+        const subscriberModal = document.getElementById('view-subscriber');
+        let currentServiceLine = null;
+        let subscriberLoaded = false;
+
+        /**
+         * Capture service line when modal is opened
+         */
+        subscriberModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+
+            currentServiceLine = button.getAttribute('data-service');
+            subscriberLoaded = false;
+
+            // RESET UI
+            $('#subscriberLoading').removeClass('d-none');
+            $('#subscriberContent').addClass('d-none');
+            $('#subscriberContentBody').empty();
+        });
+
+        /**
+         * Load subscriber content when modal is visible
+         */
+        $('#view-subscriber').on('shown.bs.modal', function() {
+
+            if (!currentServiceLine || subscriberLoaded) {
+                return;
+            }
+
+            subscriberLoaded = true;
+
+            $.ajax({
+                url: `/starlink/subscriber-view/${encodeURIComponent(currentServiceLine)}`,
+                method: 'GET',
+
+                success: function(html) {
+                    $('#subscriberContentBody').html(html);
+                    toggleForm(false);
+
+                    // Re-init Metronic components
+                    if (typeof KTComponents !== 'undefined') {
+                        KTComponents.init();
+                    }
+
+                    // SHOW CONTENT
+                    $('#subscriberLoading').addClass('d-none');
+                    $('#subscriberContent').removeClass('d-none');
+                },
+
+                error: function() {
+                    $('#subscriberContentBody').html(
+                        '<div class="text-danger text-center py-5">Failed to load subscriber data</div>'
+                    );
+
+                    // SHOW CONTENT (with error)
+                    $('#subscriberLoading').addClass('d-none');
+                    $('#subscriberContent').removeClass('d-none');
+                }
+            });
+        });
+
+        /**
+         * Cleanup when modal closes
+         */
+        $('#view-subscriber').on('hidden.bs.modal', function() {
+            $('#subscriberContentBody').empty();
         });
     </script>
 @endpush

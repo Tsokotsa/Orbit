@@ -13,8 +13,9 @@
                         <!--begin::Search-->
                         <div class="d-flex align-items-center position-relative my-1">
                             <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                            <input type="text" data-kt-user-table-filter="search"
-                                class="form-control form-control-solid w-250px ps-13" placeholder="Search user">
+                            <input type="text" data-kt-client-table-filter="search"
+                                class="form-control form-control-solid w-250px ps-13"
+                                placeholder="Search clients on orbit...">
                         </div>
                         <!--end::Search-->
                     </div>
@@ -275,48 +276,21 @@
                 <!--begin::Card body-->
                 <div class="card-body py-4">
                     <!--begin::Table-->
-                    <div id="kt_table_users_wrapper" class="dt-container dt-bootstrap5 dt-empty-footer">
-                        <div id="" class="table-responsive">
-                            <table class="table table-row-bordered gy-5 tsk-tr-hover" id="clients_dt">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Client Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Client Type</th>
-                                        <th>Created date</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                        {{-- <div id="" class="row">
-                            <div id=""
-                                class="col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start dt-toolbar">
-                            </div>
-                            <div id=""
-                                class="col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end">
-                                <div class="dt-paging paging_simple_numbers">
-                                    <ul class="pagination">
-                                        <li class="dt-paging-button page-item disabled"><a class="page-link previous"
-                                                aria-controls="kt_table_users" aria-disabled="true" aria-label="Previous"
-                                                data-dt-idx="previous" tabindex="-1"><i class="previous"></i></a></li>
-                                        <li class="dt-paging-button page-item active"><a href="#" class="page-link"
-                                                aria-controls="kt_table_users" aria-current="page" data-dt-idx="0"
-                                                tabindex="0">1</a></li>
-                                        <li class="dt-paging-button page-item"><a href="#" class="page-link"
-                                                aria-controls="kt_table_users" data-dt-idx="1" tabindex="0">2</a></li>
-                                        <li class="dt-paging-button page-item"><a href="#" class="page-link"
-                                                aria-controls="kt_table_users" data-dt-idx="2" tabindex="0">3</a></li>
-                                        <li class="dt-paging-button page-item"><a href="#" class="page-link next"
-                                                aria-controls="kt_table_users" aria-label="Next" data-dt-idx="next"
-                                                tabindex="0"><i class="next"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div> --}}
+                    <div class="table-responsive">
+                        <table class="table align-middle table-row-dashed gy-4" id="clients_dt">
+                            <thead>
+                                <tr>
+                                    <th class="text-start">ID</th>
+                                    <th>Client Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Client Type</th>
+                                    <th>Created date</th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
+
                     <!--end::Table-->
                 </div>
                 <!--end::Card body-->
@@ -413,7 +387,7 @@
                 );
 
                 // Submit button handler
-                const submitButton = element.querySelector('[data-kt-users-modal-action="submit"]');
+                const submitButton = element.querySelector('[data-kt-client-modal-action="submit"]');
                 submitButton.addEventListener('click', e => {
                     e.preventDefault();
 
@@ -497,7 +471,7 @@
                 });
 
                 // Cancel button handler
-                const cancelButton = element.querySelector('[data-kt-users-modal-action="cancel"]');
+                const cancelButton = element.querySelector('[data-kt-client-modal-action="cancel"]');
                 cancelButton.addEventListener('click', e => {
                     e.preventDefault();
 
@@ -531,7 +505,7 @@
                 });
 
                 // Close button handler
-                const closeButton = element.querySelector('[data-kt-users-modal-action="close"]');
+                const closeButton = element.querySelector('[data-kt-client-modal-action="close"]');
                 closeButton.addEventListener('click', e => {
                     e.preventDefault();
 
@@ -587,94 +561,112 @@
                 dt = $("#clients_dt").DataTable({
                     searchDelay: 500,
                     processing: true,
-                    serverSide: true,
-                    order: [
-                        [5, 'desc']
-                    ],
-                    stateSave: true,
-
+                    serverSide: false,
+                    stateSave: false,
+                    autoWidth: false, // prevent automatic narrow columns
                     ajax: {
                         url: "/clients/data",
                         type: "GET"
                     },
-
                     columns: [{
-                            data: "id",
-                            className: "client_id fw-semibold"
+                            data: "odoo_id",
+                            className: "client_id fw-semibold text-start",
+                            searchable: true
                         },
                         {
                             data: "name",
-                            render: function(data, type, row) {
+                            render: function(data) {
                                 return `
-                <div class="d-flex flex-column">
-                    <span class="client-name">${data}</span>
-                </div>
-            `;
+                            <div class="d-flex flex-column">
+                                <span class="client-name">${data}</span>
+                            </div>
+                        `;
                             }
                         },
                         {
                             data: "email",
-                            visible: false
-                        }, // 👈 hidden but keeps index
+                            render: function(data) {
+                                if (!data) return `<span class="text-muted">—</span>`;
+                                return `
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa-solid fa-envelope text-primary me-2"></i>
+                                            <span class="text-truncate" style="max-width:150px;" title="${data}">${data}</span>
+                                        </div>
+                                    `;
+                            }
+                        },
                         {
                             data: "phone",
                             render: function(data) {
-                                return `<span class="badge badge-light-primary">${data ?? "—"}</span>`;
+                                if (!data) return `<span class="text-muted">—</span>`;
+                                return `
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa-solid fa-phone text-success me-2"></i>
+                                            <span class="text-truncate" style="max-width:120px;" title="${data}">${data}</span>
+                                        </div>
+                                    `;
                             }
                         },
+
                         {
                             data: "company_type",
                             render: function(data) {
                                 return data === "company" ?
-                                    `<span class="badge badge-light-primary">
-                     <i class="ki-duotone ki-office-bag"></i> Company
-                   </span>` :
-                                    `<span class="badge badge-light-success">
-                     <i class="ki-duotone ki-user"></i> Person
-                   </span>`;
+                                    `<span class="badge badge-light-primary"><i class="ki-duotone ki-office-bag"></i> Company</span>` :
+                                    `<span class="badge badge-light-success"><i class="ki-duotone ki-user"></i> Person</span>`;
                             }
                         },
                         {
-                            data: "create_date",
+                            data: "odoo_create_date",
                             render: function(data) {
                                 return `<span class="text-muted fs-8">${data}</span>`;
                             }
                         }
                     ],
                     order: [
-                        [5, 'desc']
-                    ], // ✅ now valid again
-
+                        [10, 'desc']
+                    ],
                     pageLength: 5,
                     lengthMenu: [5, 10, 20, 50],
                     paging: true
                 });
 
-                // ✅ Row click navigation (unchanged logic, safer selector)
+                // Row click navigation
                 $("#clients_dt tbody").on("click", "tr", function(e) {
-                    if (
-                        $(e.target).closest("a, button, input, label, .form-check, [data-kt-menu]").length
-                    ) {
+                    if ($(e.target).closest("a, button, input, label, .form-check, [data-kt-menu]")
+                        .length) {
                         return;
                     }
 
                     const client_id = $(this).find("td.client_id").text().trim();
-                    if (!client_id) return;
+                    if (client_id) {
+                        window.location.href = `/client/view?client_id=${client_id}`;
+                    }
+                });
+            };
 
-                    window.location.href = `/client/view?client_id=${client_id}`;
+            var handleSearch = function() {
+                const searchInput = document.querySelector('[data-kt-client-table-filter="search"]');
+
+                if (!searchInput) return;
+
+                searchInput.addEventListener('keyup', function() {
+                    dt.search(this.value).draw();
                 });
             };
 
             return {
                 init: function() {
                     initDatatable();
+                    handleSearch(); // ✅ bind search AFTER datatable exists
                 }
             };
         }();
 
+
         // On document ready
-        KTUtil.onDOMContentLoaded(function() {
-            KTDatatablesServerSide.init();
-        });
+        // KTUtil.onDOMContentLoaded(function() {
+        KTDatatablesServerSide.init();
+        // });
     </script>
 @endpush

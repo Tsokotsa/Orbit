@@ -14,6 +14,8 @@ Route::get('/client/sales-order', [OdooController::class, 'sales_order'])->name(
 Route::get('/odoo/quotes', [OdooController::class, 'quotes']);
 Route::get('/odoo/invoices', [OdooController::class, 'lastInvoices']);
 Route::get('/odoo/billings', [OdooController::class, 'lastBillings']);
+Route::get('/odoo/billing/client', [OdooController::class, 'billingByClient']);
+
 
 
 

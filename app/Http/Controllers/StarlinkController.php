@@ -73,13 +73,14 @@ class StarlinkController extends Controller
         // }
     }
 
-    public function view_subscriber(Request $request)
+    public function view_subscriber(string $serviceLine)
     {
-        $subscriber = $this->starlink->getServiceLine("SL-DF-9722641-79642-67");
+        $service_line = $serviceLine;
+
+        $subscriber = $this->starlink->getServiceLine($service_line);
 
         // Log::info(json_encode($subscriber));
-
-        dd($subscriber);
+        return view("starlink.modals.partials.subscriber")->with(["subscriber" => $subscriber]);
 
     }
 

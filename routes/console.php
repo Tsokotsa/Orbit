@@ -2,6 +2,7 @@
 
 use App\Jobs\CountMsgsJob;
 use App\Jobs\QueueCampaignJob;
+use App\Jobs\SyncOdooInvoicesJob;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schedule;
 use App\Jobs\PollStarlinkTelemetryJob;
 use App\Services\StarlinkService;
+use App\Jobs\SyncOdooPartnersJob;
 
 // Send SMS
 // Schedule::command('send-sms-cmd')->everyFifteenSeconds(); // This Works
@@ -24,20 +26,14 @@ use App\Services\StarlinkService;
 
 //Schedule::command('send-email-cmd')->everyFifteenSeconds(); // This Test
 
-Schedule::command('starlink:refresh-token')
-    ->everyTenMinutes();
+Schedule::command('starlink:refresh-token')->everyTenMinutes();
 
-Schedule::job(new PollStarlinkTelemetryJob)->everyThreeMinutes();
+//Schedule::job(new PollStarlinkTelemetryJob)->everyThreeMinutes();
 
+//Schedule::job(new SyncOdooPartnersJob)->everyFifteenMinutes();
 
-// Schedule::job(new PollStarlinkTelemetryJob)->everyMinute();
+//Schedule::job(new SyncOdooInvoicesJob)->everyMinute();
 
-
-Schedule::command('starlink:sync-devices')
-    ->everyTenMinutes();
-
-
-
-
+//Schedule::command('starlink:sync-devices')->everyTenMinutes();
 
 // Schedule::command('task-scheduler-cmd')->everyMinute(); // This Test
