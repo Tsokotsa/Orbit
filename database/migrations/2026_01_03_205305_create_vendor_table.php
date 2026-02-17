@@ -16,7 +16,7 @@ return new class extends Migration {
             ;
             $table->string('v_shortname')->nullable();
             $table->string('description')->nullable();
-            $table->string('vendor_path')->nullable();
+            $table->string('logo_path')->nullable();
             $table->enum('active', ['y', 'n'])->default('y');
             $table->timestamps();
         });
