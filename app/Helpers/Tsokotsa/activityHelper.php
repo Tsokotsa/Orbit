@@ -14,13 +14,13 @@ class ActivityHelper
      * @param int|null $accId
      * @return void
      */
-    function logActivity(string $description, $subject = null, $accId = null)
+    function logActivity(string $description, $accId = null, $subject = null)
     {
         $agent = new Agent();
 
         activity()
             ->causedBy(auth()->user())
- //           ->performedOn($subject)
+            //->performedOn($subject)
             ->withProperties([
                 'acc_id' => $accId ?? auth()->user()->acc_id ?? null,
                 'ip' => request()->ip(),

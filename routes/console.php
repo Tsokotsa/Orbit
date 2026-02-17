@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schedule;
 use App\Jobs\PollStarlinkTelemetryJob;
 use App\Services\StarlinkService;
 use App\Jobs\SyncOdooPartnersJob;
+use App\Jobs\ExportPrepaidBillingJob;
 
 // Send SMS
 // Schedule::command('send-sms-cmd')->everyFifteenSeconds(); // This Works
@@ -33,6 +34,8 @@ Schedule::command('starlink:refresh-token')->everyTenMinutes();
 //Schedule::job(new SyncOdooPartnersJob)->everyFifteenMinutes();
 
 //Schedule::job(new SyncOdooInvoicesJob)->everyMinute();
+
+Schedule::job(new ExportPrepaidBillingJob)->everyMinute();
 
 //Schedule::command('starlink:sync-devices')->everyTenMinutes();
 

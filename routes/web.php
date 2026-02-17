@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AssetsController;
+use App\Http\Controllers\ServiceController;
 
 
 Route::get('/', function () {
@@ -26,7 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/sms/list', [SmsController::class, "index"])->name('list-sms');
     Route::post('/send-test-sms', [SmsController::class, "send_test"])->name('send-test-sms');
     Route::post('/soap-request', [SmsController::class, "makeSoapRequest"])->name('soap-request');
-    
+
     // TEST
     Route::get('/test', [SmsController::class, "test"]);
 
@@ -52,7 +53,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/{uid}/edit', [UserController::class, 'edit_user'])->name('edit-user');
 
     // EMAIL 
-    
+
     Route::get('/email/list', [EmailController::class, "listEmails"])->name('list-email');
     Route::post('/send-test-email', [EmailController::class, "send_test_Email"])->name('send-test-email');
     // Update Email
@@ -103,6 +104,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/test/prepaid-billing', [
+    \App\Http\Controllers\PrepaidBillingController::class,
+    'run'
+]);
+
+
+// Services Routes No dedicated file yet
+Route::get('/services/list', [ServiceController::class, 'search']);
 
 
 require __DIR__ . '/starlink.php';

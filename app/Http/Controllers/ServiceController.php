@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use DB;
 use Log;
 use activityHelper;
+use App\Models\Service;
 use function Laravel\Prompts\select;
 
 class ServiceController extends Controller
@@ -16,6 +17,20 @@ class ServiceController extends Controller
     public function __construct()
     {
         $this->client_services_table = "client_service_"; // example, could come from auth() or request
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->search;
+
+        $services = Service::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->limit(20)
+            ->get(['id', 'name', 'd_speed', 'u_speed']);
+
+        return response()->json($services);
     }
 
     public function get_service_by_id($table, $client_id)
@@ -79,7 +94,7 @@ class ServiceController extends Controller
         $services = $this->get_service_by_id($table, $clientID);
 
         Log::info("Found Services for client $clientID  ====  $services");
-        
+
         $logger->logActivity('Accessed resource', $table, $clientID);
 
 
@@ -116,6 +131,8 @@ class ServiceController extends Controller
 
         return $assets;
     }
+
+
 
 
 }

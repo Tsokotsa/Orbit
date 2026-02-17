@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\OdooService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use ActivityHelper;
@@ -10,26 +11,30 @@ use Spatie\Activitylog\Models\Activity;
 use Log;
 use App\Models\OdooPartner;
 use App\Models\OdooInvoice;
+use App\Helpers\Tsokotsa\generalHelpers;
 
 class ClientController extends Controller
 {
 
     // Class property
     protected OdooService $odooservice;
+    protected ActivityHelper $log;
     protected $client_services_table;
 
     // Constructor to initialize it
-    public function __construct(OdooService $odoo)
+    // public function __construct(OdooService $odoo, ActivityHelper $log)
+    public function __construct(ActivityHelper $log)
     {
         $this->client_services_table = "client_service_"; // example, could come from auth() or request
-        $this->odooservice = $odoo;
+        // $this->odooservice = $odoo;
+
+        $this->log = $log;
     }
 
     public function view_cLient(Request $request)
     {
         $client_id = $request->query('client_id'); // retrieves 6170
 
-        // $client = $this->odooservice->get_client_by_id($client_id);
         $client = OdooPartner::query()
             ->where('odoo_id', $client_id)
             ->first();
@@ -66,7 +71,9 @@ class ClientController extends Controller
         switch ($tab) {
             case 'overview':
 
-                $client = $this->odooservice->get_client_by_id($client_id);
+                $client = OdooPartner::query()
+                    ->where('odoo_id', $client_id)
+                    ->first();
 
                 Log::info("Retrieved Many clients from DB " . json_encode($client));
                 Log::info("This is the cliet ID that was passed on the [ $tab ] TAB $client_id");
@@ -156,8 +163,7 @@ class ClientController extends Controller
 
                 Log::info("This is the cliet ID that was passed on the [ $tab ] TAB $clientId");
                 $invoices = OdooInvoice::where('partner_odoo_id', $clientId)
-                    ->orderByDesc('invoice_date')
-                    ->paginate(5);
+                    ->orderByDesc('invoice_date')->get();
 
                 return view('clients.tabs.billing', [
                     'client_id' => $clientId,
@@ -265,5 +271,55 @@ class ClientController extends Controller
             'status' => 'success',
             'message' => 'Asset successfully assigned to client'
         ]);
+    }
+
+    public function add_service(Request $request)
+    {
+        $client = $request->client_id;
+        $userId = auth()->id(); // currently logged-in user
+        $package_id = $request->service_id;
+        $GH = new generalHelpers();
+        $package = $GH->get_packages_by_id($package_id);
+
+        Log::info("You Hit The Function " . __FUNCTION__ . " That will add Services to client $client with package [ ID :::: $package_id  ::: ]");
+
+        $table = "client_service_{$package->table_identifier}";
+        try {
+
+            Log::info('Inserting Service to DB', [
+                'service_id' => $package->id,
+                'client_id' => $client,
+                'table' => $table
+            ]);
+
+            DB::table($table)->insert([
+                'service_id' => $package->id,
+                'client_id' => $client,
+                'created_at' => now(),
+            ]);
+
+            $this->log->logActivity("Package {$package->id} linked to account", $client);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Service Inserted'
+            ], 200);
+
+        } catch (\Throwable $e) {
+
+            Log::error('Error inserting service to DB', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to insert package'
+            ], 500);
+        }
+
+
     }
 }

@@ -55,7 +55,7 @@
                 <!--end::Thead-->
                 <!--begin::Tbody-->
                 <tbody class="fw-6 fw-semibold text-gray-600">
-                    @forelse ($docs as $doc)
+                    @foreach ($docs as $doc)
                         <tr>
                             <td>
                                 <a href="#" class="text-hover-primary text-gray-600">{{ $doc['id'] }}</a>
@@ -65,13 +65,7 @@
                             </td>
 
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">No Finance activities found on this
-                                plannet ...
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
                 <!--end::Tbody-->
                 <tfoot>

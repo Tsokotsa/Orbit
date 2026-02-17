@@ -79,20 +79,17 @@
                                     <div class="d-inline-flex align-items-center gap-3">
 
                                         {{-- Link --}}
-                                        <a href="#" class="text-primary"
-                                            title="Link Asset">
+                                        <a href="#" class="text-primary" title="Link Asset">
                                             <i class="fa-solid fs-4 fa-link fa-lg text-success"></i>
                                         </a>
 
                                         {{-- Approve / Thumbs up --}}
-                                        <a href="#" class="text-success"
-                                            title="Approve Asset">
+                                        <a href="#" class="text-success" title="Approve Asset">
                                             <i class="fa-regular fs-4 fa-thumbs-up fa-lg"></i>
                                         </a>
 
                                         {{-- Ethernet / Network --}}
-                                        <a href="#" class="text-dark"
-                                            title="Network Port">
+                                        <a href="#" class="text-dark" title="Network Port">
                                             <i class="fa-solid fs-4 fa-ethernet fa-lg"></i>
                                         </a>
 
@@ -108,8 +105,6 @@
         <tfoot>
             <tr>
                 <th colspan="6" class="text-center">
-                    <div class="text-muted">No assets found</div>
-
                     <div class="mt-6">
                         <a href="#" class="btn btn-primary er fs-6 px-8 py-4" data-bs-toggle="modal"
                             data-bs-target="#add_asset_modal">Add New Asset</a>

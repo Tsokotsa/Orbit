@@ -14,8 +14,6 @@ use App\Http\Controllers\OdooInvoiceController;
 Route::get('/client', [OdooController::class, 'index'])->name('client_list');
 Route::get('/clients/data', [OdooController::class, 'getClients'])->name('clients.data');
 
-
-//Route::get('/client/view', [OdooController::class, 'viewClient'])->name('clients.view');
 Route::get('/client/view', [ClientController::class, 'view_client'])->name('clients.view');
 
 Route::get('/assets/tab', [ClientController::class, 'get_all_assets'])->name('assets.tab');
@@ -37,6 +35,8 @@ Route::get('/odoo/test-models', [OdooController::class, 'logAllModels']);
 
 // INVOICE 
 Route::get('/odoo/invoices', [OdooInvoiceController::class, 'index'])->name('odoo.invoices.index');
+
+Route::post("/client/add-service", [ClientController::class, 'add_service']);
 
 
 

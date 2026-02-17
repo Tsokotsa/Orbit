@@ -58,7 +58,7 @@
                 <!--end::Thead-->
                 <!--begin::Tbody-->
                 <tbody class="fw-6 fw-semibold text-gray-600">
-                    @forelse ($activity as $log)
+                    @foreach ($activity as $log)
                         <tr>
                             <td>
                                 <a href="#" class="text-hover-primary text-gray-600">{{ $log->causer?->name }}
@@ -71,12 +71,7 @@
                             <td>{{ $log->properties['ip'] ?? '-' }}</td>
                             <td>{{ $log->properties['timestamp'] ?? $log->created_at }}</td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">No activities found on this plannet ...
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
                 <!--end::Tbody-->
             </table>

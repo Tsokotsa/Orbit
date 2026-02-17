@@ -10,7 +10,7 @@ use App\Models\OdooPartner;
 
 class OdooController extends Controller
 {
-    public function index(OdooService $odoo)
+    public function index()
     {
         // $user = auth()->user();
         // $customers = $odoo->execute(
@@ -29,7 +29,7 @@ class OdooController extends Controller
         Log::info("Retrieving Clients :::       LOCAL DB     ::::");
         return view('clients.index');
     }
-    public function getClients(Request $request, OdooService $odoo)
+    public function getClients(Request $request)
     {
         try {
             $clients = OdooPartner::query();
@@ -51,11 +51,11 @@ class OdooController extends Controller
     }
 
     //  public function viewClient(OdooService $odoo, Request $request)
-    public function viewCLient()
-    {
-        $client = "";
-        return view('clients.view', compact('client'));
-    }
+    // public function viewCLient()
+    // {
+    //     $client = "";
+    //     return view('clients.view', compact('client'));
+    // }
 
     public function billing()
     {

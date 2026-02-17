@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -23,8 +22,14 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->json('pops')->nullable();
             $table->json('mediums')->nullable();
-            $table->enum('public_ip', ['y','n'])->default('n');
-            $table->enum('active', ['y','n'])->default('y');
+            $table->enum('public_ip', ['y', 'n'])->default('n');
+            $table->enum('active', ['y', 'n'])->default('y');
+            $table->enum('can_top_up', ['y', 'n'])->default('n');
+            $table->integer('top_up_period')->nullable();
+            $table->enum('is_prepaid', ['y', 'n'])->default('n');
+            $table->decimal('price', 12, 2);
+            $table->enum("amount_locked", ['y', 'n'])->default('y');
+            $table->string('details')->nullable();
             $table->timestamps();
         });
     }

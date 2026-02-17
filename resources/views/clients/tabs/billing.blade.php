@@ -44,7 +44,7 @@
         <!--begin::Table wrapper-->
         <div class="table-responsive">
             <!--begin::Table-->
-            <table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9" id="client_finance_data">
+            <table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9" id="client_billing">
                 <!--begin::Thead-->
                 <thead class="fs-5 fw-semibold bg-lighten fw-semibold fs-6 text-muted">
                     <tr>
@@ -59,7 +59,7 @@
                 <!--end::Thead-->
                 <!--begin::Tbody-->
                 <tbody class="fw-6 fw-semibold text-gray-600">
-                    @forelse ($invoices as $invoice)
+                    @foreach ($invoices as $invoice)
                         <tr>
 
                             {{-- Doc ID --}}
@@ -96,8 +96,8 @@
                                             <div class="fw-medium text-body">
                                                 {{ $invoice->partner_ref }}
                                             </div>
-                                            <small class="text-muted">
-                                                <i class="fa fa-user me-1"></i>Partner
+                                            <small class="text-muted fs-9">
+                                                <i class="fa fa-user me-1"></i>Client Ref
                                             </small>
                                         </div>
                                     </div>
@@ -148,14 +148,7 @@
                             </td>
 
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-6">
-                                <i class="fa fa-info-circle me-1"></i>
-                                No Billing activities found on this plannet ...
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
 
                 <!--end::Tbody-->

@@ -12,8 +12,8 @@ class generalHelpers
     public static function get_campaign_typeID($campaign_name)
     {
         $query = DB::table('campaigns_type')->where('type', $campaign_name)->select('id')->pluck('id');
-        
-        Log::info("Getting Campaign id function: " .__FUNCTION__);
+
+        Log::info("Getting Campaign id function: " . __FUNCTION__);
         return $query[0];
 
     }
@@ -21,15 +21,15 @@ class generalHelpers
     public function log_Msgs($message, $user)
     {
         DB::table('sent_messages_logs')->insert([
-            'type_id'       => $message['campaign_type'],
-            'uid'           => $user->id,
-            'sent_to'       => $message['to'],
-            'subj'          => $message['subject'],
-            'details'       => $message['msg'],
-            'created_at'    => Carbon::now()
+            'type_id' => $message['campaign_type'],
+            'uid' => $user->id,
+            'sent_to' => $message['to'],
+            'subj' => $message['subject'],
+            'details' => $message['msg'],
+            'created_at' => Carbon::now()
         ]);
 
-        Log::info("Logging Message " .json_encode($message) ."and " .json_encode($user) ." function: " .__FUNCTION__);
+        Log::info("Logging Message " . json_encode($message) . "and " . json_encode($user) . " function: " . __FUNCTION__);
 
         return "Message Logged";
 
@@ -41,7 +41,7 @@ class generalHelpers
     {
         $sites = DB::table('high_sites')->get();
 
-        Log::info("Getting All High sites function: " .__FUNCTION__);
+        Log::info("Getting All High sites function: " . __FUNCTION__);
         return $sites;
 
     }
@@ -52,14 +52,14 @@ class generalHelpers
     {
         $campaigns = DB::table('campaigns_type')->get();
 
-        Log::info("Getting all active campaigns function: " .__FUNCTION__);
+        Log::info("Getting all active campaigns function: " . __FUNCTION__);
         return $campaigns;
     }
 
     function generateDefaultPassword()
     {
 
-        Log::info("Starting to generate a random password with Function: " .__FUNCTION__);
+        Log::info("Starting to generate a random password with Function: " . __FUNCTION__);
         // Define the character pool for the password
         $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
         $passwordLength = 12; // Set the desired password length
@@ -70,13 +70,23 @@ class generalHelpers
             $password .= $characters[rand(0, strlen($characters) - 1)];
         }
 
-        Log::info("Password Generated " .__FUNCTION__);
+        Log::info("Password Generated " . __FUNCTION__);
         return $password;
     }
 
     public function User_Password()
     {
-        Log::info("Generating default password for new USER " .__FUNCTION__);
+        Log::info("Generating default password for new USER " . __FUNCTION__);
         return "User.2024";
+    }
+
+    public function get_packages_by_id($package_id)
+    {
+        Log::info("Calling " . __FUNCTION__ . " To retrive services for [ PACKAGE $package_id ]");
+        $package = DB::table("services")->where('id', $package_id)->first();
+
+        Log::info("The pakage found is " . json_encode($package));
+
+        return $package;
     }
 }
