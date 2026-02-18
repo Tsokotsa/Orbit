@@ -13,7 +13,6 @@ return new class extends Migration {
         Schema::create('vendor', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            ;
             $table->string('v_shortname')->nullable();
             $table->string('description')->nullable();
             $table->string('logo_path')->nullable();

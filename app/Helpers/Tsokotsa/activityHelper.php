@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Helpers\Tsokotsa;
+
 use Spatie\Activitylog\Models\Activity;
 use Jenssegers\Agent\Agent;
 

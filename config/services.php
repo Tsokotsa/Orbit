@@ -37,10 +37,17 @@ return [
 
     'telegram_bot_token' => env('TELEGRAM_BOT_TOKEN'),
 
-'starlink' => [
-    'base_url' => env('STARLINK_BASE_URL'),
-    'token'    => env('STARLINK_TOKEN'),
-],
+    'starlink' => [
+        'base_url' => env('STARLINK_BASE_URL'),
+        'token' => env('STARLINK_TOKEN'),
+    ],
+
+    'microsoft' => [
+        'client_id' => env('MICROSOFT_CLIENT_ID'),
+        'client_secret' => env('MICROSOFT_CLIENT_SECRET'),
+        'redirect' => env('MICROSOFT_REDIRECT_URI'),
+        'tenant' => env('MICROSOFT_TENANT_ID'),
+    ],
 
 
 

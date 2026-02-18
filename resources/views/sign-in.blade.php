@@ -85,15 +85,15 @@
                     </div>
                     <!--end::Title-->
                     <!--begin::Text-->
-                    <div class="text-gray-600 fs-base text-center fw-semibold">"When everything connects, clarity
-                        emerges.
-                        <a href="#" class="opacity-75-hover text-primary me-1">Integration</a> turns complexity
-                        into insight.
-                        <br />Control begins with visibility. "
-                        <a href="#" class="opacity-75-hover text-primary me-1"></br>
-                            <br />
+                    <div class="text-gray-600 fs-base text-center fw-semibold">
+                        "When everything connects, clarity emerges.
+                        <a href="#" class="opacity-75-hover text-primary me-1">Integration</a>
+                        turns complexity into insight.
+                        <br>
+                        Control begins with visibility."
                     </div>
                     <!--end::Text-->
+
                 </div>
                 <!--end::Content-->
             </div>
@@ -112,7 +112,7 @@
                                 @csrf
                                 <!--begin::Heading-->
                                 <div class="text-center mb-11">
-                                    <img class="theme-light-show mx-auto mw-100 w-150px w-lg-300px mb-10 mb-lg-20"
+                                    <img class="theme-light-show mx-auto mw-100 w-150px w-lg-300px mb-10 mb-lg-10"
                                         src="assets/media/auth/Paratus-login.png" alt="PTMZ Logo" />
                                     <!--begin::Subtitle-->
                                     <div class="text-gray-500 fw-semibold fs-6">Powering Your Ecosystem!</div>
@@ -120,9 +120,25 @@
                                 </div>
                                 <!--begin::Heading-->
                                 <!--begin::Login options-->
-                                <div class="row g-3 mb-9">
+                                <!--begin::Microsoft login button-->
+                                <div class="mb-10">
+                                    <a href="{{ route('microsoft.redirect') }}"
+                                        onclick="this.classList.add('disabled'); this.innerHTML='Redirecting...';"
+                                        class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center w-100">
 
+                                        <svg width="22" height="22" viewBox="0 0 24 24" class="me-3">
+                                            <rect x="1" y="1" width="10" height="10" fill="#F25022" />
+                                            <rect x="13" y="1" width="10" height="10" fill="#7FBA00" />
+                                            <rect x="1" y="13" width="10" height="10" fill="#00A4EF" />
+                                            <rect x="13" y="13" width="10" height="10" fill="#FFB900" />
+                                        </svg>
+
+                                        <span>Login with Microsoft</span>
+                                    </a>
                                 </div>
+
+                                <!--end::Microsoft login button-->
+
                                 <!--end::Login options-->
                                 <!--begin::Separator-->
                                 <div class="separator separator-content my-14">
