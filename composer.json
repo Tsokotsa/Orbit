@@ -15,7 +15,7 @@
         "league/flysystem-ftp": "^3.31",
         "league/flysystem-sftp-v3": "^3.31",
         "maatwebsite/excel": "^3.1",
-        "socialiteproviders/microsoft": "^4.6",
+        "socialiteproviders/microsoft-azure": "^5.2",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.9",
         "yajra/laravel-datatables-oracle": "^11.0"

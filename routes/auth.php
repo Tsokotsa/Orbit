@@ -11,6 +11,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\AzureController;
+
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -62,12 +64,16 @@ Route::middleware('auth')->group(function () {
 // Microsoft Auth 
 
 
-use App\Http\Controllers\Auth\MicrosoftController;
 
-Route::get('/auth/microsoft', [MicrosoftController::class, 'redirect'])
-    ->name('microsoft.redirect');
 
-Route::get('/auth/microsoft/callback', [MicrosoftController::class, 'callback'])
-    ->name('microsoft.callback');
+Route::get('/auth/azure', [AzureController::class, 'redirect'])
+    ->name('azure.login');
 
+Route::get('/auth/azure/callback', function () {
+
+    $azureUser = Socialite::driver('azure')->user();
+
+    dd($azureUser);
+
+});
 
