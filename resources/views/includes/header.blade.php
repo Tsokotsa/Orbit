@@ -119,10 +119,11 @@
                       <div class="cursor-pointer symbol symbol-40px"
                           data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                           data-kt-menu-placement="bottom-end">
-                          {{-- <img src="{{ asset($user->avatar) }}" class="rounded-3" alt="user" /> --}}
-                          {{-- <div class="symbol symbol-50px overflow-hidden me-3">
-                            <div class="symbol-label fs-3 text-primary">{{ Str::take($user->name, 1) }}{{ Str::take($user->surname, 1) }}</div>
-                        </div> --}}
+                          <img src="{{ asset($user->avatar) }}" class="rounded-3" alt="user" />
+                          <div class="symbol symbol-50px overflow-hidden me-3">
+                              <div class="symbol-label fs-3 text-primary">
+                                  {{ Str::take($user->name, 1) }}{{ Str::take($user->surname, 1) }}</div>
+                          </div>
                           <div class="symbol symbol-30px">
                               {{-- <div class="symbol-label fs-2 fw-semibold text-success">{{ Str::take($user->name, 1) }}{{ Str::take($user->surname, 1) }} </div> --}}
                           </div>
@@ -196,8 +197,7 @@
                                   <div class="menu-item px-3">
                                       <a href="account/statements.html"
                                           class="menu-link d-flex flex-stack px-5">Statements
-                                          <span class="ms-2 lh-0" data-bs-toggle="tooltip"
-                                              title="View your statements">
+                                          <span class="ms-2 lh-0" data-bs-toggle="tooltip" title="View your statements">
                                               <i class="ki-outline ki-information-5 fs-5"></i>
                                           </span></a>
                                   </div>

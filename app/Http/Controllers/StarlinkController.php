@@ -10,9 +10,12 @@ use Throwable;
 use Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class StarlinkController extends Controller
 {
+    use AuthorizesRequests;
     protected StarlinkService $starlink;
 
     public function __construct(StarlinkService $starlink)
@@ -24,6 +27,9 @@ class StarlinkController extends Controller
 
     public function account()
     {
+        $this->authorize('viewAccount', auth()->user());
+        $user = auth()->user();
+
         try {
             $account = $this->starlink->account();
             $subscribers = $this->starlink->allSubscribers();
@@ -32,7 +38,8 @@ class StarlinkController extends Controller
 
             return view('starlink.index', [
                 'account' => $account,
-                'subscribers' => $subscribers
+                'subscribers' => $subscribers,
+                'user' => $user
             ]);
 
         } catch (Throwable $e) {
@@ -118,6 +125,8 @@ class StarlinkController extends Controller
 
     public function activate_line(string $serviceLineNumber): JsonResponse
     {
+        $this->authorize('activateLine', auth()->user());
+
         $serviceLineNumber = "SL-DF-9678649-75021-72";
 
         return response()->json([

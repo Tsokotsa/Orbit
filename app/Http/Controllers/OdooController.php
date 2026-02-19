@@ -12,22 +12,10 @@ class OdooController extends Controller
 {
     public function index()
     {
-        // $user = auth()->user();
-        // $customers = $odoo->execute(
-        //     'res.partner',
-        //     'search_read',
-        //     [
-        //         [['customer_rank', '>', 0]]
-        //     ],
-        //     [
-        //         //'fields' => [],
-        //         'fields' => ['id', 'name', 'email', 'phone', 'company_type', 'create_date',],
-        //         'limit' => 5,
-        //     ]
-        // );
-
+        $user = auth()->user();
         Log::info("Retrieving Clients :::       LOCAL DB     ::::");
-        return view('clients.index');
+        return view('clients.index')->with(['user' => $user]);
+
     }
     public function getClients(Request $request)
     {

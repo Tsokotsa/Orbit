@@ -12,27 +12,25 @@ use Log;
 use App\Models\OdooPartner;
 use App\Models\OdooInvoice;
 use App\Helpers\Tsokotsa\generalHelpers;
-
 class ClientController extends Controller
 {
 
     // Class property
     protected OdooService $odooservice;
-    protected ActivityHelper $log;
     protected $client_services_table;
 
     // Constructor to initialize it
     // public function __construct(OdooService $odoo, ActivityHelper $log)
-    public function __construct(ActivityHelper $log)
+    public function __construct()
     {
         $this->client_services_table = "client_service_"; // example, could come from auth() or request
         // $this->odooservice = $odoo;
 
-        $this->log = $log;
     }
 
     public function view_cLient(Request $request)
     {
+        $user = auth()->user();
         $client_id = $request->query('client_id'); // retrieves 6170
 
         $client = OdooPartner::query()
@@ -42,7 +40,7 @@ class ClientController extends Controller
         Log::info("Retrieving Client wih ID:  $client_id");
         Log::info("This is the client found " . json_encode($client));
 
-        return view('clients.view')->with(['client_id' => $client_id, 'client' => $client]);
+        return view(view: 'clients.view')->with(['client_id' => $client_id, 'client' => $client, 'user' => $user]);
     }
 
     public function get_all_assets()
