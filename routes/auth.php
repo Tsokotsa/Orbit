@@ -61,19 +61,19 @@ Route::middleware('auth')->group(function () {
         ->name('logout');
 });
 
-// Microsoft Auth 
+// Microsoft Azure Auth 
+
+Route::get('/auth/microsoft', [AzureController::class, 'redirect'])
+    ->name('microsoft.login');
+
+Route::get('/auth/microsoft/callback', [AzureController::class, 'callback'])
+    ->name('microsoft.callback');
+
+
+Route::post('/logout', [AzureController::class, 'logout'])
+    ->name('logout')
+    ->middleware('auth');
 
 
 
-
-Route::get('/auth/azure', [AzureController::class, 'redirect'])
-    ->name('azure.login');
-
-Route::get('/auth/azure/callback', function () {
-
-    $azureUser = Socialite::driver('azure')->user();
-
-    dd($azureUser);
-
-});
 

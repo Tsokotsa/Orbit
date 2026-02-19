@@ -122,7 +122,7 @@
                                 <!--begin::Login options-->
                                 <!--begin::Microsoft login button-->
                                 <div class="mb-10">
-                                    <a href="{{ route('azure.login') }}"
+                                    <a href="{{ route('microsoft.login') }}"
                                         onclick="this.classList.add('disabled'); this.innerHTML='Redirecting...';"
                                         class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center w-100">
 
