@@ -11,19 +11,24 @@ class RolesPermissionController extends Controller
     public function list_roles_perms()
     {
         $user = Auth::user();
-        return view('roles-and-permissions.index', ['user' => $user]);
+
+        $roles = Role::with('permissions')
+            ->withCount('users')
+            ->get();
+
+        return view('roles-and-permissions.index', ['user' => $user, 'roles' => $roles]);
     }
 
     public function add_role(Request $request)
     {
-        $role_name          = $request->role_name;
-        $role_description   = $request->role_description;
+        $role_name = $request->role_name;
+        $role_description = $request->role_description;
         if ($request->has('role_status')) {
             $role_status = "Active";
         } else {
             $role_status = "Disabled";
         }
-        
+
         $role = Role::create([
             'name' => $role_name,
             'description' => $role_description,
