@@ -25,6 +25,7 @@ class CalixController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
         $calix_settings = DB::table(table: "calix_settings")->get();
         $query = $calix_settings[0]->region;
 
@@ -45,13 +46,14 @@ class CalixController extends Controller
         $variables = $this->calix->exec_query($endpoint, $query, $offset, $limit);
         $unassigned = $this->calix->exec_query($endpoint2, $query2_variable, $offset, $limit);
 
-        return view(view: 'calix.dashboard')->with(["variables" => $variables, "unassigned" => $unassigned]);
+        return view(view: 'calix.dashboard')->with(["variables" => $variables, "unassigned" => $unassigned, 'user' => $user]);
 
     }
 
     public function list_subscribers()
     {
-        return view(view: 'calix.subscribers');
+        $user = auth()->user();
+        return view(view: 'calix.subscribers')->with(['user' => $user]);
 
     }
 

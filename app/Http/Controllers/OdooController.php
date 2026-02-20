@@ -47,8 +47,9 @@ class OdooController extends Controller
 
     public function billing()
     {
+        $user = auth()->user();
         Log::info("Accessing the ===        BILLING     ===     Zone");
-        return view("billing.index");
+        return view("billing.index")->with(['user' => $user]);
     }
 
 

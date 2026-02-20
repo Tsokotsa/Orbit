@@ -30,9 +30,9 @@
                     <!--end::Wrapper-->
                 </div>
                 <!--begin::Input group-->
-                <form class="form" id="add_vendor_form" method="POST" action="/add-vendor">
+                <form class="form" id="add_vendor_form" method="POST" action="/add-vendor"
+                    enctype="multipart/form-data">
                     @csrf
-
                     <!--begin::Image input-->
                     <label class="d-flex align-items-center fs-6 fw-semibold mb-4">
                         <span class="required">Vendor Logo</span>
@@ -87,8 +87,7 @@
                         <!--begin::Label-->
                         <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
                             <span class="required">Vendors</span>
-                            <span class="ms-1" data-bs-toggle="tooltip"
-                                aria-label="Default logo will be paratus"
+                            <span class="ms-1" data-bs-toggle="tooltip" aria-label="Default logo will be paratus"
                                 data-bs-original-title="Default logo will be paratus" data-kt-initialized="1">
                                 <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i>
                             </span>
@@ -103,7 +102,7 @@
 
 
                     <div class="form-floating">
-                        <textarea class="form-control" placeholder="Leave a comment here" name="model_desc" id="model_desc" maxlength="160"
+                        <textarea class="form-control" placeholder="Leave a comment here" name="vendor_desc" id="vendor_desc" maxlength="160"
                             style="min-height: 150px !important; max-height: 150px !important"></textarea>
                         <label class="fs-8" for="floatingTextarea2">Vendor description... e.g: Paratus</label>
                     </div>
@@ -113,7 +112,7 @@
 
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary add-vendor-submit">Add Model</button>
+                <button type="button" class="btn btn-primary add-vendor-submit">Add Vendor</button>
             </div>
         </div>
     </div>
@@ -122,45 +121,81 @@
 @push('scripts')
     <script>
         $('.add-vendor-submit').click(function(e) {
-            //alert('olaaaaa');
-            e.preventDefault(); // avoid to execute the actual submit of the form.
 
-            var form_data = $('#add_vendor_form').serialize();
-            $.ajax({
-                type: "POST",
-                url: "/vendor_model/add",
-                data: form_data, // serializes the form's elements.
-                success: function(response) {
-                    Swal.fire({
-                        title: "Woowooooo!",
-                        text: response.message,
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                },
-                error: function(xhr, status, error) {
-                    var responseJson = JSON.parse(xhr.responseText);
-                    // Access the message property from the response
-                    var errorMessage = responseJson.message;
-                    // Display error message
-                    // alert('Error: ' + errorMessage);
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "top-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
+            e.preventDefault();
+
+            Swal.fire({
+                text: "Are you sure you want to add this vendor?",
+                icon: "warning",
+                showCancelButton: true,
+                buttonsStyling: false,
+                confirmButtonText: "Yes, add!",
+                cancelButtonText: "No, cancel",
+                customClass: {
+                    confirmButton: "btn fw-bold btn-primary",
+                    cancelButton: "btn fw-bold btn-active-light-primary"
+                }
+            }).then(function(result) {
+
+                if (result.value) {
+
+                    //var form_data = $('#add_vendor_form').serialize();
+                    let form = document.getElementById('add_vendor_form');
+                    let formData = new FormData(form);
+
+                    $.ajax({
+                        url: '/vendor/add',
+                        type: 'POST',
+                        data: formData,
+                        processData: false, // VERY IMPORTANT
+                        contentType: false, // 
+
+                        success: function(response) {
+
+                            Swal.fire({
+                                text: response.message,
+                                icon: "success",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn fw-bold btn-primary"
+                                }
+                            }).then(function() {
+                                location.reload(); // optional
+                            });
+
+                        },
+
+                        error: function(xhr) {
+
+                            var responseJson = JSON.parse(xhr.responseText);
+                            var errorMessage = responseJson.message ?? "Something went wrong.";
+
+                            Swal.fire({
+                                text: errorMessage,
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn fw-bold btn-primary"
+                                }
+                            });
                         }
                     });
-                    Toast.fire({
+
+                } else if (result.dismiss === 'cancel') {
+
+                    Swal.fire({
+                        text: "Vendor was not added.",
                         icon: "error",
-                        title: "Erro: " + errorMessage
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn fw-bold btn-primary"
+                        }
                     });
-                },
+
+                }
 
             });
 

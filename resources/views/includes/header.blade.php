@@ -119,33 +119,29 @@
                       <div class="cursor-pointer symbol symbol-40px"
                           data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                           data-kt-menu-placement="bottom-end">
-                          <img src="{{ asset($user->avatar) }}" class="rounded-3" alt="user" />
-                          <div class="symbol symbol-50px overflow-hidden me-3">
-                              <div class="symbol-label fs-3 text-primary">
-                                  {{ Str::take($user->name, 1) }}{{ Str::take($user->surname, 1) }}</div>
-                          </div>
-                          <div class="symbol symbol-30px">
-                              {{-- <div class="symbol-label fs-2 fw-semibold text-success">{{ Str::take($user->name, 1) }}{{ Str::take($user->surname, 1) }} </div> --}}
-                          </div>
+                          <img src="{{ asset($user->avatar) }}" class="rounded-3" alt="user">
                       </div>
                       <!--begin::User account menu-->
                       <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
-                          data-kt-menu="true">
+                          data-kt-menu="true" style="">
                           <!--begin::Menu item-->
                           <div class="menu-item px-3">
                               <div class="menu-content d-flex align-items-center px-3">
                                   <!--begin::Avatar-->
                                   <div class="symbol symbol-50px me-5">
-                                      {{-- <img alt="User avatar" @if ($user->avatarpath) { src="{{ asset($user->avatarpath["file_path"].'/' .$user->avatarpath["file_name"]) }}" } @else { src="{{ asset('assets/media/avatars/blank.png') }}" } @endif/> --}}
+                                      <img alt="User avatar"
+                                          @if ($user->avatarpath) { src="{{ asset($user->avatarpath['file_path'] . '/' . $user->avatarpath['file_name']) }}" } @else { src="{{ asset('assets/media/avatars/blank.png') }}" } @endif />
+                                      {{-- <img alt="Logo" src="{{ asset($user->avatar) }}"> --}}
                                   </div>
                                   <!--end::Avatar-->
                                   <!--begin::Username-->
                                   <div class="d-flex flex-column">
-                                      <div class="fw-bold d-flex align-items-center fs-5">{{ $user->fullname ?? '-' }}
+                                      <div class="fw-bold d-flex align-items-center fs-5">{{ $user->name }}
                                           <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">Pro</span>
                                       </div>
                                       <a href="#"
-                                          class="fw-semibold text-muted text-hover-primary fs-7">{{ $user->email ?? '-' }}</a>
+                                          class="fw-semibold text-muted text-hover-primary fs-7">{{ $user->email }}
+                                      </a>
                                   </div>
                                   <!--end::Username-->
                               </div>
@@ -197,7 +193,9 @@
                                   <div class="menu-item px-3">
                                       <a href="account/statements.html"
                                           class="menu-link d-flex flex-stack px-5">Statements
-                                          <span class="ms-2 lh-0" data-bs-toggle="tooltip" title="View your statements">
+                                          <span class="ms-2 lh-0" data-bs-toggle="tooltip"
+                                              aria-label="View your statements"
+                                              data-bs-original-title="View your statements" data-kt-initialized="1">
                                               <i class="ki-outline ki-information-5 fs-5"></i>
                                           </span></a>
                                   </div>
@@ -210,7 +208,7 @@
                                       <div class="menu-content px-3">
                                           <label class="form-check form-switch form-check-custom form-check-solid">
                                               <input class="form-check-input w-30px h-20px" type="checkbox"
-                                                  value="1" checked="checked" name="notifications" />
+                                                  value="1" checked="checked" name="notifications">
                                               <span class="form-check-label text-muted fs-7">Notifications</span>
                                           </label>
                                       </div>
@@ -236,8 +234,7 @@
                                       <span
                                           class="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">English
                                           <img class="w-15px h-15px rounded-1 ms-2"
-                                              src="assets/media/flags/united-states.svg"
-                                              alt="" /></span></span>
+                                              src="assets/media/flags/united-states.svg" alt=""></span></span>
                               </a>
                               <!--begin::Menu sub-->
                               <div class="menu-sub menu-sub-dropdown w-175px py-4">
@@ -246,7 +243,7 @@
                                       <a href="account/settings.html" class="menu-link d-flex px-5 active">
                                           <span class="symbol symbol-20px me-4">
                                               <img class="rounded-1" src="assets/media/flags/united-states.svg"
-                                                  alt="" />
+                                                  alt="">
                                           </span>English</a>
                                   </div>
                                   <!--end::Menu item-->
@@ -255,7 +252,7 @@
                                       <a href="account/settings.html" class="menu-link d-flex px-5">
                                           <span class="symbol symbol-20px me-4">
                                               <img class="rounded-1" src="assets/media/flags/spain.svg"
-                                                  alt="" />
+                                                  alt="">
                                           </span>Spanish</a>
                                   </div>
                                   <!--end::Menu item-->
@@ -264,7 +261,7 @@
                                       <a href="account/settings.html" class="menu-link d-flex px-5">
                                           <span class="symbol symbol-20px me-4">
                                               <img class="rounded-1" src="assets/media/flags/germany.svg"
-                                                  alt="" />
+                                                  alt="">
                                           </span>German</a>
                                   </div>
                                   <!--end::Menu item-->
@@ -273,7 +270,7 @@
                                       <a href="account/settings.html" class="menu-link d-flex px-5">
                                           <span class="symbol symbol-20px me-4">
                                               <img class="rounded-1" src="assets/media/flags/japan.svg"
-                                                  alt="" />
+                                                  alt="">
                                           </span>Japanese</a>
                                   </div>
                                   <!--end::Menu item-->
@@ -282,7 +279,7 @@
                                       <a href="account/settings.html" class="menu-link d-flex px-5">
                                           <span class="symbol symbol-20px me-4">
                                               <img class="rounded-1" src="assets/media/flags/france.svg"
-                                                  alt="" />
+                                                  alt="">
                                           </span>French</a>
                                   </div>
                                   <!--end::Menu item-->
@@ -297,18 +294,8 @@
                           <!--end::Menu item-->
                           <!--begin::Menu item-->
                           <div class="menu-item px-5">
-
-                              <form method="POST" action="{{ route('logout') }}">
-                                  @csrf
-
-                                  <x-dropdown-link :href="route('logout')" class="menu-link px-5"
-                                      onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                      {{ __('Log Out') }}
-                                  </x-dropdown-link>
-                              </form>
-                              {{-- <a href="/"
-                                class="menu-link px-5">Sign Out</a> --}}
+                              <a href="authentication/layouts/corporate/sign-in.html" class="menu-link px-5">Sign
+                                  Out</a>
                           </div>
                           <!--end::Menu item-->
                       </div>

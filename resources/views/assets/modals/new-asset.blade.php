@@ -145,8 +145,8 @@
                         <!--end::Input group-->
                         <!--begin::Actions-->
                         <div class="text-center">
-                            <button type="reset" id="kt_modal_new_target_cancel"
-                                class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+                            <button type="reset" id="kt_modal_new_target_cancel" class="btn btn-light me-3"
+                                data-bs-dismiss="modal">Cancel</button>
                             <button type="button" id="kt_modal_new_target_submit"
                                 class="btn btn-primary add-asset-submit">
                                 <span class="indicator-label">Submit</span>
@@ -171,48 +171,80 @@
 @push('scripts')
     <script>
         $('.add-asset-submit').click(function(e) {
-            //alert('olaaaaa');
-            e.preventDefault(); // avoid to execute the actual submit of the form.
+            e.preventDefault(); // Prevent default form submission
 
-            var form_data = $('#add_asset_form').serialize();
-            $.ajax({
-                type: "POST",
-                url: "/asset/store",
-                data: form_data, // serializes the form's elements.
-                success: function(response) {
-                    Swal.fire({
-                        title: "Good job!",
-                        text: response.message,
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                },
-                error: function(xhr, status, error) {
-                    var responseJson = JSON.parse(xhr.responseText);
-                    // Access the message property from the response
-                    var errorMessage = responseJson.message;
-                    // Display error message
-                    // alert('Error: ' + errorMessage);
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "top-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
+            // Show confirmation first
+            Swal.fire({
+                text: "Are you sure you want to add this asset?",
+                icon: "warning",
+                showCancelButton: true,
+                buttonsStyling: false,
+                confirmButtonText: "Yes, add it!",
+                cancelButtonText: "No, cancel",
+                customClass: {
+                    confirmButton: "btn fw-bold btn-success",
+                    cancelButton: "btn fw-bold btn-active-light-primary"
+                }
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    // User confirmed → proceed with AJAX
+                    var form_data = $('#add_asset_form').serialize();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/asset/store",
+                        data: form_data,
+                        success: function(response) {
+                            Swal.fire({
+                                title: "Good job!",
+                                text: response.message,
+                                icon: "success",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            let responseJson = {};
+                            try {
+                                responseJson = JSON.parse(xhr.responseText);
+                            } catch (e) {
+                                responseJson.message = "Something went wrong";
+                            }
+
+                            let errorMessage = responseJson.message || "Something went wrong";
+
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: "top-end",
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.onmouseenter = Swal.stopTimer;
+                                    toast.onmouseleave = Swal.resumeTimer;
+                                }
+                            });
+
+                            Toast.fire({
+                                icon: "error",
+                                title: "Error: " + errorMessage
+                            });
                         }
                     });
-                    Toast.fire({
-                        icon: "error",
-                        title: "Erro: " + errorMessage
+
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // User cancelled
+                    Swal.fire({
+                        text: "Asset was not added.",
+                        icon: "info",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn fw-bold btn-primary"
+                        }
                     });
-                },
-
+                }
             });
-
         });
     </script>
 @endpush

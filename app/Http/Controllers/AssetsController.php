@@ -6,12 +6,13 @@ use DB;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\Request;
 use Log;
+use Str;
 
 class AssetsController extends Controller
 {
     public function view()
     {
-        //$vendors = DB::table("vendor")->get();
+        $user = auth()->user();
         $vendors = DB::table('vendor')
             ->select(
                 'vendor.id',
@@ -53,7 +54,7 @@ class AssetsController extends Controller
 
         Log::info("This is our vendor : $vendors");
 
-        return view("assets.index")->with(['vendors' => $vendors]);
+        return view("assets.index")->with(['vendors' => $vendors, 'user' => $user]);
     }
 
     public function get_all_ajax(Request $request)
@@ -109,6 +110,83 @@ class AssetsController extends Controller
 
         return $vendors;
     }
+
+    public function add_vendor(Request $request)
+    {
+        Log::info("Adding NEW Vendor using Function: " . __FUNCTION__);
+
+        try {
+
+            DB::beginTransaction();
+
+            // ✅ Validate input
+            $request->validate([
+                'vendor_name' => 'required|string|max:255',
+                'vendor_desc' => 'nullable|string|max:160',
+                'avatar' => 'nullable|image|mimes:png,jpg,jpeg|max:2048'
+            ]);
+
+            $name = $request->vendor_name;
+            $description = $request->vendor_desc;
+
+            // ✅ Default logo path (must exist inside storage/app/public/vendors)
+            $avatarPath = "assets/media/vendors/paratus.png";
+
+            if ($request->hasFile('avatar')) {
+
+                $file = $request->file('avatar');
+
+                $filename = \Illuminate\Support\Str::slug($name) . '.png';
+
+                $destination = public_path('assets/media/vendors');
+
+                // Ensure folder exists
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+
+                $file->move($destination, $filename);
+
+                $avatarPath = "assets/media/vendors/" . $filename;
+            }
+
+            // ✅ Insert into database
+            DB::table('vendor')->insert([
+                'name' => $name,
+                'description' => $description,
+                'logo_path' => $avatarPath,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::commit();
+
+            Log::info("Vendor successfully added", [
+                'name' => $name,
+                'logo_path' => $avatarPath,
+                'created_by' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Vendor added successfully'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            Log::error("Vendor creation failed", [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add vendor. Please try again.'
+            ], 500);
+        }
+    }
+
 
     public function add_model(Request $request)
     {
