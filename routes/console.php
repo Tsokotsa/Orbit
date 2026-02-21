@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\RefreshRecargAkiToken;
 use App\Jobs\CountMsgsJob;
 use App\Jobs\QueueCampaignJob;
 use App\Jobs\SyncOdooInvoicesJob;
@@ -35,7 +36,11 @@ Schedule::command('starlink:refresh-token')->everyTenMinutes();
 
 //Schedule::job(new SyncOdooInvoicesJob)->everyMinute();
 
-Schedule::job(new ExportPrepaidBillingJob)->everyMinute();
+// Refresh RECARGAKI Token
+Schedule::command('app:refresh-recarg-aki-token')->everyTenMinutes();
+
+// Export File To FTP Server
+Schedule::job(new ExportPrepaidBillingJob)->everySixHours();
 
 //Schedule::command('starlink:sync-devices')->everyTenMinutes();
 
