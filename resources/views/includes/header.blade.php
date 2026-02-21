@@ -294,8 +294,14 @@
                           <!--end::Menu item-->
                           <!--begin::Menu item-->
                           <div class="menu-item px-5">
-                              <a href="authentication/layouts/corporate/sign-in.html" class="menu-link px-5">Sign
-                                  Out</a>
+                              <form method="POST" action="{{ route('logout') }}">
+                                  @csrf
+                                  <x-dropdown-link :href="route('logout')" class="menu-link px-5"
+                                      onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                      {{ __('Log Out') }}
+                                  </x-dropdown-link>
+                              </form>
                           </div>
                           <!--end::Menu item-->
                       </div>

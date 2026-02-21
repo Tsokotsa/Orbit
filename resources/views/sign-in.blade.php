@@ -304,6 +304,26 @@
             showCursor: true,
             cursorChar: "|"
         });
+
+
+        // Handle the redirecting state of the microsoft button
+        window.onpageshow = function(event) {
+            if (event.persisted) { // page loaded from bfcache
+                const msLoginBtn = document.querySelector('a[href="{{ route('microsoft.login') }}"]');
+                if (msLoginBtn) {
+                    msLoginBtn.classList.remove('disabled');
+                    msLoginBtn.innerHTML = `
+                <svg width="22" height="22" viewBox="0 0 24 24" class="me-3">
+                    <rect x="1" y="1" width="10" height="10" fill="#F25022" />
+                    <rect x="13" y="1" width="10" height="10" fill="#7FBA00" />
+                    <rect x="1" y="13" width="10" height="10" fill="#00A4EF" />
+                    <rect x="13" y="13" width="10" height="10" fill="#FFB900" />
+                </svg>
+                <span>Login with Microsoft</span>
+            `;
+                }
+            }
+        };
     </script>
     <!--end::Custom Javascript-->
     <!--end::Javascript-->
