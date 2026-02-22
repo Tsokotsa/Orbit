@@ -18,6 +18,7 @@ class RolePermissionSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissions = [
+            // Starlink Permissions
             'view starlink account',
             'view starlink terminals',
             'view starlink usage',
@@ -27,6 +28,12 @@ class RolePermissionSeeder extends Seeder
             'deactivate starlink line',
             'topup starlink line',
             'view starlink telemetry',
+            // Asset Permissions
+            'view assets',
+            'create assets',
+            'update assets',
+            'manage vendors',
+            'manage models',
         ];
 
         foreach ($permissions as $permission) {
@@ -35,12 +42,15 @@ class RolePermissionSeeder extends Seeder
 
         // Roles
         $superAdmin = Role::firstOrCreate(['name' => 'Super Admin']);
+        $superAdmin->syncPermissions($permissions);
+
         $noc = Role::firstOrCreate(['name' => 'NOC']);
         $support = Role::firstOrCreate(['name' => 'Support']);
         $viewer = Role::firstOrCreate(['name' => 'Viewer']);
 
         // Assign permissions
         $noc->givePermissionTo([
+            //Starlink Permissions
             'view starlink account',
             'view starlink terminals',
             'view starlink usage',
@@ -50,18 +60,31 @@ class RolePermissionSeeder extends Seeder
             'deactivate starlink line',
             'topup starlink line',
             'view starlink telemetry',
+            // Asset Permissions
+            'view assets',
+            'create assets',
+            'update assets',
+            'manage vendors',
+            'manage models',
         ]);
 
         $support->givePermissionTo([
+            // Starlink Permissions
             'view starlink account',
             'view starlink subscriber',
             'view starlink subscribers',
             'topup starlink line',
+            // Asset Permissions
+            'view assets',
+            'create assets',
         ]);
 
         $viewer->givePermissionTo([
+            // Starlink Permissions
             'view starlink account',
             'view starlink usage',
+            // Asset Permissions
+            'view assets',
         ]);
     }
 
