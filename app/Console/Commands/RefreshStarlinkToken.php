@@ -16,18 +16,34 @@ class RefreshStarlinkToken extends Command
     {
         $accounts = StarlinkAccount::all();
 
+        // Check if any accounts exist
+        if ($accounts->isEmpty()) {
+            $message = 'No Starlink accounts found! Stopping execution.';
+            Log::warning($message);
+            $this->warn($message); // optional console output
+            return 1; // stops execution with error code
+        }
+
         foreach ($accounts as $account) {
 
             Log::info("Refreshing Token For $account->name");
+
             $cmd = <<<CURL
-                    curl -s -i -X POST https://starlink.com/api/auth/connect/token \
-                        -H "Content-Type: application/x-www-form-urlencoded" \
-                        -d "client_id={$account->client_id}" \
-                        -d "client_secret={$account->client_secret}" \
-                        -d "grant_type=client_credentials"
-                    CURL;
+curl -s -i -X POST https://starlink.com/api/auth/connect/token \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -d "client_id={$account->client_id}" \
+    -d "client_secret={$account->client_secret}" \
+    -d "grant_type=client_credentials"
+CURL;
 
             $raw = shell_exec($cmd);
+
+            // Safety check: ensure response exists
+            if (!$raw) {
+                Log::error("No response from Starlink API for account {$account->name}");
+                continue;
+            }
+
             [$headers, $body] = explode("\r\n\r\n", $raw, 2);
             $data = json_decode($body, true);
 
@@ -41,8 +57,12 @@ class RefreshStarlinkToken extends Command
                         'raw_response' => $data,
                     ]
                 );
+            } else {
+                Log::error("Failed to get access_token for account {$account->name}", ['response' => $data]);
             }
         }
 
+        $this->info('Starlink token refresh complete.');
     }
+
 }

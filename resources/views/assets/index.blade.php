@@ -885,13 +885,16 @@
 
 
         // Loading Vendor to add Model
+        let modelModalLoading = false;
+
         $('#modelModal').on('shown.bs.modal', function() {
+            if (modelModalLoading) return; // prevent duplicate fetch
+            modelModalLoading = true;
 
             const $select = $('#vendorSelect');
             const $loading = $('#vendorLoading');
             const $content = $('#vendorContent');
 
-            // Show loader, hide content
             $loading.removeClass('d-none');
             $content.addClass('d-none');
 
@@ -902,8 +905,8 @@
             $.ajax({
                 url: '/vendors/get_all',
                 method: 'GET',
+                cache: false, // disable cache
                 success: function(vendors) {
-
                     $select.empty().append('<option></option>');
 
                     vendors.forEach(vendor => {
@@ -922,16 +925,16 @@
                         escapeMarkup: markup => markup
                     });
 
-                    // Hide loader, show content
                     $loading.addClass('d-none');
                     $content.removeClass('d-none');
+                    modelModalLoading = false;
                 },
                 error: function() {
                     $loading.html('<div class="text-danger">Failed to load vendors</div>');
+                    modelModalLoading = false;
                 }
             });
         });
-
 
         // END of Loading Vendor
 
@@ -965,24 +968,23 @@
         }
 
         // When New Asset Modal is Showing
+        let assetModalLoading = false;
 
         $('#assetModal').on('shown.bs.modal', function() {
+            if (assetModalLoading) return;
+            assetModalLoading = true;
 
             const $vendorSelect = $('#asset_vendor_select');
             const $mediumSelect = $('#asset_medium_select');
-
             const $loading = $('#assetLoading');
             const $content = $('#assetContent');
 
-            // Show loader, hide content
             $loading.removeClass('d-none');
             $content.addClass('d-none');
 
-            /* ---- Destroy if already initialized ---- */
             if ($vendorSelect.hasClass('select2-hidden-accessible')) {
                 $vendorSelect.select2('destroy');
             }
-
             if ($mediumSelect.hasClass('select2-hidden-accessible')) {
                 $mediumSelect.select2('destroy');
             }
@@ -990,11 +992,10 @@
             $.ajax({
                 url: '/assets/add_new',
                 method: 'GET',
+                cache: false,
                 success: function(response) {
 
-                    /* ---------------- Vendors ---------------- */
                     $vendorSelect.empty().append('<option></option>');
-
                     response.vendors.forEach(vendor => {
                         const option = new Option(vendor.name, vendor.id, false, false);
                         $(option).data('logo', vendor.logo_path);
@@ -1011,9 +1012,7 @@
                         escapeMarkup: markup => markup
                     });
 
-                    /* ---------------- Mediums ---------------- */
                     $mediumSelect.empty().append('<option></option>');
-
                     response.mediums.forEach(medium => {
                         const option = new Option(medium.name, medium.id, false, false);
                         $mediumSelect.append(option);
@@ -1026,18 +1025,18 @@
                         width: '100%'
                     });
 
-                    // Hide loader, show content
                     $loading.addClass('d-none');
                     $content.removeClass('d-none');
+                    assetModalLoading = false;
                 },
                 error: function() {
-                    $loading.html(
-                        '<div class="text-danger">Failed to load asset data</div>'
-                    );
+                    $loading.html('<div class="text-danger">Failed to load asset data</div>');
+                    assetModalLoading = false;
                 }
             });
         });
 
+        // END Asset Modal
 
         function formatVendor(vendor) {
             if (!vendor.id) return vendor.text;

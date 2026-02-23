@@ -18,11 +18,19 @@ class RefreshRecargAkiToken extends Command
     {
         $start = microtime(true);
 
+        Log::info('RECARGAKI scheduled token refresh started.');
+
         try {
 
-            Log::info('RECARGAKI scheduled token refresh started.');
+            // Attempt to fetch the gateway
+            $gateway = PaymentGateway::first();
 
-            $gateway = PaymentGateway::firstOrFail();
+            if (!$gateway) {
+                $message = 'No PaymentGateway found for RECARGAKI token refresh.';
+                Log::warning($message);
+                $this->warn($message);
+                return 1; // stop execution
+            }
 
             Log::info('RECARGAKI gateway found for refresh.', [
                 'gateway_id' => $gateway->id,
@@ -31,7 +39,21 @@ class RefreshRecargAkiToken extends Command
 
             $service = new PaymentGatewayService($gateway);
 
-            $service->refreshToken();
+            // Wrap token refresh in its own try/catch for granular logging
+            try {
+                $service->refreshToken();
+            } catch (\Throwable $refreshEx) {
+                $duration = round((microtime(true) - $start) * 1000, 2);
+
+                Log::error('RECARGAKI token refresh failed during service execution.', [
+                    'gateway_id' => $gateway->id,
+                    'error' => $refreshEx->getMessage(),
+                    'duration_ms' => $duration,
+                ]);
+
+                $this->error("Token refresh failed: " . $refreshEx->getMessage());
+                return 1;
+            }
 
             $duration = round((microtime(true) - $start) * 1000, 2);
 
@@ -46,7 +68,6 @@ class RefreshRecargAkiToken extends Command
             return 0;
 
         } catch (\Throwable $e) {
-
             $duration = round((microtime(true) - $start) * 1000, 2);
 
             Log::critical('RECARGAKI scheduled refresh failed.', [
@@ -55,10 +76,10 @@ class RefreshRecargAkiToken extends Command
                 'duration_ms' => $duration,
             ]);
 
-            $this->error($e->getMessage());
-
+            $this->error('Critical error: ' . $e->getMessage());
             return 1;
         }
     }
+
 
 }
