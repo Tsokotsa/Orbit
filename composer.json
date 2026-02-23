@@ -17,7 +17,7 @@
         "maatwebsite/excel": "^3.1",
         "socialiteproviders/microsoft-azure": "^5.2",
         "spatie/laravel-activitylog": "^4.10",
-        "spatie/laravel-permission": "^6.9",
+        "spatie/laravel-permission": "^6.24",
         "yajra/laravel-datatables-oracle": "^11.0"
     },
     "require-dev": {

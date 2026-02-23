@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\StarlinkController;
 
-Route::middleware(['auth'])->prefix('starlink')->group(function () {
 
+Route::group(['middleware' => ['auth', 'permission:view starlink'], 'prefix' => 'starlink'], function () {
     Route::get('/', [StarlinkController::class, 'account']);
     //Route::get('/account/view', [StarlinkController::class, 'view_account']);
     //Route::get('/terminals', [StarlinkController::class, 'terminals']);

@@ -29,12 +29,6 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('azure', \SocialiteProviders\Azure\Provider::class);
         });
-
-        // Alias middleware This needs to be checked. 
-        Route::aliasMiddleware('role', RoleMiddleware::class);
-        Route::aliasMiddleware('permission', PermissionMiddleware::class);
-        Route::aliasMiddleware('role_or_permission', RoleOrPermissionMiddleware::class);
-
     }
 
 }

@@ -119,7 +119,7 @@
                       <div class="cursor-pointer symbol symbol-40px"
                           data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                           data-kt-menu-placement="bottom-end">
-                          <img src="{{ asset($user->avatar) }}" class="rounded-3" alt="user">
+                          <img src="{{ asset($user?->avatar) }}" class="rounded-3" alt="user">
                       </div>
                       <!--begin::User account menu-->
                       <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
@@ -130,17 +130,17 @@
                                   <!--begin::Avatar-->
                                   <div class="symbol symbol-50px me-5">
                                       <img alt="User avatar"
-                                          @if ($user->avatarpath) { src="{{ asset($user->avatarpath['file_path'] . '/' . $user->avatarpath['file_name']) }}" } @else { src="{{ asset('assets/media/avatars/blank.png') }}" } @endif />
+                                          @if ($user?->avatarpath) { src="{{ asset($user?->avatarpath['file_path'] . '/' . $user?->avatarpath['file_name']) }}" } @else { src="{{ asset('assets/media/avatars/blank.png') }}" } @endif />
                                       {{-- <img alt="Logo" src="{{ asset($user->avatar) }}"> --}}
                                   </div>
                                   <!--end::Avatar-->
                                   <!--begin::Username-->
                                   <div class="d-flex flex-column">
-                                      <div class="fw-bold d-flex align-items-center fs-5">{{ $user->name }}
+                                      <div class="fw-bold d-flex align-items-center fs-5">{{ $user?->name }}
                                           <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">Pro</span>
                                       </div>
                                       <a href="#"
-                                          class="fw-semibold text-muted text-hover-primary fs-7">{{ $user->email }}
+                                          class="fw-semibold text-muted text-hover-primary fs-7">{{ $user?->email }}
                                       </a>
                                   </div>
                                   <!--end::Username-->

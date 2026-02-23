@@ -6,26 +6,22 @@ use App\Services\OdooService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use ActivityHelper;
+use App\Helpers\Tsokotsa\ActivityHelper;
 use Spatie\Activitylog\Models\Activity;
 use Log;
 use App\Models\OdooPartner;
 use App\Models\OdooInvoice;
 use App\Helpers\Tsokotsa\generalHelpers;
+
+
+
 class ClientController extends Controller
 {
+    protected string $client_services_table;
 
-    // Class property
-    protected OdooService $odooservice;
-    protected $client_services_table;
-
-    // Constructor to initialize it
-    // public function __construct(OdooService $odoo, ActivityHelper $log)
-    public function __construct()
+    public function __construct(protected ActivityHelper $log)
     {
-        $this->client_services_table = "client_service_"; // example, could come from auth() or request
-        // $this->odooservice = $odoo;
-
+        $this->client_services_table = "client_service_";
     }
 
     public function view_cLient(Request $request)
@@ -37,8 +33,13 @@ class ClientController extends Controller
             ->where('odoo_id', $client_id)
             ->first();
 
+        $log = new ActivityHelper;
+
         Log::info("Retrieving Client wih ID:  $client_id");
-        Log::info("This is the client found " . json_encode($client));
+        //Log::info("This is the client found " . json_encode($client));
+
+        $this->log->logActivity("Client Accessed by User " . $user->id, $client_id);
+
 
         return view(view: 'clients.view')->with(['client_id' => $client_id, 'client' => $client, 'user' => $user]);
     }
@@ -179,9 +180,6 @@ class ClientController extends Controller
                     ->latest()
                     ->get();
 
-                Log::info($logs);
-
-
                 return view('clients.tabs.logs', [
                     'client_id' => $clientId,
                     'activity' => $logs
@@ -257,13 +255,26 @@ class ClientController extends Controller
 
     public function store_asset(Request $request)
     {
+
+        $asset_id = $request->asset_id;
+        $client_id = $request->client_id;
+
         // ✅ Insert into client_assets table
         DB::table('client_assets')->insert([
-            'client_id' => $request->input('client_id'),
-            'asset_id' => $request->input('asset_id'),
+            'client_id' => $client_id,
+            'asset_id' => $asset_id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        Log::info("Inserting asset into client_assets table", [
+            'client_id' => $request->input('client_id'),
+            'asset_id' => $request->input('asset_id')
+        ]);
+
+        // Log Activity
+
+        $this->log->logActivity("Linked asset $asset_id to client ", $client_id);
 
         return response()->json([
             'status' => 'success',

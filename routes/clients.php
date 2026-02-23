@@ -26,7 +26,7 @@ Route::get('/client/services/wireless', [ServiceController::class, 'get_service_
 Route::get('/client/services/satt', [ServiceController::class, 'get_service_satt']);
 Route::get('/assets/get_all', [ServiceController::class, 'get_ajax'])->name('Get_assets_ajax');
 
-Route::post('/assets/store', [ClientController::class, 'store_asset'])->name('client-asset-store');
+Route::post('/client/assets/store', [ClientController::class, 'store_asset'])->name('client-asset-store');
 
 
 // Logging TESTS

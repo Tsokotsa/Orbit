@@ -712,22 +712,102 @@
 
 
 
+        // $(document).on('click', '.add-asset-click', function(e) {
+
+        //     e.preventDefault();
+        //     const $form = $('#asset-form');
+
+
+        //     $.ajax({
+        //         url: '/assets/store',
+        //         method: 'POST',
+        //         data: $form.serialize(),
+        //         success: function() {
+        //             alert('Asset saved successfully');
+        //         },
+        //         error: function(xhr) {
+        //             alert('Error saving asset');
+        //             console.error(xhr.responseText);
+        //         }
+        //     });
+        // });
+
+        // Link Asset to client
         $(document).on('click', '.add-asset-click', function(e) {
+            e.preventDefault(); // Prevent default form submission
 
-            e.preventDefault();
-            const $form = $('#asset-form');
+            // Show confirmation first
+            Swal.fire({
+                text: "Are you sure you want to link asset?",
+                icon: "warning",
+                showCancelButton: true,
+                buttonsStyling: false,
+                confirmButtonText: "Yes, link it!",
+                cancelButtonText: "No, cancel",
+                customClass: {
+                    confirmButton: "btn fw-bold btn-success",
+                    cancelButton: "btn fw-bold btn-active-light-primary"
+                }
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    // User confirmed → proceed with AJAX
+                    //var form_data = $('#add_asset_form').serialize();
+                    const form = $('#asset-form').serialize();
 
 
-            $.ajax({
-                url: '/assets/store',
-                method: 'POST',
-                data: $form.serialize(),
-                success: function() {
-                    alert('Asset saved successfully');
-                },
-                error: function(xhr) {
-                    alert('Error saving asset');
-                    console.error(xhr.responseText);
+                    $.ajax({
+                        type: "POST",
+                        url: "/client/assets/store",
+                        data: form,
+                        success: function(response) {
+                            Swal.fire({
+                                title: "Good job!",
+                                text: response.message,
+                                icon: "success",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            let responseJson = {};
+                            try {
+                                responseJson = JSON.parse(xhr.responseText);
+                            } catch (e) {
+                                responseJson.message = "Something went wrong";
+                            }
+
+                            let errorMessage = responseJson.message || "Something went wrong";
+
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: "top-end",
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.onmouseenter = Swal.stopTimer;
+                                    toast.onmouseleave = Swal.resumeTimer;
+                                }
+                            });
+
+                            Toast.fire({
+                                icon: "error",
+                                title: "Error: " + errorMessage
+                            });
+                        }
+                    });
+
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // User cancelled
+                    Swal.fire({
+                        text: "Asset was not Linked.",
+                        icon: "info",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn fw-bold btn-primary"
+                        }
+                    });
                 }
             });
         });
