@@ -27,29 +27,45 @@ class StarlinkController extends Controller
 
     public function account()
     {
-        $this->authorize('viewAccount', auth()->user());
+        //$this->authorize('viewAccount', auth()->user());
         $user = auth()->user();
-
         try {
-            $account = $this->starlink->account();
+
+            $accounts = StarlinkAccount::orderBy('id')->get();
             $subscribers = $this->starlink->allSubscribers();
 
-            Log::info("Account Retrieved " . json_encode($account));
-
             return view('starlink.index', [
-                'account' => $account,
+                'accounts' => $accounts,
                 'subscribers' => $subscribers,
-                'user' => $user
+                'user' => $user,
             ]);
 
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
+
             report($e);
 
             return view('starlink.index', [
-                'error' => 'Unable to fetch Starlink account',
+                'error' => 'Unable to load Starlink accounts',
             ]);
         }
     }
+
+    public function subscribersAjax(Request $request)
+    {
+        $accountNumber = $request->input('account_number');
+
+        // Find Starlink account ID for this number
+        $account = StarlinkAccount::where('account_number', $accountNumber)->first();
+        if (!$account) {
+            return response()->json(['data' => []]);
+        }
+
+        $subscribers = $this->starlink->allSubscribers($account->id);
+
+        // Transform into DataTables expected structure
+        return datatables()->of($subscribers['content']['results'] ?? [])->toJson();
+    }
+
 
     public function subscribersDatatable(Request $request)
     {

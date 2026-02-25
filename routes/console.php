@@ -32,7 +32,10 @@ Schedule::command('starlink:refresh-token')->everyTenMinutes();
 
 //Schedule::job(new PollStarlinkTelemetryJob)->everyThreeMinutes();
 
-//Schedule::job(new SyncOdooPartnersJob)->everyFifteenMinutes();
+Schedule::job(new SyncOdooPartnersJob)->everyFifteenMinutes();
+
+// Command For Starlink Pool Latest
+Schedule::command('starlink:poll')->everyMinute();
 
 //Schedule::job(new SyncOdooInvoicesJob)->everyMinute();
 

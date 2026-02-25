@@ -12,6 +12,7 @@ class StarlinkToken extends Model
         'expires_in',
         'expires_at',
         'response',
+        'account_id'
     ];
 
     protected $casts = [

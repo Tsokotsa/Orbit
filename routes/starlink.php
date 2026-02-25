@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\StarlinkController;
-
+use App\Http\Controllers\StarlinkUsageController;
 
 Route::group(['middleware' => ['auth', 'permission:view starlink'], 'prefix' => 'starlink'], function () {
     Route::get('/', [StarlinkController::class, 'account']);
@@ -10,6 +10,8 @@ Route::group(['middleware' => ['auth', 'permission:view starlink'], 'prefix' => 
     //Route::get('/usage', [StarlinkController::class, 'dataUsage']);
 
     //Route::get('/subscribers/datatable', [StarlinkController::class, 'subscribersDatatable'])->name('starlink.subscribers.datatable');
+
+    Route::get('/subscribers/ajax', [StarlinkController::class, 'subscribersAjax']);
 
     Route::get('/subscriber-view/{currentServiceLine}', [StarlinkController::class, 'view_subscriber']);
 
@@ -21,3 +23,9 @@ Route::group(['middleware' => ['auth', 'permission:view starlink'], 'prefix' => 
 
     Route::get('/telemetry', [StarlinkController::class, 'telemetry']);
 });
+
+
+// Testing Graph
+
+Route::get('/starlink/{device}/graph', [StarlinkUsageController::class, 'graph']);
+Route::get('/starlink/{device}/data', [StarlinkUsageController::class, 'data']);

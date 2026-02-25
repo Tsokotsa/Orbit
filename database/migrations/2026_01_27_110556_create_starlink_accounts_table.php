@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('client_secret');                    // optionally encrypted
             $table->enum("active", ["y", "n"])->default("y");
             $table->timestamps();
+            $table->enum("is_default", ["y", "n"])->default("n");
         });
     }
 

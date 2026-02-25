@@ -4,54 +4,55 @@
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <div id="kt_app_content_container" class="app-container container-fluid">
 
-            <!-- Card 1: Account Info + Ribbon + Tabs -->
-            <div class="card mb-5 mb-xl-10 position-relative overflow-hidden card-rounded">
-                <!-- Ribbon Top-Left -->
-                <div class="ribbon ribbon-triangle ribbon-top-start border-primary">
-                    <div class="ribbon-icon mt-n5 ms-n6">
-                        <i class="bi bi-star-fill fs-2 text-white"></i>
+            <div class="card mb-5">
+                <div class="card-body">
+                    <h3 class="mb-4">Select Starlink Account</h3>
+
+                    <div class="row g-4">
+                        @foreach ($accounts as $account)
+                            <div class="col-md-4">
+                                <label
+                                    class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-stack text-start p-4 w-100 account-radio-card">
+
+                                    <div class="d-flex align-items-center me-2">
+
+                                        <!-- Radio -->
+                                        <div class="form-check form-check-custom form-check-solid form-check-primary me-3">
+                                            <input class="form-check-input account-radio" type="radio"
+                                                name="starlink_account" value="{{ $account->account_number }}" />
+                                        </div>
+
+                                        <!-- Info -->
+                                        <div class="flex-grow-1">
+                                            <h4 class="fs-6 fw-bold mb-1">{{ $account->account_name ?? '—' }}</h4>
+                                            <div class="fw-semibold opacity-50">{{ $account->account_number }} | Region:
+                                                {{ $account->region_code ?? '—' }}</div>
+                                            @if ($account->has_suspension)
+                                                <span class="badge badge-light-warning mt-1">Suspended</span>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div class="text-end ms-3">
+                                        @if ($account->is_valid)
+                                            <span class="badge badge-light-success">Valid</span>
+                                        @else
+                                            <span class="badge badge-light-danger">Invalid</span>
+                                        @endif
+
+                                        <div class="fs-8 text-muted mt-1">
+                                            {{ $account->last_synced_at?->diffForHumans() ?? 'Never' }}</div>
+                                    </div>
+
+                                </label>
+                            </div>
+                        @endforeach
                     </div>
-                </div>
-
-                {{-- <!-- Country Flag Top-Right -->
-                        <div class="position-absolute top-0 end-0 p-3">
-                            <span class="flag-icon flag-icon-sa fs-2 rounded shadow-sm"></span>
-                        </div> --}}
-
-                <!-- Header -->
-                <div class="card-header py-4">
-                    <div class="card-title d-flex flex-column">
-                        <span class="text-muted text-uppercase fw-semibold fs-6 mb-1 pt-4">
-                            {{ $account['content']['accountName'] ?? '—' }}
-                        </span>
-                        <span class="fw-bold fs-9 text-gray-900 letter-spacing">
-                            {{ $account['content']['accountNumber'] ?? '—' }}
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Body -->
-                <div class="card-body pt-0 pb-0">
-                    <!-- Optional summary badges/stats -->
-                    <div class="d-flex flex-wrap flex-sm-nowrap mb-5">
-                        <!-- You can add KPI badges or account summary here -->
-                    </div>
-
-                    <!-- Nav Tabs -->
-                    <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold"
-                        id="dataTabs" role="tablist">
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5 active" data-bs-toggle="tab"
-                                data-tab="Subscribers" href="#">Subscribers</a>
-                        </li>
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="assets"
-                                href="#">Orders</a>
-                        </li>
-                    </ul>
                 </div>
             </div>
-            <!-- End Card 1 -->
+
+
 
             <!-- Card 2: Subscriptions Table -->
             <div class="card mb-5 card-bordered shadow-sm">
@@ -74,10 +75,29 @@
                         </button>
                     </div>
                 </div>
+                <div class="card-body pt-0 position-relative">
 
-                <div class="card-body pt-0">
-                    <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-8 gy-4" id="subscribersTable">
+                    <!-- Placeholder (shown initially) -->
+                    <div id="subscribersPlaceholder" class="text-center py-15">
+                        <i class="bi bi-arrow-up-circle fs-3x text-success mb-3"></i>
+                        <div class="fw-semibold text-muted">
+                            Select an account above to load subscribers ...
+                        </div>
+                    </div>
+
+                    <!-- Loader Overlay -->
+                    <div id="subscribersLoader"
+                        class="d-none position-absolute top-0 start-0 w-100 h-100
+               d-flex flex-column align-items-center justify-content-center
+               bg-white bg-opacity-75 z-index-3">
+
+                        <div class="spinner-border text-primary mb-3"></div>
+                        <div class="fw-semibold text-muted">Loading subscribers...</div>
+                    </div>
+
+                    <!-- Table (hidden initially) -->
+                    <div id="subscribersTableWrapper" class="table-responsive d-none">
+                        <table class="table align-middle table-row-dashed pt-16 fs-8 gy-4" id="subscribersTable">
                             <thead>
                                 <tr class="fw-bold text-gray-600 text-uppercase">
                                     <th>Service Line</th>
@@ -88,128 +108,13 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($subscribers['content']['results'] ?? [] as $sub)
-                                    <tr>
-                                        <td class="fw-semibold text-gray-800">
-                                            <code class="fs-9 text-dark">{{ $sub['serviceLineNumber'] ?? '—' }}</code>
-                                        </td>
-                                        <td>{{ Str::before($sub['nickname'] ?? '—', '[') }}</td>
-                                        <td>
-                                            @if (!empty($sub['productReferenceId']) && $sub['productReferenceId'] !== 'null')
-                                                <span class="badge badge-light-info">{{ $sub['productReferenceId'] }}</span>
-                                            @else
-                                                <span class="text-muted">—</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if (!empty($sub['dataBlocks']['recurringBlocksCurrentBillingCycle']))
-                                                @foreach ($sub['dataBlocks']['recurringBlocksCurrentBillingCycle'] as $block)
-                                                    @php
-                                                        $totalGb = ($block['count'] ?? 0) * ($block['dataAmount'] ?? 0);
-                                                        if ($totalGb >= 1000) {
-                                                            $value = round($totalGb / 1000, 2);
-                                                            $unit = 'TB';
-                                                        } else {
-                                                            $value = $totalGb;
-                                                            $unit = 'GB';
-                                                        }
-                                                    @endphp
-                                                    <div class="d-flex flex-column gap-1 rounded">
-                                                        <span
-                                                            class="badge badge-light-primary">{{ Str::ucfirst(implode('-', array_slice(explode('-', $block['productId']), 2, 3))) ?? '—' }}</span>
-                                                        <span class="badge badge-dark " data-bs-toggle="tooltip"
-                                                            title="Monthly Plan" style="width: fit-content;">
-                                                            Plan:
-                                                            {{ $value }} {{ $unit }}
-                                                        </span>
-                                                        <div class="text-muted fs-8">
-                                                            <i class="bi bi-calendar-event me-1"></i>
-                                                            {{ isset($block['startDate']) ? \Carbon\Carbon::parse($block['startDate'])->format('d M Y') : '—' }}
-                                                            →
-                                                            {{ isset($block['expirationDate']) ? \Carbon\Carbon::parse($block['expirationDate'])->format('d M Y') : '—' }}
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            @else
-                                                <span class="text-muted">No packages</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            @if ($sub['active'] ?? false)
-                                                <i class="bi bi-check-circle-fill text-success" data-bs-toggle="tooltip"
-                                                    title="Active"></i>
-                                            @else
-                                                <i class="bi bi-x-circle-fill text-danger" data-bs-toggle="tooltip"
-                                                    title="Inactive"></i>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <!-- Action Button -->
-                                            <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary"
-                                                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                                <i class="ki-outline ki-dots-square fs-1"></i>
-                                            </button>
-
-                                            <!-- Dropdown Menu -->
-                                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px"
-                                                data-kt-menu="true">
-                                                <!-- Header -->
-                                                <div class="menu-item px-3">
-                                                    <div class="menu-content fs-6 text-gray-900 fw-bold px-3 py-4">
-                                                        Actions</div>
-                                                </div>
-                                                <div class="separator mb-3 opacity-75"></div>
-
-                                                <!-- Menu item 1 -->
-                                                <div class="menu-item px-3">
-                                                    <a href="javascript:void(0);" class="menu-link px-3"
-                                                        data-bs-toggle="modal" data-bs-target="#topupModal"
-                                                        data-service="{{ $sub['serviceLineNumber'] }}">
-                                                        <span class="menu-icon">
-                                                            <i class="ki-outline ki-arrow-up fs-5 text-success"></i>
-                                                        </span>
-                                                        <span class="menu-title">Top Up</span>
-                                                    </a>
-                                                </div>
-
-
-                                                <!-- Menu item 2 -->
-                                                <div class="menu-item px-3">
-                                                    <a href="javascript:void(0);" class="menu-link px-3"
-                                                        data-bs-toggle="modal" data-bs-target="#view-subscriber"
-                                                        data-service="{{ $sub['serviceLineNumber'] }}">
-                                                        <span class="menu-icon"><i
-                                                                class="ki-outline ki-eye fs-5 text-success"></i></span>
-                                                        <span class="menu-title">View Subscriber</span>
-                                                    </a>
-                                                </div>
-
-                                                <!-- Menu item 3 -->
-                                                <div class="menu-item px-3">
-                                                    <a href="#" class="menu-link px-3" data-bs-toggle="modal"
-                                                        data-bs-target="{{ $sub['active'] ?? false ? '#suspendModal' : '#activateModal' }}"
-                                                        data-service="{{ $sub['serviceLineNumber'] }}">
-
-                                                        <span class="menu-icon">
-                                                            <i
-                                                                class="bi {{ $sub['active'] ?? false ? 'bi-lock text-danger' : 'bi-unlock  text-success' }} fs-5"></i>
-                                                        </span>
-
-                                                        <span class="menu-title">
-                                                            {{ $sub['active'] ?? false ? 'Suspend' : 'Activate' }}
-                                                        </span>
-                                                    </a>
-                                                </div>
-
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
+
                 </div>
+
+
             </div>
             <!-- End Card 2 -->
 
@@ -244,30 +149,30 @@
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         };
-        const table = $('#subscribersTable').DataTable({
-            // $('#subscribersTable').DataTable({
-            processing: true,
-            serverSide: false,
-            pageLength: 6, // ✅ default rows per page
-            lengthMenu: [5, 10, 25, 50], // optional dropdown options
-            order: [
-                [0, 'asc']
-            ],
-            language: {
-                emptyTable: "No subscribers found",
-                processing: "Loading Orbit subscribers…"
-            }
-        });
+        // const table = $('#subscribersTable').DataTable({
+        //     // $('#subscribersTable').DataTable({
+        //     processing: true,
+        //     serverSide: false,
+        //     pageLength: 6, // ✅ default rows per page
+        //     lengthMenu: [5, 10, 25, 50], // optional dropdown options
+        //     order: [
+        //         [0, 'asc']
+        //     ],
+        //     language: {
+        //         emptyTable: "No subscribers found. Make sure you select atleast one account",
+        //         processing: "Loading Orbit subscribers…"
+        //     }
+        // });
 
-        table.on('draw', function() {
-            KTMenu.createInstances();
-        });
+        // table.on('draw', function() {
+        //     KTMenu.createInstances();
+        // });
 
-        const searchInput = document.querySelector('[data-kt-customer-table-filter="search"]');
+        // const searchInput = document.querySelector('[data-kt-customer-table-filter="search"]');
 
-        searchInput.addEventListener('keyup', function(e) {
-            table.search(e.target.value).draw();
-        });
+        // searchInput.addEventListener('keyup', function(e) {
+        //     table.search(e.target.value).draw();
+        // });
 
         // Show and Hide IP Field       
         $(document).on('change', '#ip_policy', function() {
@@ -529,5 +434,238 @@
         $('#view-subscriber').on('hidden.bs.modal', function() {
             $('#subscriberContentBody').empty();
         });
+
+
+        // Radio Button of the Account
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            let subscribersTable = null;
+
+            function initSubscribersTable(accountNumber) {
+
+                // Show custom loading overlay
+                document.getElementById('subscribersLoader').classList.remove('d-none');
+
+                // Destroy existing table properly
+                if ($.fn.DataTable.isDataTable('#subscribersTable')) {
+                    $('#subscribersTable').DataTable().clear().destroy();
+                }
+
+                subscribersTable = $('#subscribersTable').DataTable({
+                    processing: false,
+                    serverSide: true,
+                    destroy: true,
+                    ajax: {
+                        url: '/starlink/subscribers/ajax',
+                        type: 'GET',
+                        data: function(d) {
+                            d.account_number = accountNumber;
+                        },
+                        complete: function() {
+                            // Hide loader when finished
+                            document.getElementById('subscribersLoader').classList.add('d-none');
+                        }
+                    },
+
+                    language: {
+                        // processing: "Loading subscribers...",
+                        emptyTable: "No subscribers found for this account",
+                        zeroRecords: "No matching subscribers found",
+                        lengthMenu: "Show _MENU_ subscribers",
+                        info: "Showing _START_ to _END_ of _TOTAL_ subscribers",
+                        infoEmpty: "No subscribers available",
+                        search: "Search subscribers:"
+                    },
+
+                    columns: [{
+                            data: 'serviceLineNumber',
+                            render: data => `<code class="fs-9 text-dark">${data ?? '—'}</code>`
+                        },
+                        {
+                            data: 'nickname',
+                            render: data => data ? data.split('[')[0] : '—'
+                        },
+                        {
+                            data: 'productReferenceId',
+                            render: data => data && data !== 'null' ?
+                                `<span class="badge badge-light-info">${data}</span>` :
+                                '<span class="text-muted">—</span>'
+                        },
+                        {
+                            data: 'dataBlocks',
+                            orderable: false,
+                            render: blocks => {
+                                if (!blocks?.recurringBlocksCurrentBillingCycle ||
+                                    blocks.recurringBlocksCurrentBillingCycle.length === 0)
+                                    return '<span class="text-muted">No packages</span>';
+
+                                let html = '';
+
+                                blocks.recurringBlocksCurrentBillingCycle.forEach(block => {
+                                    let totalGb = (block.count ?? 0) * (block.dataAmount ??
+                                        0);
+                                    let value = totalGb >= 1000 ?
+                                        (totalGb / 1000).toFixed(2) :
+                                        totalGb;
+                                    let unit = totalGb >= 1000 ? 'TB' : 'GB';
+
+                                    let productName = block.productId?.split('-')
+                                        .slice(2, 5).join('-') ?? '—';
+
+                                    let start = block.startDate ?
+                                        moment(block.startDate).format('D MMM YYYY') :
+                                        '—';
+
+                                    let end = block.expirationDate ?
+                                        moment(block.expirationDate).format('D MMM YYYY') :
+                                        '—';
+
+                                    html += `
+                                <div class="d-flex flex-column gap-1 rounded mb-2">
+                                    <span class="badge badge-light-primary">${productName}</span>
+                                    <span class="badge badge-dark" style="width: fit-content;">
+                                        Plan: ${value} ${unit}
+                                    </span>
+                                    <div class="text-muted fs-8">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        ${start} → ${end}
+                                    </div>
+                                </div>`;
+                                });
+
+                                return html;
+                            }
+                        },
+                        {
+                            data: 'active',
+                            render: active => active ?
+                                '<i class="bi bi-check-circle-fill text-success" data-bs-toggle="tooltip" title="Active"></i>' :
+                                '<i class="bi bi-x-circle-fill text-danger" data-bs-toggle="tooltip" title="Inactive"></i>'
+                        },
+                        {
+                            data: null,
+                            orderable: false,
+                            render: row => `
+                        <button class="btn btn-icon btn-color-gray-500 btn-active-color-primary"
+                            data-kt-menu-trigger="click"
+                            data-kt-menu-placement="bottom-end">
+                            <i class="ki-outline ki-dots-square fs-1"></i>
+                        </button>
+
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded
+                                    menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px"
+                             data-kt-menu="true">
+
+                            <div class="menu-item px-3">
+                                <div class="menu-content fs-6 text-gray-900 fw-bold px-3 py-4">
+                                    Actions
+                                </div>
+                            </div>
+
+                            <div class="separator mb-3 opacity-75"></div>
+
+                            <div class="menu-item px-3">
+                                <a href="javascript:void(0);" class="menu-link px-3"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#topupModal"
+                                   data-service="${row.serviceLineNumber}">
+                                    <span class="menu-icon">
+                                        <i class="ki-outline ki-arrow-up fs-5 text-success"></i>
+                                    </span>
+                                    <span class="menu-title">Top Up</span>
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="javascript:void(0);" class="menu-link px-3"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#view-subscriber"
+                                   data-service="${row.serviceLineNumber}">
+                                    <span class="menu-icon">
+                                        <i class="ki-outline ki-eye fs-5 text-success"></i>
+                                    </span>
+                                    <span class="menu-title">View Subscriber</span>
+                                </a>
+                            </div>
+
+                            <div class="menu-item px-3">
+                                <a href="#"
+                                   class="menu-link px-3"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="${row.active ? '#suspendModal' : '#activateModal'}"
+                                   data-service="${row.serviceLineNumber}">
+                                    <span class="menu-icon">
+                                        <i class="bi ${row.active ? 'bi-lock text-danger' : 'bi-unlock text-success'} fs-5"></i>
+                                    </span>
+                                    <span class="menu-title">
+                                        ${row.active ? 'Suspend' : 'Activate'}
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    `
+
+                        }
+                    ],
+
+                    drawCallback: function() {
+
+                        // Bootstrap tooltips
+                        $('[data-bs-toggle="tooltip"]').tooltip();
+
+                        // Reinitialize Metronic KT Menu
+                        if (typeof KTMenu !== "undefined") {
+                            KTMenu.createInstances();
+                        }
+                    }
+
+                });
+            }
+            // Seach Filed of the datatable
+            const searchInput = document.querySelector('[data-kt-customer-table-filter="search"]');
+
+            searchInput.addEventListener('keyup', function(e) {
+                subscribersTable.search(e.target.value).draw();
+            });
+
+            // ONLY load when radio is clicked
+            // ONLY load when radio is clicked
+            document.querySelectorAll('.account-radio').forEach(radio => {
+                radio.addEventListener('change', function() {
+
+                    // 1️⃣ Hide placeholder
+                    const placeholder = document.getElementById('subscribersPlaceholder');
+                    if (placeholder) {
+                        placeholder.classList.add('d-none');
+                    }
+
+                    // 2️⃣ Show table wrapper
+                    const tableWrapper = document.getElementById('subscribersTableWrapper');
+                    if (tableWrapper) {
+                        tableWrapper.classList.remove('d-none');
+                    }
+
+                    // 3️⃣ Show loader immediately
+                    document.getElementById('subscribersLoader')
+                        .classList.remove('d-none');
+
+                    // 4️⃣ Load table
+                    initSubscribersTable(this.value);
+
+                    // 5️⃣ Highlight selected card
+                    document.querySelectorAll('.account-radio-card')
+                        .forEach(c => c.classList.remove('active'));
+
+                    this.closest('.account-radio-card')
+                        .classList.add('active');
+                });
+            });
+
+        });
+
+
+        // End of radio button of the account
     </script>
 @endpush

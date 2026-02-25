@@ -6,7 +6,9 @@ use App\Models\StarlinkAccount;
 use App\Models\StarlinkToken;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use RuntimeException;
+use Throwable;
 
 class StarlinkService
 {
@@ -14,18 +16,16 @@ class StarlinkService
 
     /**
      * Retrieve a valid token from DB
-     * Uses default account if none provided
      */
     protected function getAccessToken(?int $accountId = null): string
     {
-        // Resolve default account if none passed
         if (!$accountId) {
             $accountId = StarlinkAccount::where('active', 'y')
                 ->where('is_default', 'y')
                 ->value('id');
 
             if (!$accountId) {
-                Log::critical('No default Starlink account configured');
+                Log::critical('Starlink: No default account configured');
                 throw new RuntimeException('Default Starlink account not configured');
             }
         }
@@ -35,12 +35,17 @@ class StarlinkService
             ->first();
 
         if (!$token) {
-            Log::critical("Starlink token missing for account: {$accountId}");
+            Log::critical("Starlink: Token missing", [
+                'account_id' => $accountId,
+            ]);
             throw new RuntimeException("Starlink token not available for account {$accountId}");
         }
 
         if ($token->expires_at->isPast()) {
-            Log::critical("Starlink token expired for account: {$accountId}");
+            Log::critical("Starlink: Token expired", [
+                'account_id' => $accountId,
+                'expired_at' => $token->expires_at,
+            ]);
             throw new RuntimeException("Starlink token expired for account {$accountId}");
         }
 
@@ -48,47 +53,113 @@ class StarlinkService
     }
 
     /**
-     * Generic API request handler
+     * Generic API request handler (Enterprise Safe)
      */
     public function request(
         string $method,
         string $endpoint,
         array $payload = [],
-        ?int $accountId = null
+        ?int $accountId = null,
+        bool $silent = false // useful for jobs
     ): array {
         $url = $this->apiBase . $endpoint;
+        $correlationId = (string) Str::uuid();
+        $startTime = microtime(true);
 
-        $response = Http::withToken($this->getAccessToken($accountId))
-                    ->acceptJson()
-                    ->timeout(15)
-                    ->retry(2, 500)
-            ->$method($url, $payload);
+        try {
 
-        if (!$response->successful()) {
-            Log::error('Starlink API request failed', [
-                'method' => strtoupper($method),
-                'url' => $url,
-                'status' => $response->status(),
-                'body' => $response->body(),
+            $response = Http::withToken($this->getAccessToken($accountId))
+                        ->acceptJson()
+                        ->timeout(20)
+                        ->retry(3, 500, function ($exception, $request) {
+                            return $exception instanceof \Illuminate\Http\Client\ConnectionException;
+                        })
+                        ->withHeaders([
+                            'X-Correlation-ID' => $correlationId,
+                        ])
+                ->$method($url, $payload);
+
+            $duration = round((microtime(true) - $startTime) * 1000, 2);
+
+            if (!$response->successful()) {
+                Log::error('Starlink API failure', [
+                    'correlation_id' => $correlationId,
+                    'method' => strtoupper($method),
+                    'endpoint' => $endpoint,
+                    'account_id' => $accountId,
+                    'status' => $response->status(),
+                    'duration_ms' => $duration,
+                    'response_body' => $response->body(),
+                ]);
+            } else {
+                Log::info('Starlink API success', [
+                    'correlation_id' => $correlationId,
+                    'endpoint' => $endpoint,
+                    'account_id' => $accountId,
+                    'status' => $response->status(),
+                    'duration_ms' => $duration,
+                ]);
+            }
+
+            return $response->throw()->json();
+
+        } catch (Throwable $e) {
+
+            Log::critical('Starlink API exception', [
+                'correlation_id' => $correlationId,
+                'endpoint' => $endpoint,
+                'account_id' => $accountId,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
-        }
 
-        return $response->throw()->json();
+            if (!$silent) {
+                throw new RuntimeException(
+                    "Starlink API request failed [{$endpoint}]",
+                    previous: $e
+                );
+            }
+
+            return [];
+        }
     }
 
     /* =======================
        PUBLIC API METHODS
        ======================= */
 
-    public function account(?int $accountId = null): array
+    public function account(?int $accountId = null, bool $silent = false): array
     {
-        return $this->request('get', '/account', [], $accountId);
+        return $this->request('get', '/account', [], $accountId, $silent);
     }
 
-    public function allUserTerminals(?int $accountId = null): array
+    public function fetchAccountData(?int $accountId = null): ?array
     {
-        return $this->request('get', '/user-terminals', [], $accountId);
+        $response = $this->account($accountId, true);
+
+        if (!isset($response['content'])) {
+            return null;
+        }
+
+        $content = $response['content'];
+
+        return [
+            'account_number' => $content['accountNumber'],
+            'account_name' => $content['accountName'] ?? null,
+            'region_code' => $content['regionCode'] ?? null,
+            'is_valid' => $response['isValid'] ?? false,
+            'has_suspension' => !empty($content['activeSuspensions']),
+            'suspension_payload' => $content['activeSuspensions'] ?? [],
+            'raw_payload' => $response,
+        ];
     }
+
+
+    public function allUserTerminals(?int $accountId = null, bool $silent = false): array
+    {
+        return $this->request('get', '/user-terminals', [], $accountId, $silent);
+    }
+
 
     public function allSubscribers(?int $accountId = null): array
     {
