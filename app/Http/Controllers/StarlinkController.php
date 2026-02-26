@@ -34,7 +34,8 @@ class StarlinkController extends Controller
             $accounts = StarlinkAccount::orderBy('id')->get();
             $subscribers = $this->starlink->allSubscribers();
 
-            return view('starlink.index', [
+            Log::info("Returning Authenticated User $user");
+            return view('starlink.index')->with([
                 'accounts' => $accounts,
                 'subscribers' => $subscribers,
                 'user' => $user,

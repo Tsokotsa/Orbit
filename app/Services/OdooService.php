@@ -27,10 +27,11 @@ class OdooService
     /**
      * Base HTTP client (DEV only disables SSL)
      */
+
     protected function http()
     {
         return Http::withOptions([
-            'verify' => app()->environment('local') ? false : true,
+            'verify' => !app()->environment(['local', 'uat']),
         ]);
     }
 

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\StarlinkRouterUsage;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use Log;
 class StarlinkUsageController extends Controller
 {
     public function graph($device)
@@ -48,16 +50,21 @@ class StarlinkUsageController extends Controller
 
         $month = request('month', 'current');
 
+        $now = Carbon::now();
+
         if ($month === 'last') {
-            $start = Carbon::now()->subMonth()->startOfMonth();
-            $end = Carbon::now()->subMonth()->endOfMonth();
+            $start = $now->copy()->subMonth()->startOfMonth()->startOfDay();
+            $end = $now->copy()->subMonth()->endOfMonth()->endOfDay();
         } else {
-            $start = Carbon::now()->startOfMonth();
-            $end = Carbon::now()->endOfMonth();
+            $start = $now->copy()->startOfMonth()->startOfDay();
+            $end = $now->copy()->endOfMonth()->endOfDay();
+            $today = now();
         }
 
+        Log::info("We are querying Period from [ $start ] to [ $end ]");
+
         $usage = StarlinkRouterUsage::where('device_id', $device)
-            ->whereBetween('recorded_at', [$start, $end])
+            ->whereBetween('recorded_at', [$start, $today])
             ->selectRaw("
             DATE(recorded_at) as day,
             SUM(rx_mbps * 60 / 8 / 1024) as download_gb,
@@ -65,14 +72,40 @@ class StarlinkUsageController extends Controller
         ")
             ->groupBy('day')
             ->orderBy('day')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->day = Carbon::parse($item->day)->format('Y-m-d');
+                return $item;
+            })
+            ->keyBy('day');
+
+        $period = CarbonPeriod::create($start, $end);
+
+        $labels = [];
+        $download = [];
+        $upload = [];
+
+        foreach ($period as $date) {
+            $day = $date->format('Y-m-d');
+
+            $labels[] = $day;
+
+            $download[] = isset($usage[$day])
+                ? round($usage[$day]->download_gb, 2)
+                : 0;
+
+            $upload[] = isset($usage[$day])
+                ? round($usage[$day]->upload_gb, 2)
+                : 0;
+        }
 
         return response()->json([
-            'labels' => $usage->pluck('day'),
-            'download' => $usage->pluck('download_gb')->map(fn($v) => round($v, 2)),
-            'upload' => $usage->pluck('upload_gb')->map(fn($v) => round($v, 2)),
-            'total_download' => round($usage->sum('download_gb'), 2),
-            'total_upload' => round($usage->sum('upload_gb'), 2),
+            'labels' => $labels,
+            'download' => $download,
+            'upload' => $upload,
+            'total_download' => round(array_sum($download), 2),
+            'total_upload' => round(array_sum($upload), 2),
         ]);
+
     }
 }
