@@ -25,7 +25,7 @@ class TelemetryProcessor
 
         $response = $this->starlinkService->request(
             'post',
-            '/telemetry/stream', //'https://starlink.com/api/public/v2';
+            '/telemetry/stream',
             $payload,
             $accountId,
             silent: true

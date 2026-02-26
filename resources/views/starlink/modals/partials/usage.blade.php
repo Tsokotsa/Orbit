@@ -35,7 +35,7 @@
                   </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link" data-bs-toggle="tab" href="#tab-usage">
+                  <a class="nav-link" data-bs-toggle="tab" href="#usage">
                       Usage
                   </a>
               </li>
@@ -182,12 +182,11 @@
               </div>
 
               <!-- STATS -->
-              <div class="tab-pane fade" id="tab-usage">
+              <div class="tab-pane fade" id="usage">
                   <div class="text-muted fs-8">
                       <div class="card card-bordered">
                           <div class="card-body">
-                              <div id="tsokotsa_chart" class="min-h-auto w-100 ps-4 pe-6" style="height: 300px">
-                              </div>
+                              <div id="kt_apexcharts_3" style="height: 350px;"></div>
                           </div>
                       </div>
                   </div>

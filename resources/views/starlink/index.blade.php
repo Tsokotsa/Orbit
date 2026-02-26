@@ -9,48 +9,73 @@
                     <h3 class="mb-4">Select Starlink Account</h3>
 
                     <div class="row g-4">
-                        @foreach ($accounts as $account)
-                            <div class="col-md-4">
-                                <label
-                                    class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-stack text-start p-4 w-100 account-radio-card">
+                        @if (isset($accounts) && $accounts->count())
+                            @foreach ($accounts as $account)
+                                <div class="col-md-4">
+                                    <label
+                                        class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex flex-stack text-start p-4 w-100 account-radio-card">
 
-                                    <div class="d-flex align-items-center me-2">
+                                        <div class="d-flex align-items-center me-2">
 
-                                        <!-- Radio -->
-                                        <div class="form-check form-check-custom form-check-solid form-check-primary me-3">
-                                            <input class="form-check-input account-radio" type="radio"
-                                                name="starlink_account" value="{{ $account->account_number }}" />
+                                            <!-- Radio -->
+                                            <div
+                                                class="form-check form-check-custom form-check-solid form-check-primary me-3">
+                                                <input class="form-check-input account-radio" type="radio"
+                                                    name="starlink_account" value="{{ $account->account_number }}" />
+                                            </div>
+
+                                            <!-- Info -->
+                                            <div class="flex-grow-1">
+                                                <h4 class="fs-6 fw-bold mb-1">{{ $account->account_name ?? '—' }}</h4>
+                                                <div class="fw-semibold opacity-50">{{ $account->account_number }} | Region:
+                                                    {{ $account->region_code ?? '—' }}</div>
+                                                @if ($account->has_suspension)
+                                                    <span class="badge badge-light-warning mt-1">Suspended</span>
+                                                @endif
+                                            </div>
                                         </div>
 
-                                        <!-- Info -->
-                                        <div class="flex-grow-1">
-                                            <h4 class="fs-6 fw-bold mb-1">{{ $account->account_name ?? '—' }}</h4>
-                                            <div class="fw-semibold opacity-50">{{ $account->account_number }} | Region:
-                                                {{ $account->region_code ?? '—' }}</div>
-                                            @if ($account->has_suspension)
-                                                <span class="badge badge-light-warning mt-1">Suspended</span>
+                                        <!-- Status -->
+                                        <div class="text-end ms-3">
+                                            @if ($account->is_valid)
+                                                <span class="badge badge-light-success">Valid</span>
+                                            @else
+                                                <span class="badge badge-light-danger">Invalid</span>
                                             @endif
+
+                                            <div class="fs-8 text-muted mt-1">
+                                                {{ $account->last_synced_at?->diffForHumans() ?? 'Never' }}</div>
                                         </div>
-                                    </div>
 
-                                    <!-- Status -->
-                                    <div class="text-end ms-3">
-                                        @if ($account->is_valid)
-                                            <span class="badge badge-light-success">Valid</span>
-                                        @else
-                                            <span class="badge badge-light-danger">Invalid</span>
-                                        @endif
-
-                                        <div class="fs-8 text-muted mt-1">
-                                            {{ $account->last_synced_at?->diffForHumans() ?? 'Never' }}</div>
-                                    </div>
-
-                                </label>
-                            </div>
-                        @endforeach
+                                    </label>
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
+
+
+
+            {{-- <div class="card card-bordered">
+                <div class="card-body">
+                    <div id="tsokotsa_chart" class="min-h-auto w-100 ps-4 pe-6" style="height: 300px"></div>
+                </div> --}}
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <button class="btn btn-sm btn-primary" onclick="loadChart('current')">Current Month</button>
+                    <button class="btn btn-sm btn-light" onclick="loadChart('last')">Last Month</button>
+                </div>
+
+                <div>
+                    <strong>Total Download:</strong> <span id="totalDownload">0 GB</span> |
+                    <strong>Total Upload:</strong> <span id="totalUpload">0 GB</span>
+                </div>
+            </div>
+
+            <div id="tsokotsa_chart"></div>
+
 
 
 
@@ -149,30 +174,6 @@
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         };
-        // const table = $('#subscribersTable').DataTable({
-        //     // $('#subscribersTable').DataTable({
-        //     processing: true,
-        //     serverSide: false,
-        //     pageLength: 6, // ✅ default rows per page
-        //     lengthMenu: [5, 10, 25, 50], // optional dropdown options
-        //     order: [
-        //         [0, 'asc']
-        //     ],
-        //     language: {
-        //         emptyTable: "No subscribers found. Make sure you select atleast one account",
-        //         processing: "Loading Orbit subscribers…"
-        //     }
-        // });
-
-        // table.on('draw', function() {
-        //     KTMenu.createInstances();
-        // });
-
-        // const searchInput = document.querySelector('[data-kt-customer-table-filter="search"]');
-
-        // searchInput.addEventListener('keyup', function(e) {
-        //     table.search(e.target.value).draw();
-        // });
 
         // Show and Hide IP Field       
         $(document).on('change', '#ip_policy', function() {
@@ -631,7 +632,6 @@
             });
 
             // ONLY load when radio is clicked
-            // ONLY load when radio is clicked
             document.querySelectorAll('.account-radio').forEach(radio => {
                 radio.addEventListener('change', function() {
 
@@ -664,8 +664,210 @@
             });
 
         });
-
-
         // End of radio button of the account
+
+        // document.addEventListener("DOMContentLoaded", function() {
+        //     var element = document.getElementById('tsokotsa_chart');
+        //     if (!element) return;
+
+        //     // Replace with your device ID
+        //     var deviceId = 1;
+
+        //     fetch(`/starlink/${deviceId}/data`)
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             console.log(data); // check if labels/download/upload are arrays
+        //             if (!data.download || !data.upload || data.download.length === 0) {
+        //                 console.error('No data for chart!');
+        //                 return;
+        //             }
+        //             var options = {
+        //                 series: [{
+        //                         name: 'Download',
+        //                         data: data.download.map(Number)
+        //                     },
+        //                     {
+        //                         name: 'Upload',
+        //                         data: data.upload.map(Number)
+        //                     }
+        //                 ],
+        //                 chart: {
+        //                     type: 'bar',
+        //                     height: 350,
+        //                     toolbar: {
+        //                         show: false
+        //                     },
+        //                     zoom: {
+        //                         enabled: false
+        //                     }
+        //                 },
+        //                 stroke: {
+        //                     curve: 'smooth',
+        //                     width: 2
+        //                 },
+        //                 fill: {
+        //                     type: 'gradient',
+        //                     gradient: {
+        //                         shadeIntensity: 1,
+        //                         opacityFrom: 0.35,
+        //                         opacityTo: 0.05,
+        //                         stops: [0, 90, 100]
+        //                     }
+        //                 },
+        //                 dataLabels: {
+        //                     enabled: false // 🚀 remove clutter numbers
+        //                 },
+        //                 markers: {
+        //                     size: 0 // remove circle markers
+        //                 },
+        //                 xaxis: {
+        //                     type: 'datetime',
+        //                     categories: data.labels,
+        //                     labels: {
+        //                         datetimeFormatter: {
+        //                             hour: 'HH:mm',
+        //                             minute: 'HH:mm'
+        //                         }
+        //                     }
+        //                 },
+        //                 yaxis: {
+        //                     min: 0,
+        //                     decimalsInFloat: 1,
+        //                     labels: {
+        //                         formatter: function(val) {
+        //                             return val.toFixed(1) + " Mbps";
+        //                         }
+        //                     }
+        //                 },
+        //                 tooltip: {
+        //                     shared: true,
+        //                     intersect: false,
+        //                     x: {
+        //                         format: 'HH:mm'
+        //                     },
+        //                     y: {
+        //                         formatter: function(val) {
+        //                             return val.toFixed(2) + " Mbps";
+        //                         }
+        //                     }
+        //                 },
+        //                 legend: {
+        //                     position: 'top',
+        //                     horizontalAlign: 'right'
+        //                 },
+        //                 grid: {
+        //                     strokeDashArray: 4,
+        //                     padding: {
+        //                         left: 10,
+        //                         right: 10
+        //                     }
+        //                 },
+        //                 colors: ['#009EF7', '#50CD89']
+        //             };
+
+        //             setTimeout(() => {
+        //                 new ApexCharts(element, options).render();
+        //             }, 100);
+        //         })
+
+        //         .catch(err => console.error(err));
+        // });
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            let chart;
+            let deviceId = 1;
+
+            function loadChart(month = 'current') {
+
+                fetch(`/starlink/${deviceId}/monthly-usage?month=${month}`)
+                    .then(res => res.json())
+                    .then(data => {
+
+                        document.getElementById('totalDownload').innerText =
+                            data.total_download + " GB";
+
+                        document.getElementById('totalUpload').innerText =
+                            data.total_upload + " GB";
+
+                        let options = {
+                            series: [{
+                                    name: 'Download (GB)',
+                                    data: data.download
+                                },
+                                {
+                                    name: 'Upload (GB)',
+                                    data: data.upload
+                                }
+                            ],
+                            chart: {
+                                type: 'bar',
+                                height: 380,
+                                toolbar: {
+                                    show: false
+                                }
+                            },
+                            plotOptions: {
+                                bar: {
+                                    horizontal: false,
+                                    columnWidth: '55%',
+                                    borderRadius: 6
+                                }
+                            },
+                            dataLabels: {
+                                enabled: false
+                            },
+                            stroke: {
+                                show: true,
+                                width: 1,
+                                colors: ['transparent']
+                            },
+                            xaxis: {
+                                categories: data.labels,
+                                title: {
+                                    text: 'Day of Month'
+                                }
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Usage (GB)'
+                                },
+                                labels: {
+                                    formatter: function(val) {
+                                        return val + " GB";
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                y: {
+                                    formatter: function(val) {
+                                        return val + " GB";
+                                    }
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                                horizontalAlign: 'right'
+                            },
+                            colors: ['#009EF7', '#50CD89']
+                        };
+
+                        if (chart) {
+                            chart.updateOptions(options);
+                        } else {
+                            chart = new ApexCharts(
+                                document.querySelector("#tsokotsa_chart"),
+                                options
+                            );
+                            chart.render();
+                        }
+                    });
+            }
+
+            loadChart('current');
+
+            window.loadChart = loadChart;
+        });
     </script>
 @endpush

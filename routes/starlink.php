@@ -29,3 +29,9 @@ Route::group(['middleware' => ['auth', 'permission:view starlink'], 'prefix' => 
 
 Route::get('/starlink/{device}/graph', [StarlinkUsageController::class, 'graph']);
 Route::get('/starlink/{device}/data', [StarlinkUsageController::class, 'data']);
+
+Route::get(
+    '/starlink/{device}/monthly-usage',
+    [StarlinkUsageController::class, 'usageMonthly']
+)->name('starlink.monthly.usage');
+
