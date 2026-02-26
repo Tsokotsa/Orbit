@@ -22,16 +22,20 @@ Route::group(['middleware' => ['auth', 'permission:view starlink'], 'prefix' => 
     Route::put('/service-line/{serviceLineNumber}/product', [StarlinkController::class, 'activate_line']);
 
     Route::get('/telemetry', [StarlinkController::class, 'telemetry']);
+
+
+    // Testing Graph
+
+    Route::get('/{device}/graph', [StarlinkUsageController::class, 'graph']);
+    Route::get('/{device}/data', [StarlinkUsageController::class, 'data']);
+
+    Route::get(
+        '/{device}/monthly-usage',
+        [StarlinkUsageController::class, 'usageMonthly']
+    )->name('starlink.monthly.usage');
+
 });
 
 
-// Testing Graph
 
-Route::get('/starlink/{device}/graph', [StarlinkUsageController::class, 'graph']);
-Route::get('/starlink/{device}/data', [StarlinkUsageController::class, 'data']);
-
-Route::get(
-    '/starlink/{device}/monthly-usage',
-    [StarlinkUsageController::class, 'usageMonthly']
-)->name('starlink.monthly.usage');
 
