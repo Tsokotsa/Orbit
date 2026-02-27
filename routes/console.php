@@ -4,6 +4,7 @@ use App\Console\Commands\RefreshRecargAkiToken;
 use App\Jobs\CountMsgsJob;
 use App\Jobs\QueueCampaignJob;
 use App\Jobs\SyncOdooInvoicesJob;
+use App\Jobs\SyncStarlinkAccountsJob;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +37,9 @@ Schedule::job(new SyncOdooPartnersJob)->everyFifteenMinutes();
 
 // Command For Starlink Pool Latest
 Schedule::command('starlink:poll')->everyMinute();
+
+
+Schedule::job(new SyncStarlinkAccountsJob)->everyMinute();
 
 // Schedule::job(new SyncOdooInvoicesJob)->everyMinute();
 

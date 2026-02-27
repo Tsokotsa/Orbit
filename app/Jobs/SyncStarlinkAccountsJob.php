@@ -2,14 +2,20 @@
 
 namespace App\Jobs;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
 use App\Models\StarlinkAccount;
 use App\Models\StarlinkToken;
 use App\Services\StarlinkService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
+
 class SyncStarlinkAccountsJob implements ShouldQueue
 {
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     public function handle(): void
     {
         Log::info('Starlink sync started');
