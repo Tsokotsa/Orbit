@@ -1,3 +1,11 @@
+<style>
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+</style>
 @extends('layouts.master')
 
 @section('content')
@@ -31,24 +39,75 @@
                 </div>
             </div>
             <!-- End Card 1 -->
+            <div class="row g-4">
 
-            <div>
-                <button class="btn btn-sm btn-primary" onclick="loadChart('current')">Current
-                    Month</button>
-                <button class="btn btn-sm btn-light" onclick="loadChart('last')">Last
-                    Month</button>
+                <!-- Chart Column -->
+                <div class="col-12 col-md-6">
+
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+
+                        <!-- Card Header -->
+                        <div
+                            class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                            <!-- Title -->
+                            <div class="px-4 pb-2 pt-8">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                                    <!-- LEFT: Totals (unchanged structure) -->
+                                    <div class="d-flex gap-4 small text-muted">
+                                        <div>
+                                            <span class="fw-semibold text-primary">
+                                                <i class="bi bi-download me-1"></i>
+                                                <span id="totalDownload">0 GB</span>
+                                            </span>
+                                            <div class="small">Total Download</div>
+                                        </div>
+
+                                        <div>
+                                            <span class="fw-semibold text-success">
+                                                <i class="bi bi-upload me-1"></i>
+                                                <span id="totalUpload">0 GB</span>
+                                            </span>
+                                            <div class="small">Total Upload</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div>
+                                <button class="btn btn-sm btn-primary me-2" onclick="loadChart('current')">
+                                    Current Month
+                                </button>
+
+                                <button class="btn btn-sm btn-light" onclick="loadChart('last')">
+                                    Last Month
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- Chart -->
+                        <div class="card-body pt-0">
+                            <div id="tsokotsa_chart"></div>
+                        </div>
+                        <!-- End Chart -->
+
+                    </div>
+
+                </div>
+
+                <!-- Future Columns -->
+                <div class="col-12 col-md-6">
+                    <!-- You can place another chart or stats card here -->
+                </div>
+
             </div>
 
-            <div>
-                <strong>Total Download:</strong> <span id="totalDownload">0 GB</span> |
-                <strong>Total Upload:</strong> <span id="totalUpload">0 GB</span>
-            </div>
+
         </div>
-
-        <div id="tsokotsa_chart"></div>
-
-
-    </div>
     </div>
 @endsection
 
@@ -59,16 +118,17 @@
             let chart = null;
 
             function renderChart(data) {
+
                 document.getElementById('totalDownload').innerText = data.total_download + " GB";
                 document.getElementById('totalUpload').innerText = data.total_upload + " GB";
 
                 const options = {
                     series: [{
-                            name: 'Download',
+                            name: "Download",
                             data: data.download.map(Number)
                         },
                         {
-                            name: 'Upload',
+                            name: "Upload",
                             data: data.upload.map(Number)
                         }
                     ],
@@ -77,49 +137,94 @@
                         height: 350,
                         toolbar: {
                             show: false
-                        },
-                        zoom: {
-                            enabled: false
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 6,
+                            columnWidth: '45%',
+                            dataLabels: {
+                                position: 'top'
+                            }
                         }
                     },
                     stroke: {
-                        curve: 'smooth',
-                        width: 2
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
                     },
+                    zoom: {
+                        enabled: false
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: "easeinout",
+                        speed: 800
+                    },
+
                     fill: {
-                        type: 'gradient',
+                        type: "gradient",
                         gradient: {
-                            shadeIntensity: 1,
-                            opacityFrom: 0.35,
-                            opacityTo: 0.05,
-                            stops: [0, 90, 100]
+                            shade: "light",
+                            type: "vertical",
+                            shadeIntensity: 0.4,
+                            //opacityFrom: 0.8,
+                            opacityTo: 0.4,
+                            stops: [0, 100]
                         }
                     },
+                    colors: ["#1B84FF", "#17C653"],
                     dataLabels: {
                         enabled: false
                     },
                     markers: {
-                        size: 0
+                        size: 4,
+                        strokeWidth: 2,
+                        hover: {
+                            size: 6
+                        }
+                    },
+                    grid: {
+                        borderColor: "#f1f1f1",
+                        strokeDashArray: 4
                     },
                     xaxis: {
-                        type: 'datetime',
-                        categories: data.labels
+                        type: "datetime",
+                        categories: data.labels,
+                        labels: {
+                            style: {
+                                colors: "#6c757d",
+                                fontSize: "12px"
+                            }
+                        }
                     },
                     yaxis: {
                         min: 0,
                         decimalsInFloat: 1,
-                        labels: val => val.toFixed(1) + " Mbps"
+                        labels: {
+                            formatter: val => val.toFixed(1) + " Mbps",
+                            style: {
+                                colors: "#6c757d",
+                                fontSize: "12px"
+                            }
+                        }
                     },
                     tooltip: {
+                        theme: "light",
                         shared: true,
                         intersect: false,
-                        y: val => val.toFixed(2) + " Mbps"
+                        y: {
+                            formatter: val => val.toFixed(2) + " Mbps"
+                        }
                     },
                     legend: {
-                        position: 'top',
-                        horizontalAlign: 'right'
-                    },
-                    colors: ['#009EF7', '#50CD89']
+                        position: "top",
+                        horizontalAlign: "right",
+                        fontSize: "13px",
+                        labels: {
+                            colors: "#212529"
+                        }
+                    }
                 };
 
                 if (chart) chart.destroy();
@@ -127,11 +232,9 @@
                 chart.render();
             }
 
-            // Initial render from controller
             const initialUsage = @json($usage);
             renderChart(initialUsage);
 
-            // Buttons for Current/Last month
             window.loadChart = function(month, serviceLine) {
                 fetch(`/starlink/${serviceLine}/monthly-usage?month=${month}`)
                     .then(res => res.json())

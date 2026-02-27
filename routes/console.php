@@ -38,8 +38,8 @@ Schedule::job(new SyncOdooPartnersJob)->everyFifteenMinutes();
 // Command For Starlink Pool Latest
 Schedule::command('starlink:poll')->everyMinute();
 
-
-Schedule::job(new SyncStarlinkAccountsJob)->everyMinute();
+// Sync Starlink main Accounts
+Schedule::job(new SyncStarlinkAccountsJob)->everySixHours();
 
 // Schedule::job(new SyncOdooInvoicesJob)->everyMinute();
 

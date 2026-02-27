@@ -31,10 +31,10 @@
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <!--begin::Page-->
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
-          @include('includes.header')
+            @include('includes.header')
             <!--begin::Wrapper-->
             <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
-                
+
                 <!-- Include Tsokotsa Includes -->
                 @include('includes.sidebar')
 
@@ -52,7 +52,7 @@
                         <!--end::Content-->
                     </div>
                     <!--end::Content wrapper-->
-                @include('includes.footer')
+                    @include('includes.footer')
                 </div>
                 <!--end:::Main-->
             </div>
@@ -137,8 +137,7 @@
                                         </div>
                                         <!--end::Label-->
                                         <!--begin::Users-->
-                                        <div
-                                            class="symbol-group symbol-hover flex-nowrap flex-grow-1 min-w-100px pe-2">
+                                        <div class="symbol-group symbol-hover flex-nowrap flex-grow-1 min-w-100px pe-2">
                                             <!--begin::User-->
                                             <div class="symbol symbol-circle symbol-25px">
                                                 <img src="assets/media/avatars/300-2.jpg" alt="img" />
@@ -267,8 +266,8 @@
                                 <!--begin::Timeline heading-->
                                 <div class="mb-5 pe-3">
                                     <!--begin::Title-->
-                                    <a href="#"
-                                        class="fs-5 fw-semibold text-gray-800 text-hover-primary mb-2">3 New Incoming
+                                    <a href="#" class="fs-5 fw-semibold text-gray-800 text-hover-primary mb-2">3
+                                        New Incoming
                                         Project Files:</a>
                                     <!--end::Title-->
                                     <!--begin::Description-->
@@ -419,8 +418,7 @@
                                         <!--end::Info-->
                                         <!--begin::User-->
                                         <div class="symbol symbol-circle symbol-25px" data-bs-toggle="tooltip"
-                                            data-bs-boundary="window" data-bs-placement="top"
-                                            title="Marcus Dotson">
+                                            data-bs-boundary="window" data-bs-placement="top" title="Marcus Dotson">
                                             <img src="assets/media/avatars/300-2.jpg" alt="img" />
                                         </div>
                                         <!--end::User-->
@@ -769,8 +767,8 @@
                                 <!--end::Avatar-->
                                 <!--begin::Details-->
                                 <div class="ms-3">
-                                    <a href="#"
-                                        class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+                                    <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian
+                                        Cox</a>
                                     <span class="text-muted fs-7 mb-1">2 mins</span>
                                 </div>
                                 <!--end::Details-->
@@ -827,8 +825,8 @@
                                 <!--end::Avatar-->
                                 <!--begin::Details-->
                                 <div class="ms-3">
-                                    <a href="#"
-                                        class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+                                    <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian
+                                        Cox</a>
                                     <span class="text-muted fs-7 mb-1">1 Hour</span>
                                 </div>
                                 <!--end::Details-->
@@ -884,8 +882,8 @@
                                 <!--end::Avatar-->
                                 <!--begin::Details-->
                                 <div class="ms-3">
-                                    <a href="#"
-                                        class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+                                    <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian
+                                        Cox</a>
                                     <span class="text-muted fs-7 mb-1">3 Hours</span>
                                 </div>
                                 <!--end::Details-->
@@ -943,8 +941,8 @@
                                 <!--end::Avatar-->
                                 <!--begin::Details-->
                                 <div class="ms-3">
-                                    <a href="#"
-                                        class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+                                    <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian
+                                        Cox</a>
                                     <span class="text-muted fs-7 mb-1">5 Hours</span>
                                 </div>
                                 <!--end::Details-->
@@ -1000,8 +998,8 @@
                                 <!--end::Avatar-->
                                 <!--begin::Details-->
                                 <div class="ms-3">
-                                    <a href="#"
-                                        class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+                                    <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian
+                                        Cox</a>
                                     <span class="text-muted fs-7 mb-1">Just now</span>
                                 </div>
                                 <!--end::Details-->
@@ -1055,8 +1053,7 @@
     <div id="kt_shopping_cart" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="cart"
         data-kt-drawer-activate="true" data-kt-drawer-overlay="true"
         data-kt-drawer-width="{default:'300px', 'md': '500px'}" data-kt-drawer-direction="end"
-        data-kt-drawer-toggle="#kt_drawer_shopping_cart_toggle"
-        data-kt-drawer-close="#kt_drawer_shopping_cart_close">
+        data-kt-drawer-toggle="#kt_drawer_shopping_cart_toggle" data-kt-drawer-close="#kt_drawer_shopping_cart_close">
         <!--begin::Messenger-->
         <div class="card card-flush w-100 rounded-0">
             <!--begin::Card header-->
@@ -1860,8 +1857,7 @@
                     <div id="kt_modal_users_search_handler" data-kt-search-keypress="true"
                         data-kt-search-min-length="2" data-kt-search-enter="enter" data-kt-search-layout="inline">
                         <!--begin::Form-->
-                        <form data-kt-search-element="form" class="w-100 position-relative mb-5"
-                            autocomplete="off">
+                        <form data-kt-search-element="form" class="w-100 position-relative mb-5" autocomplete="off">
                             <!--begin::Hidden input(Added to disable form autocomplete)-->
                             <input type="hidden" />
                             <!--end::Hidden input-->
@@ -1871,8 +1867,7 @@
                             <!--end::Icon-->
                             <!--begin::Input-->
                             <input type="text" class="form-control form-control-lg form-control-solid px-15"
-                                name="search" value=""
-                                placeholder="Search by username, full name or email..."
+                                name="search" value="" placeholder="Search by username, full name or email..."
                                 data-kt-search-element="input" />
                             <!--end::Input-->
                             <!--begin::Spinner-->
@@ -1920,8 +1915,7 @@
                                         class="d-flex align-items-center p-3 rounded bg-state-light bg-state-opacity-50 mb-1">
                                         <!--begin::Avatar-->
                                         <div class="symbol symbol-35px symbol-circle me-5">
-                                            <span
-                                                class="symbol-label bg-light-danger text-danger fw-semibold">M</span>
+                                            <span class="symbol-label bg-light-danger text-danger fw-semibold">M</span>
                                         </div>
                                         <!--end::Avatar-->
                                         <!--begin::Info-->
@@ -3340,7 +3334,13 @@
     </div>
     <!--end::Modal - Invite Friend-->
     <!--end::Modals-->
-    
+
+    @if (session('reload'))
+        <script>
+            // Force a full reload if session indicates a logout redirect
+            window.location.href = "{{ url('/') }}";
+        </script>
+    @endif
     @include('includes.scripts')
 
 </body>

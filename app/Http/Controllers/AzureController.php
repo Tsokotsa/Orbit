@@ -91,24 +91,62 @@ class AzureController extends Controller
     /**
      * Logout from application and Azure
      */
+    // public function logout(Request $request)
+    // {
+    //     $tenant = config('services.azure.tenant');
+
+    //     Auth::logout();
+
+    //     $request->session()->invalidate();
+    //     $request->session()->regenerateToken();
+
+    //     $postLogoutRedirectUri = route('login');
+
+    //     $azureLogoutUrl = sprintf(
+    //         'https://login.microsoftonline.com/%s/oauth2/v2.0/logout?post_logout_redirect_uri=%s',
+    //         $tenant,
+    //         urlencode($postLogoutRedirectUri)
+    //     );
+
+    //     return redirect($azureLogoutUrl);
+    // }
+
     public function logout(Request $request)
     {
+        $user = Auth::user();
+
+        // Determine if user logged in via Microsoft (no password stored)
+        $isMicrosoftUser = empty($user->password);
+
         $tenant = config('services.azure.tenant');
 
+        // Destroy Laravel session
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        $postLogoutRedirectUri = route('login');
+        // $postLogoutRedirectUri = route('genesis');
+        $postLogoutRedirectUri = url('/');
 
-        $azureLogoutUrl = sprintf(
-            'https://login.microsoftonline.com/%s/oauth2/v2.0/logout?post_logout_redirect_uri=%s',
-            $tenant,
-            urlencode($postLogoutRedirectUri)
-        );
+        // If Microsoft authenticated user → redirect to Azure logout
+        if ($isMicrosoftUser) {
 
-        return redirect($azureLogoutUrl);
+            $azureLogoutUrl = sprintf(
+                'https://login.microsoftonline.com/%s/oauth2/v2.0/logout?post_logout_redirect_uri=%s',
+                $tenant,
+                urlencode($postLogoutRedirectUri)
+            );
+
+            return redirect($azureLogoutUrl);
+        }
+
+        // If local authenticated user → normal redirect
+        // return redirect()->route('genesis');
+        return redirect('/')->withHeaders([
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+            'Expires' => 'Sat, 01 Jan 1990 00:00:00 GMT',
+        ]);
     }
 
 }

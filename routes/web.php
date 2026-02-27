@@ -14,9 +14,11 @@ use App\Http\Controllers\AssetsController;
 use App\Http\Controllers\ServiceController;
 
 
-Route::get('/', function () {
-    return view('sign-in');
-});
+// Route::get('/', function () {
+//     return view('sign-in')->name('login');
+// });
+
+Route::get('/', [DefaultController::class, 'login'])->name('login');
 
 // General Midleware for Auth
 Route::middleware('auth')->group(function () {
