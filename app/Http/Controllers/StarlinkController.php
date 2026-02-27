@@ -28,15 +28,15 @@ class StarlinkController extends Controller
 
     public function account()
     {
-        //$this->authorize('viewAccount', auth()->user());
+        $this->authorize('viewAccount', auth()->user());
         $user = auth()->user();
+
         try {
 
             $accounts = StarlinkAccount::orderBy('id')->get();
             $subscribers = $this->starlink->allSubscribers();
 
-            Log::info("Returning Authenticated User $user");
-            return view('starlink.index')->with([
+            return view('starlink.index', [
                 'accounts' => $accounts,
                 'subscribers' => $subscribers,
                 'user' => $user,
@@ -48,6 +48,9 @@ class StarlinkController extends Controller
 
             return view('starlink.index', [
                 'error' => 'Unable to load Starlink accounts',
+                'accounts' => collect(),     // prevent other undefined errors
+                'subscribers' => [],
+                'user' => $user,             // ✅ important
             ]);
         }
     }
