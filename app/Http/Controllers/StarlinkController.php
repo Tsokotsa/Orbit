@@ -6,6 +6,7 @@ use App\Models\StarlinkAccount;
 use App\Services\StarlinkService;
 use Illuminate\Http\JsonResponse;
 use App\Models\StarlinkTelemetry;
+use App\Models\StarlinkRouterUsage;
 use Throwable;
 use Log;
 use Illuminate\Http\Request;
@@ -99,12 +100,24 @@ class StarlinkController extends Controller
 
     public function view_subscriber(string $serviceLine)
     {
+        $user = auth()->user();
         $service_line = $serviceLine;
+
+        // get **raw array**, not JSON
+        $usage = $this->usageMonthly($service_line, false);
 
         $subscriber = $this->starlink->getServiceLine($service_line);
 
+        return view("starlink.view-subscriber")
+            ->with([
+                'subscriber' => $subscriber,
+                'user' => $user,
+                'usage' => $usage,
+                'service_line' => $service_line
+            ]);
         // Log::info(json_encode($subscriber));
-        return view("starlink.modals.partials.subscriber")->with(["subscriber" => $subscriber]);
+        // return view("starlink.modals.partials.subscriber")->with(["subscriber" => $subscriber]);
+
 
     }
 
@@ -270,6 +283,81 @@ class StarlinkController extends Controller
             'message' => 'Top Up Successfuly!',
             'data' => 200,
         ]);
+    }
+
+    public function usageMonthly($service_line, $returnJson = true)
+    {
+        $sl = $this->starlink->getUserTerminalByServiceLine($service_line);
+        $sl = $this->starlink->getUserTerminalByServiceLine($service_line);
+
+        // Make sure routerId exists
+        $routerId = $sl['routerId'] ?? null;
+
+        if (!$routerId) {
+            // No router assigned — handle gracefully
+            Log::warning("Service Line {$service_line} has no router assigned");
+            return []; // or throw exception, or return default device string
+        }
+
+        $device = "Router-" . $routerId;
+
+        $month = request('month', 'current');
+        $now = now(); // Africa/Maputo
+
+        if ($month === 'last') {
+            $start = $now->copy()->subMonth()->startOfMonth();
+            $end = $now->copy()->subMonth()->endOfMonth();
+        } else {
+            $start = $now->copy()->startOfMonth();
+            $end = $now->copy()->endOfMonth();
+        }
+
+        $queryStart = $start->copy()->startOfDay();
+        $queryEnd = $end->copy()->endOfDay();
+
+        Log::info("Querying usage from {$queryStart} to {$queryEnd}");
+
+        $usage = StarlinkRouterUsage::where('device_id', $device)
+            ->whereBetween('recorded_at', [$queryStart, $queryEnd])
+            ->get()
+            ->groupBy(function ($item) {
+                return \Carbon\Carbon::parse($item->recorded_at)->format('Y-m-d');
+            })
+            ->map(function ($items) {
+                return (object) [
+                    'download_gb' => $items->sum(fn($row) => $row->rx_mbps * 60 / 8 / 1024),
+                    'upload_gb' => $items->sum(fn($row) => $row->tx_mbps * 60 / 8 / 1024),
+                ];
+            });
+
+        $period = \Carbon\CarbonPeriod::create($start->copy()->startOfDay(), $end->copy()->startOfDay());
+
+        $labels = [];
+        $download = [];
+        $upload = [];
+
+        foreach ($period as $date) {
+            $day = $date->format('Y-m-d');
+            $labels[] = $day;
+
+            if (isset($usage[$day])) {
+                $download[] = round($usage[$day]->download_gb, 2);
+                $upload[] = round($usage[$day]->upload_gb, 2);
+            } else {
+                $download[] = 0;
+                $upload[] = 0;
+            }
+        }
+
+        $result = [
+            'labels' => $labels,
+            'download' => $download,
+            'upload' => $upload,
+            'total_download' => round(array_sum($download), 2),
+            'total_upload' => round(array_sum($upload), 2),
+        ];
+
+        return $returnJson ? response()->json($result) : $result;
     }
 
 }

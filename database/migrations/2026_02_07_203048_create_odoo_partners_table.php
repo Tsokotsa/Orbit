@@ -63,14 +63,14 @@ return new class extends Migration {
             $table->integer('opportunity_count')->default(0);
 
             // Odoo audit
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('create_uid')->nullable();
-            $table->unsignedBigInteger('write_uid')->nullable();
+            $table->json('user_id')->nullable();
+            $table->json('create_uid')->nullable();
+            $table->json('write_uid')->nullable();
             $table->timestamp('odoo_create_date')->nullable();
             $table->timestamp('odoo_write_date')->nullable()->index();
 
             // Sync tracking
-            $table->boolean('synchronized_m3ms')->default(false)->index();
+            $table->string('synchronized_m3ms')->nullable();
             $table->timestamp('last_synced_at')->nullable();
             $table->enum('sync_status', ['pending', 'success', 'failed'])->default('pending');
             $table->text('sync_error')->nullable();

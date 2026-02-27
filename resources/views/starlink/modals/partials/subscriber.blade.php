@@ -186,23 +186,37 @@
                   <div class="text-muted fs-8">
                       <div class="card card-bordered">
                           <div class="card-body">
-                              <div id="tsokotsa_chart" class="min-h-auto w-100 ps-4 pe-6" style="height: 300px">
+                              <div class="d-flex justify-content-between align-items-center mb-4">
+                                  <div>
+                                      <button class="btn btn-sm btn-primary" onclick="loadChart('current')">Current
+                                          Month</button>
+                                      <button class="btn btn-sm btn-light" onclick="loadChart('last')">Last
+                                          Month</button>
+                                  </div>
+
+                                  <div>
+                                      <strong>Total Download:</strong> <span id="totalDownload">0 GB</span> |
+                                      <strong>Total Upload:</strong> <span id="totalUpload">0 GB</span>
+                                  </div>
                               </div>
+
+                              <div id="tsokotsa_chart"></div>
                           </div>
                       </div>
                   </div>
               </div>
-
-              <!-- IPV4 -->
-              <div class="tab-pane fade" id="tab-ipv4">
-                  <div class="text-muted fs-8">
-                      IPv4 details will go here
-                  </div>
-              </div>
-
           </div>
+
+          <!-- IPV4 -->
+          <div class="tab-pane fade" id="tab-ipv4">
+              <div class="text-muted fs-8">
+                  IPv4 details will go here
+              </div>
+          </div>
+
       </div>
-      <!--end::Card body-->
+  </div>
+  <!--end::Card body-->
 
   </div>
   <!-- 🔼 TAB CARD ENDS HERE -->

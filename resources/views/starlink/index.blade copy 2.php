@@ -564,7 +564,10 @@
                             </div>
 
                             <div class="menu-item px-3">
-                                <a href="/starlink/subscriber-view/${row.serviceLineNumber}" class="menu-link px-3">
+                                <a href="javascript:void(0);" class="menu-link px-3"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#view-subscriber"
+                                   data-service="${row.serviceLineNumber}">
                                     <span class="menu-icon">
                                         <i class="ki-outline ki-eye fs-5 text-success"></i>
                                     </span>

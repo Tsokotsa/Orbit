@@ -160,6 +160,26 @@ class StarlinkService
         return $this->request('get', '/user-terminals', [], $accountId, $silent);
     }
 
+    public function getUserTerminalByServiceLine(string $serviceLineNumber, ?int $accountId = null): array
+    {
+        Log::info("Running function " . __FUNCTION__ . " For SL: [ $serviceLineNumber ]");
+
+        $res = $this->request(
+            'get',
+            '/user-terminals',
+            [
+                'serviceLineNumbers' => $serviceLineNumber
+            ],
+            $accountId
+        );
+
+        $results = $res['content']['results'] ?? [];
+        if (!empty($results) && !empty($results[0]['routers'])) {
+            return $results[0]['routers'][0];
+        }
+        return [];
+    }
+
 
     public function allSubscribers(?int $accountId = null): array
     {
@@ -168,6 +188,7 @@ class StarlinkService
 
     public function getServiceLine(string $serviceLineNumber, ?int $accountId = null): array
     {
+        Log::info("Running function " . __FUNCTION__ . " For SL: [ $serviceLineNumber ]");
         return $this->request(
             'get',
             "/service-lines/{$serviceLineNumber}",

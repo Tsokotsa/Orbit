@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('odoo_sync_runs', function (Blueprint $table) {
             $table->id();
             $table->string('model');
-            $table->enum('status', ['running', 'idle', 'failed'])->default('running');
+            $table->enum('status', ['running', 'idle', 'failed', 'success'])->default('running');
             $table->timestamp('started_at');
             $table->timestamp('finished_at')->nullable();
             $table->integer('duration_seconds')->nullable();
