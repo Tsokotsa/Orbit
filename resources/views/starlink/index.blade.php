@@ -21,7 +21,7 @@
                                             <div
                                                 class="form-check form-check-custom form-check-solid form-check-primary me-3">
                                                 <input class="form-check-input account-radio" type="radio"
-                                                    name="starlink_account" value="{{ $account->account_number }}" />
+                                                    name="starlink_account" value="{{ $account->id }}" />
                                             </div>
 
                                             <!-- Info -->
@@ -325,100 +325,100 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // document.addEventListener('DOMContentLoaded', function() {
 
-            const topupModal = document.getElementById('topupModal');
+        //     const topupModal = document.getElementById('topupModal');
 
-            topupModal.addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget;
+        //     topupModal.addEventListener('show.bs.modal', function(event) {
+        //         const button = event.relatedTarget;
 
-                if (!button) {
-                    console.warn('Topup modal opened without trigger button');
-                    return;
-                }
+        //         if (!button) {
+        //             console.warn('Topup modal opened without trigger button');
+        //             return;
+        //         }
 
-                const serviceLine = button.getAttribute('data-service');
+        //         const serviceLine = button.getAttribute('data-service');
 
-                const input = topupModal.querySelector('#topup-serviceLine');
+        //         const input = topupModal.querySelector('#topup-serviceLine');
 
-                if (!input) {
-                    console.error('Service line input not found');
-                    return;
-                }
+        //         if (!input) {
+        //             console.error('Service line input not found');
+        //             return;
+        //         }
 
-                input.value = serviceLine;
-            });
+        //         input.value = serviceLine;
+        //     });
 
-        });
+        // });
 
 
-        // View Subscriber Modal
-        const subscriberModal = document.getElementById('view-subscriber');
-        let currentServiceLine = null;
-        let subscriberLoaded = false;
+        // // View Subscriber Modal
+        // const subscriberModal = document.getElementById('view-subscriber');
+        // let currentServiceLine = null;
+        // let subscriberLoaded = false;
 
-        /**
-         * Capture service line when modal is opened
-         */
-        subscriberModal.addEventListener('show.bs.modal', event => {
-            const button = event.relatedTarget;
+        // /**
+        //  * Capture service line when modal is opened
+        //  */
+        // subscriberModal.addEventListener('show.bs.modal', event => {
+        //     const button = event.relatedTarget;
 
-            currentServiceLine = button.getAttribute('data-service');
-            subscriberLoaded = false;
+        //     currentServiceLine = button.getAttribute('data-service');
+        //     subscriberLoaded = false;
 
-            // RESET UI
-            $('#subscriberLoading').removeClass('d-none');
-            $('#subscriberContent').addClass('d-none');
-            $('#subscriberContentBody').empty();
-        });
+        //     // RESET UI
+        //     $('#subscriberLoading').removeClass('d-none');
+        //     $('#subscriberContent').addClass('d-none');
+        //     $('#subscriberContentBody').empty();
+        // });
 
         /**
          * Load subscriber content when modal is visible
          */
-        $('#view-subscriber').on('shown.bs.modal', function() {
+        // $('#view-subscriber').on('shown.bs.modal', function() {
 
-            if (!currentServiceLine || subscriberLoaded) {
-                return;
-            }
+        //     if (!currentServiceLine || subscriberLoaded) {
+        //         return;
+        //     }
 
-            subscriberLoaded = true;
+        //     subscriberLoaded = true;
 
-            $.ajax({
-                url: `/starlink/subscriber-view/${encodeURIComponent(currentServiceLine)}`,
-                method: 'GET',
+        //     $.ajax({
+        //         url: `/starlink/subscriber-view/${encodeURIComponent(currentServiceLine)}`,
+        //         method: 'GET',
 
-                success: function(html) {
-                    $('#subscriberContentBody').html(html);
-                    toggleForm(false);
+        //         success: function(html) {
+        //             $('#subscriberContentBody').html(html);
+        //             toggleForm(false);
 
-                    // Re-init Metronic components
-                    if (typeof KTComponents !== 'undefined') {
-                        KTComponents.init();
-                    }
+        //             // Re-init Metronic components
+        //             if (typeof KTComponents !== 'undefined') {
+        //                 KTComponents.init();
+        //             }
 
-                    // SHOW CONTENT
-                    $('#subscriberLoading').addClass('d-none');
-                    $('#subscriberContent').removeClass('d-none');
-                },
+        //             // SHOW CONTENT
+        //             $('#subscriberLoading').addClass('d-none');
+        //             $('#subscriberContent').removeClass('d-none');
+        //         },
 
-                error: function() {
-                    $('#subscriberContentBody').html(
-                        '<div class="text-danger text-center py-5">Failed to load subscriber data</div>'
-                    );
+        //         error: function() {
+        //             $('#subscriberContentBody').html(
+        //                 '<div class="text-danger text-center py-5">Failed to load subscriber data</div>'
+        //             );
 
-                    // SHOW CONTENT (with error)
-                    $('#subscriberLoading').addClass('d-none');
-                    $('#subscriberContent').removeClass('d-none');
-                }
-            });
-        });
+        //             // SHOW CONTENT (with error)
+        //             $('#subscriberLoading').addClass('d-none');
+        //             $('#subscriberContent').removeClass('d-none');
+        //         }
+        //     });
+        // });
 
         /**
          * Cleanup when modal closes
          */
-        $('#view-subscriber').on('hidden.bs.modal', function() {
-            $('#subscriberContentBody').empty();
-        });
+        // $('#view-subscriber').on('hidden.bs.modal', function() {
+        //     $('#subscriberContentBody').empty();
+        // });
 
 
         // Radio Button of the Account
@@ -564,7 +564,7 @@
                             </div>
 
                             <div class="menu-item px-3">
-                                <a href="/starlink/subscriber-view/${row.serviceLineNumber}" class="menu-link px-3">
+                                <a href="#" class="menu-link px-3 view-subscriber-btn" data-service="${row.serviceLineNumber}">
                                     <span class="menu-icon">
                                         <i class="ki-outline ki-eye fs-5 text-success"></i>
                                     </span>
@@ -645,362 +645,75 @@
             });
 
         });
-        // End of radio button of the account
+
+
+
+        // Delegate the radiu of the account
 
         // document.addEventListener("DOMContentLoaded", function() {
-        //     var element = document.getElementById('tsokotsa_chart');
-        //     if (!element) return;
 
-        //     // Replace with your device ID
-        //     var deviceId = 1;
+        //     // Delegated listener for dynamically generated buttons
+        //     document.addEventListener("click", function(e) {
+        //         const btn = e.target.closest(".view-subscriber-btn");
+        //         if (!btn) return;
 
-        //     fetch(`/starlink/${deviceId}/data`)
-        //         .then(res => res.json())
-        //         .then(data => {
-        //             console.log(data); // check if labels/download/upload are arrays
-        //             if (!data.download || !data.upload || data.download.length === 0) {
-        //                 console.error('No data for chart!');
-        //                 return;
-        //             }
-        //             var options = {
-        //                 series: [{
-        //                         name: 'Download',
-        //                         data: data.download.map(Number)
-        //                     },
-        //                     {
-        //                         name: 'Upload',
-        //                         data: data.upload.map(Number)
-        //                     }
-        //                 ],
-        //                 chart: {
-        //                     type: 'bar',
-        //                     height: 350,
-        //                     toolbar: {
-        //                         show: false
-        //                     },
-        //                     zoom: {
-        //                         enabled: false
-        //                     }
-        //                 },
-        //                 stroke: {
-        //                     curve: 'smooth',
-        //                     width: 2
-        //                 },
-        //                 fill: {
-        //                     type: 'gradient',
-        //                     gradient: {
-        //                         shadeIntensity: 1,
-        //                         opacityFrom: 0.35,
-        //                         opacityTo: 0.05,
-        //                         stops: [0, 90, 100]
-        //                     }
-        //                 },
-        //                 dataLabels: {
-        //                     enabled: false // 🚀 remove clutter numbers
-        //                 },
-        //                 markers: {
-        //                     size: 0 // remove circle markers
-        //                 },
-        //                 xaxis: {
-        //                     type: 'datetime',
-        //                     categories: data.labels,
-        //                     labels: {
-        //                         datetimeFormatter: {
-        //                             hour: 'HH:mm',
-        //                             minute: 'HH:mm'
-        //                         }
-        //                     }
-        //                 },
-        //                 yaxis: {
-        //                     min: 0,
-        //                     decimalsInFloat: 1,
-        //                     labels: {
-        //                         formatter: function(val) {
-        //                             return val.toFixed(1) + " Mbps";
-        //                         }
-        //                     }
-        //                 },
-        //                 tooltip: {
-        //                     shared: true,
-        //                     intersect: false,
-        //                     x: {
-        //                         format: 'HH:mm'
-        //                     },
-        //                     y: {
-        //                         formatter: function(val) {
-        //                             return val.toFixed(2) + " Mbps";
-        //                         }
-        //                     }
-        //                 },
-        //                 legend: {
-        //                     position: 'top',
-        //                     horizontalAlign: 'right'
-        //                 },
-        //                 grid: {
-        //                     strokeDashArray: 4,
-        //                     padding: {
-        //                         left: 10,
-        //                         right: 10
-        //                     }
-        //                 },
-        //                 colors: ['#009EF7', '#50CD89']
-        //             };
+        //         e.preventDefault();
 
-        //             setTimeout(() => {
-        //                 new ApexCharts(element, options).render();
-        //             }, 100);
-        //         })
+        //         // Look for the globally selected radio button
+        //         const selectedRadio = document.querySelector("input[name='starlink_account']:checked");
 
-        //         .catch(err => console.error(err));
+        //         if (!selectedRadio) {
+        //             alert("Please select an account first.");
+        //             return;
+        //         }
+
+        //         const accountNumber = selectedRadio.value;
+
+        //         // Redirect to dynamic URL
+        //         const url = `/starlink/subscriber-view/${accountNumber}`;
+        //         window.location.href = url;
+        //     });
+
         // });
 
 
-        // Start of graph
 
         document.addEventListener("DOMContentLoaded", function() {
 
-            let chart = null;
+            // Delegated click listener for dynamically generated buttons
+            document.addEventListener("click", function(e) {
+                const btn = e.target.closest(".view-subscriber-btn");
+                if (!btn) return;
 
-            // Function to load the chart for a specific service line
-            function loadChart(month = 'current', serviceLine) {
-                if (!serviceLine) return;
+                e.preventDefault();
 
-                fetch(`/starlink/${serviceLine}/monthly-usage?month=${month}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById('totalDownload').innerText =
-                            data.total_download + " GB";
-                        document.getElementById('totalUpload').innerText =
-                            data.total_upload + " GB";
+                // Get the row's serviceLineNumber from a data attribute
 
-                        let options = {
-                            series: [{
-                                    name: 'Download (GB)',
-                                    data: data.download
-                                },
-                                {
-                                    name: 'Upload (GB)',
-                                    data: data.upload
-                                }
-                            ],
-                            chart: {
-                                type: 'bar',
-                                height: 380,
-                                toolbar: {
-                                    show: false
-                                }
-                            },
-                            plotOptions: {
-                                bar: {
-                                    horizontal: false,
-                                    columnWidth: '55%',
-                                    borderRadius: 6
-                                }
-                            },
-                            dataLabels: {
-                                enabled: false
-                            },
-                            stroke: {
-                                show: true,
-                                width: 1,
-                                colors: ['transparent']
-                            },
-                            xaxis: {
-                                categories: data.labels,
-                                title: {
-                                    text: 'Day of Month'
-                                }
-                            },
-                            yaxis: {
-                                title: {
-                                    text: 'Usage (GB)'
-                                },
-                                labels: {
-                                    formatter: val => val + " GB"
-                                }
-                            },
-                            tooltip: {
-                                y: {
-                                    formatter: val => val + " GB"
-                                }
-                            },
-                            legend: {
-                                position: 'top',
-                                horizontalAlign: 'right'
-                            },
-                            colors: ['#009EF7', '#50CD89']
-                        };
+                //const serviceLineNumber = btn.dataset.serviceLine;
+                const serviceLineNumber = btn.dataset.service;
 
-                        // Destroy previous chart if exists
-                        if (chart) chart.destroy();
+                if (!serviceLineNumber) {
+                    alert("Service line number not found.");
+                    return;
+                }
 
-                        chart = new ApexCharts(document.querySelector("#tsokotsa_chart"), options);
-                        chart.render();
-                    });
-            }
+                // Get the globally selected radio
+                const selectedRadio = document.querySelector("input[name='starlink_account']:checked");
 
-            // Reference to modal
-            const modal = document.getElementById('view-subscriber');
+                if (!selectedRadio) {
+                    alert("Please select an account first.");
+                    return;
+                }
 
-            if (modal) {
-                // When modal opens
-                modal.addEventListener('shown.bs.modal', function(event) {
-                    const button = event.relatedTarget; // button that triggered modal
-                    const serviceLine = button.getAttribute('data-service');
+                const accountNumber = selectedRadio.value;
 
-                    // Optional: store in hidden input if needed
-                    const hiddenInput = document.getElementById('serviceLineNumber');
-                    if (hiddenInput) hiddenInput.value = serviceLine;
+                // Build the URL with both values
+                const url = `/starlink/subscriber-view/${serviceLineNumber}?acc_n=${accountNumber}`;
 
-                    // Load chart immediately if chart tab is active
-                    const activeTab = modal.querySelector('.tab-pane.active');
-                    if (activeTab && activeTab.id === 'tab-usage') {
-                        setTimeout(() => loadChart('current', serviceLine), 150);
-                    }
-
-                    // Listen for tab changes inside modal to refresh chart
-                    modal.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
-                        tab.addEventListener('shown.bs.tab', function(event) {
-                            if (event.target.getAttribute('href') === '#tab-usage') {
-                                const currentServiceLine = hiddenInput ? hiddenInput.value :
-                                    serviceLine;
-                                setTimeout(() => loadChart('current', currentServiceLine),
-                                    150);
-                            }
-                        });
-                    });
-                });
-            }
-
-            // Expose globally if needed
-            window.loadChart = loadChart;
+                // Redirect
+                window.location.href = url;
+            });
 
         });
-
-        // End of load the graph
-
-
-
-
-        // document.addEventListener("DOMContentLoaded", function() {
-
-        //     let chart = null;
-
-        //     const serviceLine = document.getElementById('serviceLineNumber').value;
-
-        //     function loadChart(month = 'current') {
-
-        //         fetch(`/starlink/${serviceLine}/monthly-usage?month=${month}`)
-        //             .then(res => res.json())
-        //             .then(data => {
-
-        //                 document.getElementById('totalDownload').innerText =
-        //                     data.total_download + " GB";
-
-        //                 document.getElementById('totalUpload').innerText =
-        //                     data.total_upload + " GB";
-
-        //                 let options = {
-        //                     series: [{
-        //                             name: 'Download (GB)',
-        //                             data: data.download
-        //                         },
-        //                         {
-        //                             name: 'Upload (GB)',
-        //                             data: data.upload
-        //                         }
-        //                     ],
-        //                     chart: {
-        //                         type: 'bar',
-        //                         height: 380,
-        //                         toolbar: {
-        //                             show: false
-        //                         }
-        //                     },
-        //                     plotOptions: {
-        //                         bar: {
-        //                             horizontal: false,
-        //                             columnWidth: '55%',
-        //                             borderRadius: 6
-        //                         }
-        //                     },
-        //                     dataLabels: {
-        //                         enabled: false
-        //                     },
-        //                     stroke: {
-        //                         show: true,
-        //                         width: 1,
-        //                         colors: ['transparent']
-        //                     },
-        //                     xaxis: {
-        //                         categories: data.labels,
-        //                         title: {
-        //                             text: 'Day of Month'
-        //                         }
-        //                     },
-        //                     yaxis: {
-        //                         title: {
-        //                             text: 'Usage (GB)'
-        //                         },
-        //                         labels: {
-        //                             formatter: function(val) {
-        //                                 return val + " GB";
-        //                             }
-        //                         }
-        //                     },
-        //                     tooltip: {
-        //                         y: {
-        //                             formatter: function(val) {
-        //                                 return val + " GB";
-        //                             }
-        //                         }
-        //                     },
-        //                     legend: {
-        //                         position: 'top',
-        //                         horizontalAlign: 'right'
-        //                     },
-        //                     colors: ['#009EF7', '#50CD89']
-        //                 };
-
-        //                 // Destroy previous chart (important inside modals)
-        //                 if (chart) {
-        //                     chart.destroy();
-        //                 }
-
-        //                 chart = new ApexCharts(
-        //                     document.querySelector("#tsokotsa_chart"),
-        //                     options
-        //                 );
-
-        //                 chart.render();
-        //             });
-        //     }
-
-        //     // Load chart when modal becomes visible
-        //     const modal = document.getElementById('view-subscriber');
-
-        //     if (modal) {
-        //         modal.addEventListener('shown.bs.modal', function() {
-        //             loadChart('current');
-        //         });
-        //     }
-
-        //     // If chart is inside a tab inside modal
-        //     document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
-        //         tab.addEventListener('shown.bs.tab', function(event) {
-
-        //             // Replace #usage-tab with your actual tab pane ID
-        //             if (event.target.getAttribute('href') === '#tab-usage') {
-        //                 setTimeout(() => {
-        //                     loadChart('current');
-        //                 }, 150);
-        //             }
-
-        //         });
-        //     });
-
-        //     window.loadChart = loadChart;
-
-        // });
     </script>
 @endpush

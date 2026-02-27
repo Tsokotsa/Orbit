@@ -124,7 +124,7 @@ class StarlinkUsageController extends Controller
 
     // }
 
-    public function usageMonthly($service_line)
+    public function usageMonthly(string $service_line)
     {
         $device = "Router-010000000000000000A950D9";
         $device = "Router-010000000000000000E52342";

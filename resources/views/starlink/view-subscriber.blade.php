@@ -117,10 +117,22 @@
 
             let chart = null;
 
+            // Helper function to format totals in MB / GB
+            function formatDataSize(valueInMb) {
+                if (valueInMb >= 1024) {
+                    return (valueInMb / 1024).toFixed(2) + " GB";
+                } else if (valueInMb >= 1) {
+                    return valueInMb.toFixed(2) + " MB";
+                } else {
+                    return (valueInMb * 1024).toFixed(2) + " KB";
+                }
+            }
+
             function renderChart(data) {
 
-                document.getElementById('totalDownload').innerText = data.total_download + " GB";
-                document.getElementById('totalUpload').innerText = data.total_upload + " GB";
+                // Dynamically show MB / GB
+                document.getElementById('totalDownload').innerText = formatDataSize(data.total_download);
+                document.getElementById('totalUpload').innerText = formatDataSize(data.total_upload);
 
                 const options = {
                     series: [{
@@ -134,9 +146,19 @@
                     ],
                     chart: {
                         type: 'bar',
-                        height: 350,
+                        height: 300,
                         toolbar: {
                             show: false
+                        }
+                    },
+                    noData: {
+                        text: 'No data available on this orbit ...',
+                        align: 'center',
+                        verticalAlign: 'middle',
+                        style: {
+                            color: '#6c757d',
+                            fontSize: '16px',
+                            fontFamily: 'Inter, sans-serif'
                         }
                     },
                     plotOptions: {
@@ -161,14 +183,12 @@
                         easing: "easeinout",
                         speed: 800
                     },
-
                     fill: {
                         type: "gradient",
                         gradient: {
                             shade: "light",
                             type: "vertical",
                             shadeIntensity: 0.4,
-                            //opacityFrom: 0.8,
                             opacityTo: 0.4,
                             stops: [0, 100]
                         }
@@ -202,7 +222,7 @@
                         min: 0,
                         decimalsInFloat: 1,
                         labels: {
-                            formatter: val => val.toFixed(1) + " Mbps",
+                            formatter: val => formatDataSize(val),
                             style: {
                                 colors: "#6c757d",
                                 fontSize: "12px"
@@ -224,7 +244,7 @@
                         labels: {
                             colors: "#212529"
                         }
-                    }
+                    },
                 };
 
                 if (chart) chart.destroy();
@@ -232,9 +252,11 @@
                 chart.render();
             }
 
+            // Initial render
             const initialUsage = @json($usage);
             renderChart(initialUsage);
 
+            // Buttons for Current / Last month
             window.loadChart = function(month, serviceLine) {
                 fetch(`/starlink/${serviceLine}/monthly-usage?month=${month}`)
                     .then(res => res.json())

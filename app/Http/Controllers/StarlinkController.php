@@ -60,12 +60,15 @@ class StarlinkController extends Controller
         $accountNumber = $request->input('account_number');
 
         // Find Starlink account ID for this number
-        $account = StarlinkAccount::where('account_number', $accountNumber)->first();
-        if (!$account) {
-            return response()->json(['data' => []]);
-        }
+        // $account = StarlinkAccount::where('account_number', $accountNumber)->first();
+        // if (!$account) {
+        //     return response()->json(['data' => []]);
+        // }
 
-        $subscribers = $this->starlink->allSubscribers($account->id);
+
+
+        // $subscribers = $this->starlink->allSubscribers($account->id);
+        $subscribers = $this->starlink->allSubscribers($accountNumber);
 
         // Transform into DataTables expected structure
         return datatables()->of($subscribers['content']['results'] ?? [])->toJson();
@@ -101,15 +104,16 @@ class StarlinkController extends Controller
         // }
     }
 
-    public function view_subscriber(string $serviceLine)
+    public function view_subscriber(Request $request, $serviceLine)
     {
         $user = auth()->user();
         $service_line = $serviceLine;
+        $accountId = $request->acc_n;
 
         // get **raw array**, not JSON
-        $usage = $this->usageMonthly($service_line, false);
+        $usage = $this->usageMonthly($service_line, $accountId);
 
-        $subscriber = $this->starlink->getServiceLine($service_line);
+        $subscriber = $this->starlink->getServiceLine($service_line, $accountId);
 
         return view("starlink.view-subscriber")
             ->with([
@@ -288,21 +292,25 @@ class StarlinkController extends Controller
         ]);
     }
 
-    public function usageMonthly($service_line, $returnJson = true)
+    public function usageMonthly($service_line, $acc_id, $returnJson = false)
     {
-        $sl = $this->starlink->getUserTerminalByServiceLine($service_line);
-        $sl = $this->starlink->getUserTerminalByServiceLine($service_line);
+        Log::info("TSOKOTSA =========== Getting Service Line for {$service_line} and ACC: {$acc_id}");
 
-        // Make sure routerId exists
-        $routerId = $sl['routerId'] ?? null;
+        $sl = $this->starlink->getUserTerminalByServiceLine($service_line, $acc_id);
 
-        if (!$routerId) {
-            // No router assigned — handle gracefully
-            Log::warning("Service Line {$service_line} has no router assigned");
-            return []; // or throw exception, or return default device string
+        // ✅ Validate service line response safely
+        if (!$sl || empty($sl['routerId'])) {
+            Log::warning("Service Line {$service_line} has no router assigned or not found.");
+
+            return $returnJson
+                ? response()->json($this->emptyUsageResponse())
+                : $this->emptyUsageResponse();
         }
 
+        $routerId = $sl['routerId'];
         $device = "Router-" . $routerId;
+
+        Log::info("TSOKOTSA +++++++++++++++++++++++++ Querying Router [ {$device} ] +++++++++++++++++++++++++++++");
 
         $month = request('month', 'current');
         $now = now(); // Africa/Maputo
@@ -320,20 +328,35 @@ class StarlinkController extends Controller
 
         Log::info("Querying usage from {$queryStart} to {$queryEnd}");
 
-        $usage = StarlinkRouterUsage::where('device_id', $device)
+        // ✅ Fetch & aggregate usage safely
+        $usageCollection = StarlinkRouterUsage::where('device_id', $device)
             ->whereBetween('recorded_at', [$queryStart, $queryEnd])
-            ->get()
+            ->get();
+
+        // If no records found — return structured empty response
+        if ($usageCollection->isEmpty()) {
+            Log::info("No usage records found for {$device}");
+
+            return $returnJson
+                ? response()->json($this->emptyUsageResponse())
+                : $this->emptyUsageResponse();
+        }
+
+        $usage = $usageCollection
             ->groupBy(function ($item) {
                 return \Carbon\Carbon::parse($item->recorded_at)->format('Y-m-d');
             })
             ->map(function ($items) {
                 return (object) [
-                    'download_gb' => $items->sum(fn($row) => $row->rx_mbps * 60 / 8 / 1024),
-                    'upload_gb' => $items->sum(fn($row) => $row->tx_mbps * 60 / 8 / 1024),
+                    'download_mb' => $items->sum(fn($row) => ($row->rx_mbps * 60) / 8),
+                    'upload_mb' => $items->sum(fn($row) => ($row->tx_mbps * 60) / 8),
                 ];
             });
 
-        $period = \Carbon\CarbonPeriod::create($start->copy()->startOfDay(), $end->copy()->startOfDay());
+        $period = \Carbon\CarbonPeriod::create(
+            $start->copy()->startOfDay(),
+            $end->copy()->startOfDay()
+        );
 
         $labels = [];
         $download = [];
@@ -344,8 +367,8 @@ class StarlinkController extends Controller
             $labels[] = $day;
 
             if (isset($usage[$day])) {
-                $download[] = round($usage[$day]->download_gb, 2);
-                $upload[] = round($usage[$day]->upload_gb, 2);
+                $download[] = round($usage[$day]->download_mb, 2);
+                $upload[] = round($usage[$day]->upload_mb, 2);
             } else {
                 $download[] = 0;
                 $upload[] = 0;
@@ -360,7 +383,20 @@ class StarlinkController extends Controller
             'total_upload' => round(array_sum($upload), 2),
         ];
 
-        return $returnJson ? response()->json($result) : $result;
+        return $returnJson
+            ? response()->json($result)
+            : $result;
+    }
+
+    private function emptyUsageResponse()
+    {
+        return [
+            'labels' => [],
+            'download' => [],
+            'upload' => [],
+            'total_download' => 0,
+            'total_upload' => 0,
+        ];
     }
 
 }
