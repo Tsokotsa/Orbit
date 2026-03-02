@@ -4,7 +4,7 @@ use App\Http\Controllers\StarlinkController;
 use App\Http\Controllers\StarlinkUsageController;
 
 //Route::group(['middleware' => ['auth', 'permission:view starlink'], 'prefix' => 'starlink'], function () {
-Route::group(['middleware' => ['permission: view starlink account']], function () {
+Route::group(['middleware' => ['auth', 'permission: view starlink account']], function () {
     Route::get('/starlink', [StarlinkController::class, 'account']);
     //Route::get('/account/view', [StarlinkController::class, 'view_account']);
 //Route::get('/terminals', [StarlinkController::class, 'terminals']);
