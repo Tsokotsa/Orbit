@@ -99,16 +99,124 @@
 
                 </div>
 
+
                 <!-- Future Columns -->
                 <div class="col-12 col-md-6">
-                    <!-- You can place another chart or stats card here -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+
+                        <!-- 1️⃣ Nickname Block -->
+                        <div
+                            class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-4">
+                            <div class="d-flex align-items-center flex-grow-1">
+                                <div class="symbol symbol-50px me-4">
+                                    <span class="symbol-label">
+                                        <i class="ki-outline ki-element-11 fs-2qx text-primary"></i>
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-800 fs-6 fw-bold d-block">Nick Name</span>
+                                    <span class="text-gray-500 fw-semibold fs-7">
+
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-light-primary edit-btn" data-bs-toggle="modal"
+                                    data-bs-target="#editModal" data-field="nickname" data-value="">
+                                    <i class="ki-outline ki-pencil fs-5"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2️⃣ Email Block -->
+                        <div
+                            class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-4">
+                            <div class="d-flex align-items-center flex-grow-1">
+                                <div class="symbol symbol-50px me-4">
+                                    <span class="symbol-label">
+                                        <i class="ki-outline ki-mail fs-2qx text-success"></i>
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-800 fs-6 fw-bold d-block">Email</span>
+                                    <span class="text-gray-500 fw-semibold fs-7">
+
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-light-primary edit-btn" data-bs-toggle="modal"
+                                    data-bs-target="#editModal" data-field="email" data-value="">
+                                    <i class="ki-outline ki-pencil fs-5"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3️⃣ Phone Block -->
+                        <div
+                            class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-0">
+                            <div class="d-flex align-items-center flex-grow-1">
+                                <div class="symbol symbol-50px me-4">
+                                    <span class="symbol-label">
+                                        <i class="ki-outline ki-call fs-2qx text-warning"></i>
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-800 fs-6 fw-bold d-block">Phone</span>
+                                    <span class="text-gray-500 fw-semibold fs-7">
+
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-light-primary edit-btn" data-bs-toggle="modal"
+                                    data-bs-target="#editModal" data-field="phone" data-value="">
+                                    <i class="ki-outline ki-pencil fs-5"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
+
 
             </div>
 
 
         </div>
     </div>
+
+    <!-- Include Modals -->
+    <!-- Reusable Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" id="editForm">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalTitle">Edit Field</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" id="editModalLabel">Value</label>
+                            <input type="text" name="value" class="form-control" id="editModalInput">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Include -->
 @endsection
 
 @push('scripts')
@@ -263,6 +371,32 @@
                     .then(data => renderChart(data));
             };
 
+        });
+
+
+        // Reusable Modal
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const editModal = document.getElementById('editModal');
+            const modalTitle = document.getElementById('editModalTitle');
+            const modalLabel = document.getElementById('editModalLabel');
+            const modalInput = document.getElementById('editModalInput');
+            const editForm = document.getElementById('editForm');
+
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const field = this.dataset.field;
+                    const value = this.dataset.value;
+
+                    modalTitle.textContent =
+                        `Edit ${field.charAt(0).toUpperCase() + field.slice(1)}`;
+                    modalLabel.textContent = `${field.charAt(0).toUpperCase() + field.slice(1)}`;
+                    modalInput.value = value;
+
+                    // Update form action dynamically
+                    editForm.action = `/subscriber//update/${field}`;
+                });
+            });
         });
     </script>
 @endpush
