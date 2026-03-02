@@ -7,8 +7,6 @@ use App\Http\Controllers\StarlinkUsageController;
 Route::group(['middleware' => ['auth', 'permission: view starlink account']], function () {
     Route::get('/starlink', [StarlinkController::class, 'account']);
     //Route::get('/account/view', [StarlinkController::class, 'view_account']);
-//Route::get('/terminals', [StarlinkController::class, 'terminals']);
-//Route::get('/usage', [StarlinkController::class, 'dataUsage']);
 
     //Route::get('/subscribers/datatable', [StarlinkController::class, 'subscribersDatatable'])->name('starlink.subscribers.datatable');
 

@@ -34,34 +34,39 @@ class StarlinkTelemetryPoller extends Command
 
     public function handle(TelemetryProcessor $processor)
     {
-        $accounts = StarlinkAccount::where('active', 'y')->get();
+        if (app()->environment('local')) {
+            Log::warning('This Action will be aborted — running in LOCAL environment.');
+            return;
 
-        if ($accounts->isEmpty()) {
-            Log::channel('starlink')->warning('No active Starlink accounts found');
-            return Command::FAILURE;
-        }
+            $accounts = StarlinkAccount::where('active', 'y')->get();
 
-        Log::channel('starlink')->info('Starlink telemetry poller started', [
-            'accounts_count' => $accounts->count(),
-        ]);
-
-        foreach ($accounts as $account) {
-            try {
-                Log::channel('starlink')->info('Polling account', [
-                    'account_name' => $account->account_name,
-                ]);
-
-                $processor->pollAndProcess($account->id);
-
-            } catch (\Throwable $e) {
-                Log::channel('starlink')->critical('Telemetry poll failed', [
-                    'account_name' => $account->account_name,
-                    'message' => $e->getMessage(),
-                ]);
+            if ($accounts->isEmpty()) {
+                Log::channel('starlink')->warning('No active Starlink accounts found');
+                return Command::FAILURE;
             }
-        }
 
-        return Command::SUCCESS;
+            Log::channel('starlink')->info('Starlink telemetry poller started', [
+                'accounts_count' => $accounts->count(),
+            ]);
+
+            foreach ($accounts as $account) {
+                try {
+                    Log::channel('starlink')->info('Polling account', [
+                        'account_name' => $account->account_name,
+                    ]);
+
+                    $processor->pollAndProcess($account->id);
+
+                } catch (\Throwable $e) {
+                    Log::channel('starlink')->critical('Telemetry poll failed', [
+                        'account_name' => $account->account_name,
+                        'message' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            return Command::SUCCESS;
+        }
     }
 
 

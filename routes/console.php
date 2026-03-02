@@ -36,7 +36,7 @@ Schedule::command('starlink:refresh-token')->everyTenMinutes();
 Schedule::job(new SyncOdooPartnersJob)->everyFifteenMinutes();
 
 // Command For Starlink Pool Latest
-//Schedule::command('starlink:poll')->everyFifteenSeconds(); Should be disabled on dev
+Schedule::command('starlink:poll')->everyFifteenSeconds(); //Should be disabled on dev
 
 // Sync Starlink main Accounts
 Schedule::job(new SyncStarlinkAccountsJob)->everySixHours();
