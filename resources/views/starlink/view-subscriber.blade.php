@@ -7,7 +7,7 @@
     }
 </style>
 @extends('layouts.master')
-
+{{-- {{ dd($service_line) }} --}}
 @section('content')
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <div id="kt_app_content_container" class="app-container container-fluid">
@@ -30,10 +30,10 @@
                 <div class="card-header py-4">
                     <div class="card-title d-flex flex-column">
                         <span class="text-muted text-uppercase fw-semibold fs-6 mb-1 pt-4">
-                            {{ $account['content']['accountName'] ?? '—' }}
+                            {{ $account->raw_payload['content']['accountName'] ?? '—' }}
                         </span>
                         <span class="fw-bold fs-9 text-gray-900 letter-spacing">
-                            {{ $account['content']['accountNumber'] ?? '—' }}
+                            {{ $account->raw_payload['content']['accountNumber'] ?? '—' }} | {{ $service_line }}
                         </span>
                     </div>
                 </div>
@@ -104,73 +104,98 @@
                 <div class="col-12 col-md-6">
                     <div class="card border-0 shadow-sm rounded-4 p-4">
 
-                        <!-- 1️⃣ Nickname Block -->
+                        <!-- Nickname Block -->
                         <div
                             class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-4">
                             <div class="d-flex align-items-center flex-grow-1">
                                 <div class="symbol symbol-50px me-4">
                                     <span class="symbol-label">
-                                        <i class="ki-outline ki-element-11 fs-2qx text-primary"></i>
+                                        <i class="ki-outline ki-user-edit  fs-2qx text-primary"></i>
                                     </span>
                                 </div>
                                 <div>
                                     <span class="text-gray-800 fs-6 fw-bold d-block">Nick Name</span>
                                     <span class="text-gray-500 fw-semibold fs-7">
-
+                                        {{ $subscriber['content']['nickname'] }}
                                     </span>
                                 </div>
                             </div>
                             <div>
                                 <button type="button" class="btn btn-sm btn-light-primary edit-btn" data-bs-toggle="modal"
-                                    data-bs-target="#editModal" data-field="nickname" data-value="">
+                                    data-bs-target="#edit-nicknameModal" data-field="nickname"
+                                    data-value="{{ $subscriber['content']['nickname'] }}">
                                     <i class="ki-outline ki-pencil fs-5"></i> Edit
                                 </button>
                             </div>
                         </div>
 
-                        <!-- 2️⃣ Email Block -->
+                        <!-- Service Plan -->
                         <div
                             class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-4">
                             <div class="d-flex align-items-center flex-grow-1">
                                 <div class="symbol symbol-50px me-4">
                                     <span class="symbol-label">
-                                        <i class="ki-outline ki-mail fs-2qx text-success"></i>
+                                        @php
+                                            $statusClass =
+                                                $subscriber['content']['active'] == false ||
+                                                $subscriber['content']['active'] === 'false'
+                                                    ? 'text-danger'
+                                                    : 'text-success';
+                                        @endphp
+                                        <i class="ki-outline ki-electricity fs-2qx {{ $statusClass }}"></i>
                                     </span>
                                 </div>
                                 <div>
-                                    <span class="text-gray-800 fs-6 fw-bold d-block">Email</span>
+                                    <span class="text-gray-800 fs-6 fw-bold d-block">Service Plan</span>
                                     <span class="text-gray-500 fw-semibold fs-7">
+                                        <span class="badge bg-light-su">
+                                            @php
+                                                $productId =
+                                                    $subscriber['content']['dataBlocks'][
+                                                        'recurringBlocksNextBillingCycle'
+                                                    ][0]['productId'] ?? null;
 
+                                                $badgeClass =
+                                                    $subscriber['content']['active'] == false ||
+                                                    $subscriber['content']['active'] === 'false'
+                                                        ? 'bg-light-danger'
+                                                        : 'bg-light-success';
+                                            @endphp
+
+                                            <span class="badge {{ $badgeClass }}">
+                                                {{ $productId ?? 'N/A' }}
+                                            </span>
+                                        </span>
                                     </span>
                                 </div>
                             </div>
                             <div>
                                 <button type="button" class="btn btn-sm btn-light-primary edit-btn" data-bs-toggle="modal"
-                                    data-bs-target="#editModal" data-field="email" data-value="">
-                                    <i class="ki-outline ki-pencil fs-5"></i> Edit
+                                    data-bs-target="#edit-serviceplanModal" data-field="Service Plan" data-value="">
+                                    <i class="ki-outline ki-pencil fs-5"></i> Manage
                                 </button>
                             </div>
                         </div>
 
-                        <!-- 3️⃣ Phone Block -->
+                        <!-- IP Policy -->
                         <div
                             class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-0">
                             <div class="d-flex align-items-center flex-grow-1">
                                 <div class="symbol symbol-50px me-4">
                                     <span class="symbol-label">
-                                        <i class="ki-outline ki-call fs-2qx text-warning"></i>
+                                        <i class="ki-outline ki-wrench fs-2qx text-warning"></i>
                                     </span>
                                 </div>
                                 <div>
-                                    <span class="text-gray-800 fs-6 fw-bold d-block">Phone</span>
+                                    <span class="text-gray-800 fs-6 fw-bold d-block">IP Policy</span>
                                     <span class="text-gray-500 fw-semibold fs-7">
-
+                                        {{ $subscriber['content']['publicIp'] === 'false' || $subscriber['content']['publicIp'] == false ? 'Default' : 'Public' }}
                                     </span>
                                 </div>
                             </div>
                             <div>
                                 <button type="button" class="btn btn-sm btn-light-primary edit-btn" data-bs-toggle="modal"
-                                    data-bs-target="#editModal" data-field="phone" data-value="">
+                                    data-bs-target="#edit-ippolicyModal" data-field="IP Policy" data-value="">
                                     <i class="ki-outline ki-pencil fs-5"></i> Edit
                                 </button>
                             </div>
@@ -178,8 +203,6 @@
 
                     </div>
                 </div>
-
-
             </div>
 
 
@@ -187,35 +210,9 @@
     </div>
 
     <!-- Include Modals -->
-    <!-- Reusable Edit Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="POST" id="editForm">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editModalTitle">Edit Field</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold" id="editModalLabel">Value</label>
-                            <input type="text" name="value" class="form-control" id="editModalInput">
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-    </div>
+    @include('starlink.modals.edit-nickname')
+    @include('starlink.modals.edit-serviceplan')
+    @include('starlink.modals.edit-ippolicy')
     <!-- End Include -->
 @endsection
 
@@ -377,26 +374,106 @@
         // Reusable Modal
 
         document.addEventListener("DOMContentLoaded", function() {
-            const editModal = document.getElementById('editModal');
+
+            // Grab the modal elements
+            const editModalEl = document.getElementById('editModal');
             const modalTitle = document.getElementById('editModalTitle');
             const modalLabel = document.getElementById('editModalLabel');
             const modalInput = document.getElementById('editModalInput');
             const editForm = document.getElementById('editForm');
 
+            // Keep track of current field and subscriber ID dynamically if needed
+            let currentField = null;
+            let currentSubscriberId = "{{ $subscriber['id'] ?? '' }}"; // adapt if dynamic
+
+            // When any "edit-btn" is clicked
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const field = this.dataset.field;
+                    currentField = this.dataset.field;
                     const value = this.dataset.value;
 
+                    // Update modal title, label, input
                     modalTitle.textContent =
-                        `Edit ${field.charAt(0).toUpperCase() + field.slice(1)}`;
-                    modalLabel.textContent = `${field.charAt(0).toUpperCase() + field.slice(1)}`;
+                        `Edit ${currentField.charAt(0).toUpperCase() + currentField.slice(1)}`;
+                    modalLabel.textContent = currentField.charAt(0).toUpperCase() + currentField
+                        .slice(1);
                     modalInput.value = value;
 
-                    // Update form action dynamically
-                    editForm.action = `/subscriber//update/${field}`;
+                    // Update form action dynamically (if your route requires field)
+                    editForm.action = `/subscriber/${currentSubscriberId}/update/${currentField}`;
                 });
             });
+
+            // AJAX submit for reusable modal
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    text: "Are you sure you want to save these changes?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    buttonsStyling: false,
+                    confirmButtonText: "Yes, save it!",
+                    cancelButtonText: "No, cancel",
+                    customClass: {
+                        confirmButton: "btn fw-bold btn-success",
+                        cancelButton: "btn fw-bold btn-active-light-primary"
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        $.ajax({
+                            type: "POST", // Laravel PUT handled via _method
+                            url: editForm.action,
+                            data: $(editForm).serialize(),
+                            success: function(response) {
+                                Swal.fire({
+                                    title: "Updated!",
+                                    text: response.message,
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+
+                                // Close modal
+                                const modal = bootstrap.Modal.getInstance(editModalEl);
+                                modal.hide();
+
+                                // Reload page after delay
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1500);
+                            },
+                            error: function(xhr) {
+                                let message = "Something went wrong";
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    message = xhr.responseJSON.message;
+                                }
+
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error",
+                                    text: message
+                                });
+                            }
+                        });
+
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire({
+                            text: "Changes were not saved.",
+                            icon: "info",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary"
+                            }
+                        });
+                    }
+                });
+            });
+
         });
+
+        // END Reusable Modal 
     </script>
 @endpush

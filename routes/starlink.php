@@ -20,6 +20,12 @@ Route::group(['middleware' => ['auth', 'permission: view starlink account']], fu
 
     Route::put('/starlink/service-line/{serviceLineNumber}/product', [StarlinkController::class, 'activate_line']);
 
+    Route::put('/starlink/update/nickname', [StarlinkController::class, 'update_nickname']);
+
+    Route::put('/starlink/update/ippolicy', [StarlinkController::class, 'update_ippolicy']);
+
+
+
     Route::get('/starlink/telemetry', [StarlinkController::class, 'telemetry']);
 
 

@@ -197,6 +197,38 @@ class StarlinkService
         );
     }
 
+    public function updateNickname(string $serviceLineNumber, ?int $accountId = null, $nickname): array
+    {
+        $endpoint = "/service-lines/{$serviceLineNumber}/nickname";
+
+        $payload = [
+            'nickname' => $nickname,
+        ];
+
+        Log::info("Nickname will be updated for", [
+            'serviceLine' => $serviceLineNumber,
+            'accountId' => $accountId,
+        ]);
+
+        return $this->request('put', $endpoint, $payload, $accountId);
+    }
+
+    public function updateIPpolicy(string $serviceLineNumber, ?int $accountId = null, bool $isPublic = false): array
+    {
+        $endpoint = "/service-lines/{$serviceLineNumber}/public-ip";
+
+        $payload = [
+            'publicIp' => $isPublic,
+        ];
+
+        Log::info("Public IP set will be updated for", [
+            'serviceLine' => $serviceLineNumber,
+            'accountId' => $accountId,
+        ]);
+
+        return $this->request('put', $endpoint, $payload, $accountId);
+    }
+
     public function deactivateServiceLine(
         string $serviceLineNumber,
         bool $endNow = true,

@@ -113,18 +113,80 @@ class StarlinkController extends Controller
         // get **raw array**, not JSON
         $usage = $this->usageMonthly($service_line, $accountId);
 
+        $account = StarlinkAccount::where('id', $accountId)->first();
+
         $subscriber = $this->starlink->getServiceLine($service_line, $accountId);
 
         return view("starlink.view-subscriber")
             ->with([
+                'account' => $account,
                 'subscriber' => $subscriber,
                 'user' => $user,
                 'usage' => $usage,
                 'service_line' => $service_line
             ]);
-        // Log::info(json_encode($subscriber));
-        // return view("starlink.modals.partials.subscriber")->with(["subscriber" => $subscriber]);
 
+    }
+
+    public function update_nickname(Request $request)
+    {
+        //$serviceLineNumber = "SL-DF-9678649-75021-72";
+        // return "OK";
+        $acc_id = $request->account_id;
+        $sl = $request->service_line;
+        $nickname = $request->nickname;
+
+        //$starlink_acc = StarlinkAccount::where('id', $acc_id)->first();  // IMPACT ACC
+
+        try {
+
+            $response = $this->starlink->updateNickname($sl, $acc_id, $nickname);
+
+            Log::info("Starlink Updating NICKNAME : " . json_encode($response));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Nickname Updated',
+                'data' => $response,
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update nickname',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+
+    public function update_ippolicy(Request $request)
+    {
+        //$serviceLineNumber = "SL-DF-9678649-75021-72";
+        // return "OK";
+        $acc_id = $request->account_id;
+        $sl = $request->service_line;
+        $isPublic = strtolower((string) $request->ippolicy) === 'public';
+
+        //$starlink_acc = StarlinkAccount::where('id', $acc_id)->first();  // IMPACT ACC
+
+        try {
+
+            $response = $this->starlink->updateIPpolicy($sl, $acc_id, $isPublic);
+
+            Log::info("Starlink Updating IPPOLICY : " . json_encode($response));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Policy Updated',
+                'data' => $response,
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update Policy',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
 
     }
 
