@@ -12,6 +12,7 @@ use Log;
 use App\Models\OdooPartner;
 use App\Models\OdooInvoice;
 use App\Helpers\Tsokotsa\generalHelpers;
+use App\Http\Controllers\ServiceController;
 
 
 
@@ -329,6 +330,16 @@ class ClientController extends Controller
             ], 500);
         }
 
+    }
 
+    public function view_service(Request $request)
+    {
+        $srv = new ServiceController;
+
+        $service = $srv->get_service_by_sid($request->servicetable, $request->service_id);
+
+        Log::info("The variable Request has: " . json_encode($service));
+
+        return view('clients.services.modals.partials.view-service-fiber')->with(['service' => $service]);
     }
 }

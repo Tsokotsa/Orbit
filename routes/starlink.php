@@ -24,6 +24,11 @@ Route::group(['middleware' => ['auth', 'permission: view starlink account']], fu
 
     Route::put('/starlink/update/ippolicy', [StarlinkController::class, 'update_ippolicy']);
 
+    Route::delete('/starlink/pause-service', [StarlinkController::class, 'deactivate_line']);
+
+    Route::put('/starlink/activate-plan', [StarlinkController::class, 'activate_line']);
+
+
 
 
     Route::get('/starlink/telemetry', [StarlinkController::class, 'telemetry']);

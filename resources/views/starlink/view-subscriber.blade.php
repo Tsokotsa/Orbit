@@ -12,33 +12,33 @@
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <div id="kt_app_content_container" class="app-container container-fluid">
 
-            <!-- Card 1: Account Info + Ribbon + Tabs -->
+            <!-- Account Card -->
             <div class="card mb-5 mb-xl-10 position-relative overflow-hidden card-rounded">
-                <!-- Ribbon Top-Left -->
+
+                <!-- Ribbon -->
                 <div class="ribbon ribbon-triangle ribbon-top-start border-primary">
                     <div class="ribbon-icon mt-n5 ms-n6">
                         <i class="bi bi-star-fill fs-2 text-white"></i>
                     </div>
                 </div>
 
-                {{-- <!-- Country Flag Top-Right -->
-                        <div class="position-absolute top-0 end-0 p-3">
-                            <span class="flag-icon flag-icon-sa fs-2 rounded shadow-sm"></span>
-                        </div> --}}
-
                 <!-- Header -->
                 <div class="card-header py-4">
                     <div class="card-title d-flex flex-column">
+
                         <span class="text-muted text-uppercase fw-semibold fs-6 mb-1 pt-4">
                             {{ $account->raw_payload['content']['accountName'] ?? '—' }}
                         </span>
+
                         <span class="fw-bold fs-9 text-gray-900 letter-spacing">
                             {{ $account->raw_payload['content']['accountNumber'] ?? '—' }} | {{ $service_line }}
                         </span>
+
                     </div>
                 </div>
+
             </div>
-            <!-- End Card 1 -->
+
             <div class="row g-4">
 
                 <!-- Chart Column -->
@@ -46,37 +46,33 @@
 
                     <div class="card shadow-sm border-0 rounded-4 h-100">
 
-                        <!-- Card Header -->
                         <div
                             class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                            <!-- Title -->
                             <div class="px-4 pb-2 pt-8">
-                                <div class="d-flex justify-content-between align-items-center flex-wrap">
 
-                                    <!-- LEFT: Totals (unchanged structure) -->
-                                    <div class="d-flex gap-4 small text-muted">
-                                        <div>
-                                            <span class="fw-semibold text-primary">
-                                                <i class="bi bi-download me-1"></i>
-                                                <span id="totalDownload">0 GB</span>
-                                            </span>
-                                            <div class="small">Total Download</div>
-                                        </div>
+                                <div class="d-flex gap-4 small text-muted">
 
-                                        <div>
-                                            <span class="fw-semibold text-success">
-                                                <i class="bi bi-upload me-1"></i>
-                                                <span id="totalUpload">0 GB</span>
-                                            </span>
-                                            <div class="small">Total Upload</div>
-                                        </div>
+                                    <div>
+                                        <span class="fw-semibold text-primary">
+                                            <i class="bi bi-download me-1"></i>
+                                            <span id="totalDownload">0 GB</span>
+                                        </span>
+                                        <div class="small">Total Download</div>
+                                    </div>
+
+                                    <div>
+                                        <span class="fw-semibold text-success">
+                                            <i class="bi bi-upload me-1"></i>
+                                            <span id="totalUpload">0 GB</span>
+                                        </span>
+                                        <div class="small">Total Upload</div>
                                     </div>
 
                                 </div>
+
                             </div>
 
-                            <!-- Buttons -->
                             <div>
                                 <button class="btn btn-sm btn-primary me-2" onclick="loadChart('current')">
                                     Current Month
@@ -89,52 +85,63 @@
 
                         </div>
 
-                        <!-- Chart -->
                         <div class="card-body pt-0">
                             <div id="tsokotsa_chart"></div>
                         </div>
-                        <!-- End Chart -->
 
                     </div>
 
                 </div>
 
 
-                <!-- Future Columns -->
+                <!-- Right Column -->
                 <div class="col-12 col-md-6">
+
                     <div class="card border-0 shadow-sm rounded-4 p-4">
 
-                        <!-- Nickname Block -->
+                        <!-- Nickname -->
                         <div
                             class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-4">
+
                             <div class="d-flex align-items-center flex-grow-1">
+
                                 <div class="symbol symbol-50px me-4">
                                     <span class="symbol-label">
-                                        <i class="ki-outline ki-user-edit  fs-2qx text-primary"></i>
+                                        <i class="ki-outline ki-user-edit fs-2qx text-primary"></i>
                                     </span>
                                 </div>
+
                                 <div>
                                     <span class="text-gray-800 fs-6 fw-bold d-block">Nick Name</span>
+
                                     <span class="text-gray-500 fw-semibold fs-7">
-                                        {{ $subscriber['content']['nickname'] }}
+                                        {{ $subscriber['content']['nickname'] ?? '—' }}
                                     </span>
+
                                 </div>
                             </div>
+
                             <div>
                                 <button type="button" class="btn btn-sm btn-light-primary edit-btn" data-bs-toggle="modal"
                                     data-bs-target="#edit-nicknameModal" data-field="nickname"
-                                    data-value="{{ $subscriber['content']['nickname'] }}">
+                                    data-value="{{ $subscriber['content']['nickname'] ?? '' }}">
                                     <i class="ki-outline ki-pencil fs-5"></i> Edit
                                 </button>
                             </div>
+
                         </div>
+
 
                         <!-- Service Plan -->
                         <div
                             class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-4">
+
                             <div class="d-flex align-items-center flex-grow-1">
+
                                 <div class="symbol symbol-50px me-4">
+
                                     <span class="symbol-label">
+
                                         @php
                                             $statusClass =
                                                 $subscriber['content']['active'] == false ||
@@ -142,72 +149,167 @@
                                                     ? 'text-danger'
                                                     : 'text-success';
                                         @endphp
+
                                         <i class="ki-outline ki-electricity fs-2qx {{ $statusClass }}"></i>
+
                                     </span>
                                 </div>
+
                                 <div>
-                                    <span class="text-gray-800 fs-6 fw-bold d-block">Service Plan</span>
-                                    <span class="text-gray-500 fw-semibold fs-7">
-                                        <span class="badge bg-light-su">
-                                            @php
-                                                $productId =
-                                                    $subscriber['content']['dataBlocks'][
-                                                        'recurringBlocksNextBillingCycle'
-                                                    ][0]['productId'] ?? null;
 
-                                                $badgeClass =
-                                                    $subscriber['content']['active'] == false ||
-                                                    $subscriber['content']['active'] === 'false'
-                                                        ? 'bg-light-danger'
-                                                        : 'bg-light-success';
-                                            @endphp
-
-                                            <span class="badge {{ $badgeClass }}">
-                                                {{ $productId ?? 'N/A' }}
-                                            </span>
-                                        </span>
+                                    <span class="text-gray-800 fs-6 fw-bold d-block">
+                                        Service Plan
                                     </span>
+
+                                    @php
+                                        $productId =
+                                            $subscriber['content']['dataBlocks']['recurringBlocksNextBillingCycle'][0][
+                                                'productId'
+                                            ] ?? null;
+
+                                        $badgeClass =
+                                            $subscriber['content']['active'] == false ||
+                                            $subscriber['content']['active'] === 'false'
+                                                ? 'bg-light-danger'
+                                                : 'bg-light-success';
+                                    @endphp
+
+                                    <span class="badge {{ $badgeClass }}">
+                                        {{ $productId ?? 'N/A' }}
+                                    </span>
+
                                 </div>
+
                             </div>
+
                             <div>
                                 <button type="button" class="btn btn-sm btn-light-primary edit-btn" data-bs-toggle="modal"
-                                    data-bs-target="#edit-serviceplanModal" data-field="Service Plan" data-value="">
+                                    data-bs-target="#edit-serviceplanModal">
                                     <i class="ki-outline ki-pencil fs-5"></i> Manage
                                 </button>
                             </div>
+
                         </div>
+
 
                         <!-- IP Policy -->
                         <div
-                            class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-0">
+                            class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6 mb-4">
+
                             <div class="d-flex align-items-center flex-grow-1">
+
                                 <div class="symbol symbol-50px me-4">
                                     <span class="symbol-label">
                                         <i class="ki-outline ki-wrench fs-2qx text-warning"></i>
                                     </span>
                                 </div>
+
                                 <div>
-                                    <span class="text-gray-800 fs-6 fw-bold d-block">IP Policy</span>
-                                    <span class="text-gray-500 fw-semibold fs-7">
-                                        {{ $subscriber['content']['publicIp'] === 'false' || $subscriber['content']['publicIp'] == false ? 'Default' : 'Public' }}
+
+                                    <span class="text-gray-800 fs-6 fw-bold d-block">
+                                        IP Policy
                                     </span>
+
+                                    <span class="text-gray-500 fw-semibold fs-7">
+                                        {{ filter_var($subscriber['content']['publicIp'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 'Public' : 'Default' }}
+                                    </span>
+
                                 </div>
+
                             </div>
+
                             <div>
                                 <button type="button" class="btn btn-sm btn-light-primary edit-btn" data-bs-toggle="modal"
-                                    data-bs-target="#edit-ippolicyModal" data-field="IP Policy" data-value="">
+                                    data-bs-target="#edit-ippolicyModal">
                                     <i class="ki-outline ki-pencil fs-5"></i> Edit
                                 </button>
                             </div>
+
                         </div>
+
+
+                        <!-- Today Usage -->
+                        <div
+                            class="d-flex justify-content-between align-items-center border border-gray-300 border-dashed rounded p-6">
+
+                            <div class="d-flex align-items-center flex-grow-1">
+
+                                <div class="symbol symbol-50px me-4">
+                                    <span class="symbol-label">
+                                        <i class="ki-outline ki-chart fs-2qx text-success"></i>
+                                    </span>
+                                </div>
+
+                                @php
+                                    $percent = $today_use['percentage'];
+
+                                    if ($percent >= 70) {
+                                        $badgeClass = 'badge-light-danger';
+                                        $barClass = 'bg-danger';
+                                    } elseif ($percent >= 50) {
+                                        $badgeClass = 'badge-light-warning';
+                                        $barClass = 'bg-warning';
+                                    } else {
+                                        $badgeClass = 'badge-light-success';
+                                        $barClass = 'bg-success';
+                                    }
+                                @endphp
+
+                                <div class="w-100 pe-6">
+
+                                    {{-- <span class="text-gray-800 fs-6 fw-bold d-block">
+                                        Today Usage
+                                    </span> --}}
+
+                                    <div class="d-flex align-items-center flex-column mt-3 w-100">
+
+                                        <div class="d-flex justify-content-between w-100 mb-2">
+                                            <span class="text-gray-800 fs-6 fw-bold d-block">Usage</span>
+
+                                            <span class="badge {{ $badgeClass }}">
+                                                {{ $today_use['percentage'] }}%
+                                            </span>
+                                        </div>
+
+                                        <div class="h-8px w-100 bg-light rounded">
+                                            <div class="{{ $barClass }} rounded h-8px" role="progressbar"
+                                                style="width: {{ $today_use['percentage'] }}%"
+                                                aria-valuenow="{{ $today_use['total_usage'] }}" aria-valuemin="0"
+                                                aria-valuemax="{{ $today_use['limit'] }}">
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between w-100 mt-2">
+                                            <span class="text-gray-600 fs-7">
+                                                {{ number_format($today_use['total_usage'], 2) }} GB used
+                                            </span>
+                                            <span class="text-gray-600 fs-7">
+                                                {{ number_format($today_use['limit'], 0) }} GB plan
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div>
+                                <button class="btn btn-sm btn-light-primary">
+                                    <i class="ki-outline ki-arrows-circle fs-5"></i> Refresh
+                                </button>
+                            </div>
+
+                        </div>
+
 
                     </div>
                 </div>
             </div>
 
-
         </div>
     </div>
+
 
     <!-- Include Modals -->
     @include('starlink.modals.edit-nickname')

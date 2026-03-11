@@ -86,7 +86,7 @@
                         Special Notes
                     </label>
 
-                    <textarea class="form-control form-control-solid" rows="4" name="target_details"
+                    <textarea class="form-control form-control-solid" rows="4" name="client_special_notes"
                         placeholder="Add any info regarding this client ...."></textarea>
 
                     <small class="text-muted mt-1">
@@ -108,7 +108,8 @@
                     <!--end::Label-->
 
                     <label class="form-label">Default input style</label>
-                    <input class="form-control" value="tag1, tag2, tag3" id="kt_tagify_1" />
+                    <input name="client_tags" class="form-control" value="Important, Priority, Partner"
+                        id="client_tags" />
                 </div>
                 <!--end::Input group-->
 

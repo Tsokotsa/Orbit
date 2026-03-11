@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Log;
-use activityHelper;
 use App\Models\Service;
 use function Laravel\Prompts\select;
+use App\Helpers\Tsokotsa\ActivityHelper;
 
 class ServiceController extends Controller
 {
@@ -50,9 +50,43 @@ class ServiceController extends Controller
             ->where("$table.client_id", $client_id)
             ->select(
                 "$table.*",
-                "services.*"         // All columns from client-specific table
-            )->get();
+                'services.name as service_name',
+                'services.description',
+                'services.table_identifier',
+                'services.d_speed',
+                'services.u_speed',
+                'services.profile',
+            )
+            ->get();
 
+    }
+
+    public function get_service_by_sid($table, $service_id)
+    {
+        $table = $this->client_services_table . $table;
+        /* $allowedTables = ['service_table1', 'service_table2', 'service_table3']; Tsokotsa Future filter tables
+
+        if (!in_array($table, $allowedTables)) {
+            throw new \Exception("Invalid table name");
+        }
+            */
+
+        Log::info("Querying Services on table [ $table ]");
+
+        return DB::table($table)
+            ->join('services', "$table.service_id", '=', 'services.id')
+            //->where("$table.client_id", $client_id)
+            ->where("$table.id", $service_id)
+            ->select(
+                "$table.*",
+                'services.name as service_name',
+                'services.description',
+                'services.table_identifier',
+                'services.d_speed',
+                'services.u_speed',
+                'services.profile',
+            )
+            ->first();
     }
 
 
@@ -70,7 +104,7 @@ class ServiceController extends Controller
 
         Log::info("Found Services for client $clientID  ====  $services");
 
-        return view("clients.services.fiber-tab")->with(["services" => $services]);
+        return view("clients.services.fiber-tab")->with(["services" => $services, 'table' => $table]);
     }
 
     public function get_service_wireless(Request $request)
@@ -82,12 +116,13 @@ class ServiceController extends Controller
 
         Log::info("Found Services for client $clientID  ====  $services");
 
-        return view("clients.services.wireless-tab")->with(["services" => $services]);
+        return view("clients.services.wireless-tab")->with(["services" => $services, 'table' => $table]);
+
     }
 
     public function get_service_satt(Request $request)
     {
-        $logger = new activityHelper();
+        $logger = new ActivityHelper;
         $table = "satt";
         $clientID = $request->client_id;
 
@@ -98,7 +133,8 @@ class ServiceController extends Controller
         $logger->logActivity('Accessed resource', $table, $clientID);
 
 
-        return view("clients.services.satt-tab")->with(["services" => $services]);
+        return view("clients.services.satt-tab")->with(["services" => $services, 'table' => $table]);
+
     }
 
     public function get_ajax(Request $request)
@@ -131,8 +167,5 @@ class ServiceController extends Controller
 
         return $assets;
     }
-
-
-
 
 }

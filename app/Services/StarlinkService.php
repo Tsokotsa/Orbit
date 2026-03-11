@@ -333,8 +333,20 @@ class StarlinkService
     }
 
 
-    public function dataUsage(array $payload, ?int $accountId = null): array
+    public function dataUsage(string $serviceLineNumber, ?int $accountId = null): array
     {
-        return $this->request('post', '/data-usage/query', $payload, $accountId);
+        $endpoint = "/data-usage/query";
+
+        $payload = [
+            'serviceLineNumbers' => [$serviceLineNumber], // must be array
+        ];
+
+        Log::info("Data Usage is being queried for", [
+            'serviceLine' => $serviceLineNumber,
+            'accountId' => $accountId,
+        ]);
+
+        return $this->request('post', $endpoint, $payload, $accountId);
     }
+
 }

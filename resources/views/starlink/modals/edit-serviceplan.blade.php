@@ -13,60 +13,84 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
+                    @php
+                        $isInactive =
+                            $subscriber['content']['active'] == false || $subscriber['content']['active'] === 'false';
+                    @endphp
+
                     <div class="modal-body">
 
                         <div class="d-flex flex-column gap-4">
 
-                            <!-- Change Plan -->
-                            <div class="border border-gray-300 border-dashed rounded p-5 hover-elevate-up cursor-pointer action-btn"
-                                data-action="change-plan">
-                                <div class="d-flex align-items-center">
-                                    <div class="symbol symbol-50px me-4">
-                                        <span class="symbol-label bg-light-primary">
-                                            <i class="ki-outline ki-arrow-up fs-2 text-primary"></i>
-                                        </span>
+                            @if ($isInactive)
+                                <!-- Activate Plan -->
+                                <div class="border border-gray-300 border-dashed rounded p-5 hover-elevate-up cursor-pointer action-btn"
+                                    data-action="activate-plan">
+                                    <div class="d-flex align-items-center">
+                                        <div class="symbol symbol-50px me-4">
+                                            <span class="symbol-label bg-light-success">
+                                                <i class="ki-outline ki-check-circle fs-2 text-success"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold fs-6 text-gray-800">Activate Plan</div>
+                                            <div class="fs-7 text-gray-500">Activate the subscriber plan</div>
+                                        </div>
+                                        <i class="ki-outline ki-arrow-right fs-2 text-gray-400"></i>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <div class="fw-bold fs-6 text-gray-800">Change Plan</div>
-                                        <div class="fs-7 text-gray-500">Upgrade or downgrade the current plan</div>
-                                    </div>
-                                    <i class="ki-outline ki-arrow-right fs-2 text-gray-400"></i>
                                 </div>
-                            </div>
+                            @else
+                                <!-- Change Plan -->
+                                <div class="border border-gray-300 border-dashed rounded p-5 hover-elevate-up cursor-pointer action-btn"
+                                    data-action="change-plan">
+                                    <div class="d-flex align-items-center">
+                                        <div class="symbol symbol-50px me-4">
+                                            <span class="symbol-label bg-light-primary">
+                                                <i class="ki-outline ki-arrow-up fs-2 text-primary"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold fs-6 text-gray-800">Change Plan</div>
+                                            <div class="fs-7 text-gray-500">Upgrade or downgrade the current plan</div>
+                                        </div>
+                                        <i class="ki-outline ki-arrow-right fs-2 text-gray-400"></i>
+                                    </div>
+                                </div>
 
-                            <!-- Pause Service -->
-                            <div class="border border-gray-300 border-dashed rounded p-5 hover-elevate-up cursor-pointer action-btn"
-                                data-action="pause-service">
-                                <div class="d-flex align-items-center">
-                                    <div class="symbol symbol-50px me-4">
-                                        <span class="symbol-label bg-light-warning">
-                                            <i class="las la-pause fs-2 text-warning"></i>
-                                        </span>
+                                <!-- Pause Service -->
+                                <div class="border border-gray-300 border-dashed rounded p-5 hover-elevate-up cursor-pointer action-btn"
+                                    data-action="pause-service">
+                                    <div class="d-flex align-items-center">
+                                        <div class="symbol symbol-50px me-4">
+                                            <span class="symbol-label bg-light-warning">
+                                                <i class="las la-pause fs-2 text-warning"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold fs-6 text-gray-800">Pause Service</div>
+                                            <div class="fs-7 text-gray-500">Temporarily suspend the service</div>
+                                        </div>
+                                        <i class="ki-outline ki-arrow-right fs-2 text-gray-400"></i>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <div class="fw-bold fs-6 text-gray-800">Pause Service</div>
-                                        <div class="fs-7 text-gray-500">Temporarily suspend the service</div>
-                                    </div>
-                                    <i class="ki-outline ki-arrow-right fs-2 text-gray-400"></i>
                                 </div>
-                            </div>
 
-                            <!-- Cancel Service -->
-                            <div class="border border-gray-300 border-dashed rounded p-5 hover-elevate-up cursor-pointer action-btn"
-                                data-action="cancel-service">
-                                <div class="d-flex align-items-center">
-                                    <div class="symbol symbol-50px me-4">
-                                        <span class="symbol-label bg-light-danger">
-                                            <i class="ki-outline ki-cross-circle fs-2 text-danger"></i>
-                                        </span>
+                                <!-- Cancel Service -->
+                                <div class="border border-gray-300 border-dashed rounded p-5 hover-elevate-up cursor-pointer action-btn"
+                                    data-action="cancel-service">
+                                    <div class="d-flex align-items-center">
+                                        <div class="symbol symbol-50px me-4">
+                                            <span class="symbol-label bg-light-danger">
+                                                <i class="ki-outline ki-cross-circle fs-2 text-danger"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold fs-6 text-gray-800">Cancel Service</div>
+                                            <div class="fs-7 text-gray-500">Permanently terminate the service</div>
+                                        </div>
+                                        <i class="ki-outline ki-arrow-right fs-2 text-gray-400"></i>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <div class="fw-bold fs-6 text-gray-800">Cancel Service</div>
-                                        <div class="fs-7 text-gray-500">Permanently terminate the service</div>
-                                    </div>
-                                    <i class="ki-outline ki-arrow-right fs-2 text-gray-400"></i>
                                 </div>
-                            </div>
+                            @endif
 
                         </div>
 
@@ -98,16 +122,25 @@
                         case 'change-plan':
                             confirmText = "Are you sure you want to change the plan?";
                             confirmButtonClass = "btn fw-bold btn-primary";
+                            route_type = "get";
+                            break;
+
+                        case 'activate-plan':
+                            confirmText = "Are you sure you want to activate the plan?";
+                            confirmButtonClass = "btn fw-bold btn-success";
+                            route_type = "put";
                             break;
 
                         case 'pause-service':
                             confirmText = "Are you sure you want to pause this service?";
                             confirmButtonClass = "btn fw-bold btn-warning";
+                            route_type = "delete";
                             break;
 
                         case 'cancel-service':
                             confirmText = "Are you sure you want to permanently cancel this service?";
                             confirmButtonClass = "btn fw-bold btn-danger";
+                            route_type = "get";
                             break;
                     }
 
@@ -130,8 +163,8 @@
                         actionInput.value = action;
 
                         $.ajax({
-                            type: "POST",
-                            url: "/starlink/update/serviceplan", // adjust route
+                            type: route_type,
+                            url: "{{ url('/starlink') }}/" + action,
                             data: $(form).serialize(),
 
                             success: function(response) {
@@ -150,8 +183,8 @@
                                         document.getElementById(
                                             'edit-serviceplanModal')
                                     );
-                                    modal.hide();
 
+                                    modal.hide();
                                     location.reload();
                                 });
                             },
@@ -175,7 +208,6 @@
                                 });
                             }
                         });
-
                     });
 
                 });

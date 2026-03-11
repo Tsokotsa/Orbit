@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use App\Models\StarlinkTelemetry;
 use App\Models\StarlinkRouterUsage;
 use Throwable;
+use Carbon\Carbon;
 use Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -110,23 +111,83 @@ class StarlinkController extends Controller
         $service_line = $serviceLine;
         $accountId = $request->acc_n;
 
-        // get **raw array**, not JSON
-        $usage = $this->usageMonthly($service_line, $accountId);
+        $usage_monthly = $this->usageMonthly($service_line, $accountId);
+
+        $usage_today = $this->starlink->dataUsage($service_line, $accountId);
 
         $account = StarlinkAccount::where('id', $accountId)->first();
-
         $subscriber = $this->starlink->getServiceLine($service_line, $accountId);
+
+        $today = Carbon::today()->toDateString();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get all daily usage records
+        |--------------------------------------------------------------------------
+        */
+
+        $daily = collect(data_get($usage_today, 'content.results.0.billingCycles', []))
+            ->flatMap(fn($cycle) => $cycle['dailyDataUsage'] ?? []);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Find today's usage
+        |--------------------------------------------------------------------------
+        */
+
+        $today_record = $daily->first(function ($d) use ($today) {
+            return Carbon::parse($d['date'])->toDateString() === $today;
+        });
+
+        $today_usage = $today_record
+            ? ($today_record['priorityGB'] ?? 0)
+            + ($today_record['optInPriorityGB'] ?? 0)
+            + ($today_record['standardGB'] ?? 0)
+            + ($today_record['nonBillableGB'] ?? 0)
+            : 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get Data Pool values
+        |--------------------------------------------------------------------------
+        */
+
+        $dataBlock = collect(
+            data_get($usage_today, 'content.results.0.servicePlan.dataPoolUsage.dataBlocks', [])
+        )->first();
+
+        $totalAmountGB = $dataBlock['totalAmountGB'] ?? 0;
+        $consumedAmountGB = $dataBlock['consumedAmountGB'] ?? 0;
+
+        $percentage = $totalAmountGB > 0
+            ? ($consumedAmountGB / $totalAmountGB) * 100
+            : 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Final variable passed to Blade
+        |--------------------------------------------------------------------------
+        */
+
+        $usage_today = [
+            'today_usage' => round($today_usage, 2),
+            'total_usage' => round($consumedAmountGB, 2),
+            'limit' => $totalAmountGB,
+            'percentage' => round($percentage, 2)
+        ];
 
         return view("starlink.view-subscriber")
             ->with([
                 'account' => $account,
                 'subscriber' => $subscriber,
                 'user' => $user,
-                'usage' => $usage,
+                'usage' => $usage_monthly,
+                'today_use' => $usage_today,
                 'service_line' => $service_line
             ]);
-
     }
+
+
 
     public function update_nickname(Request $request)
     {
@@ -190,21 +251,15 @@ class StarlinkController extends Controller
 
     }
 
-    public function deactivate_line(string $serviceLineNumber): JsonResponse
+    public function deactivate_line(Request $request): JsonResponse
     {
-        $serviceLineNumber = "SL-DF-9678649-75021-72";
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Service line deactivated successfully',
-            'data' => "200",
-        ]);
-
-        $starlink_acc = StarlinkAccount::where('id', 2)->first();  // IMPACT ACC
+        // $serviceLineNumber = "SL-DF-9678649-75021-72";
+        $acc_id = $request->account_id;
+        $sl = $request->service_line;
 
         try {
             // $response = $this->starlink->deactivateServiceLine($serviceLineNumber);
-            $response = $this->starlink->deactivateServiceLine($serviceLineNumber, true, $starlink_acc->id);
+            $response = $this->starlink->deactivateServiceLine($sl, true, $acc_id);
 
             Log::info("Starlink Deactivation Response: " . json_encode($response));
 
@@ -222,25 +277,20 @@ class StarlinkController extends Controller
         }
     }
 
-    public function activate_line(string $serviceLineNumber): JsonResponse
+    public function activate_line(Request $request): JsonResponse
     {
         $this->authorize('activateLine', auth()->user());
 
-        $serviceLineNumber = "SL-DF-9678649-75021-72";
+        $acc_id = $request->account_id;
+        $sl = $request->service_line;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Service line Activated successfully',
-            'data' => "200",
-        ]);
+        //$starlink_acc = StarlinkAccount::where('id', 2)->first();  // IMPACT ACC
 
-        $starlink_acc = StarlinkAccount::where('id', 2)->first();  // IMPACT ACC
-
-        Log::info("This is the Account used " . $starlink_acc->id);
+        Log::info("This is the Account used " . $acc_id);
 
         try {
             // $response = $this->starlink->deactivateServiceLine($serviceLineNumber);
-            $response = $this->starlink->resumeServiceLine($serviceLineNumber, $starlink_acc->id);
+            $response = $this->starlink->resumeServiceLine($sl, $acc_id);
 
             Log::info("Starlink Activation Response: " . json_encode($response));
 

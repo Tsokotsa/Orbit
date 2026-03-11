@@ -58,7 +58,7 @@
                         <!--begin::Nav item-->
                         <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="contacts"
-                                href="#">Contacts & Adress</a>
+                                href="#">Contacts & Address</a>
                         </li>
                         <!--end::Nav item-->
                         <!--begin::Nav item-->
@@ -148,8 +148,8 @@
 
                         initializeTabs(); // The tabs that should be active on the left
                         // THe tagify on the view
-                        var input1 = document.querySelector("#kt_tagify_1");
-                        new Tagify(input1);
+                        var ct = document.querySelector("#client_tags");
+                        new Tagify(ct);
 
                     },
                     error: function(xhr) {
@@ -158,11 +158,11 @@
                             $('#tab-content').html(xhr.responseText);
                         } else {
                             $('#tab-content').html(`
-                <div class="text-center text-muted py-10">
-                    <h3> Lost in Orbit</h3>
-                    <p>This tab does not exist.</p>
-                </div>
-            `);
+                        <div class="text-center text-muted py-10">
+                            <h3> Lost in Orbit</h3>
+                            <p>This tab does not exist.</p>
+                        </div>
+                        `);
                         }
                     }
                 });
@@ -1141,6 +1141,32 @@
         // On document ready
         KTUtil.onDOMContentLoaded(function() {
             KTCreateApp.init();
+        });
+    </script>
+
+    <script>
+        // Service View Modal
+        $(document).on("click", ".view-service", function() {
+
+            let serviceId = $(this).data("id");
+            let serviceTable = $(this).data("servicetable");
+
+            let modal = new bootstrap.Modal(document.getElementById('serviceModal'));
+            modal.show();
+
+            $("#serviceModalBody").html("Loading...");
+
+            $.ajax({
+                url: "/client/view-service?servicetable=" + serviceTable + '&service_id=' + serviceId,
+                type: "GET",
+                data: {
+                    client_id: window.CLIENT_ID
+                },
+                success: function(response) {
+                    $("#serviceModalBody").html(response);
+                }
+            });
+
         });
     </script>
 @endpush
