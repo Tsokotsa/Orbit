@@ -18,7 +18,8 @@ use App\Http\Controllers\ServiceController;
 //     return view('sign-in')->name('login');
 // });
 
-Route::get('/', [DefaultController::class, 'login'])->name('login');
+//Route::get('/', [DefaultController::class, 'login'])->name('login');
+Route::get('/', [DefaultController::class, 'login']);
 
 // General Midleware for Auth
 Route::middleware('auth')->group(function () {
