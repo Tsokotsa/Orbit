@@ -39,6 +39,22 @@
 
             </div>
 
+            <div class="d-flex justify-content-end mb-4">
+
+                <a href="/starlink/view-device/{{ $service_line }}/?acc_n={{ $account['id'] }}"
+                    class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm px-4 py-2">
+
+                    <i class="ki-outline ki-setting-2 fs-4"></i>
+
+                    <span class="fw-semibold">
+                        Device Configuration
+                    </span>
+
+                </a>
+
+            </div>
+
+
             <div class="row g-4">
 
                 <!-- Chart Column -->
@@ -55,18 +71,18 @@
 
                                     <div>
                                         <span class="fw-semibold text-primary">
-                                            <i class="bi bi-download me-1"></i>
-                                            <span id="totalDownload">0 GB</span>
+                                            <i class="bi bi-graph-up me-1"></i>
+                                            <span id="currentCycle">0 GB</span>
                                         </span>
-                                        <div class="small">Total Download</div>
+                                        <div class="small">Current Billing Cycle</div>
                                     </div>
 
                                     <div>
-                                        <span class="fw-semibold text-success">
-                                            <i class="bi bi-upload me-1"></i>
-                                            <span id="totalUpload">0 GB</span>
+                                        <span class="fw-semibold text-secondary">
+                                            <i class="bi bi-clock-history me-1"></i>
+                                            <span id="previousCycle" class="text-success">0 GB</span>
                                         </span>
-                                        <div class="small">Total Upload</div>
+                                        <div class="small">Previous Billing Cycle</div>
                                     </div>
 
                                 </div>
@@ -74,16 +90,13 @@
                             </div>
 
                             <div>
-                                <button class="btn btn-sm btn-primary me-2" onclick="loadChart('current')">
-                                    Current Month
-                                </button>
-
-                                <button class="btn btn-sm btn-light" onclick="loadChart('last')">
-                                    Last Month
+                                <button class="btn btn-sm btn-light" onclick="resetChart()">
+                                    <i class="bi bi-arrow-clockwise"></i> Refresh
                                 </button>
                             </div>
 
                         </div>
+
 
                         <div class="card-body pt-0">
                             <div id="tsokotsa_chart"></div>
@@ -236,7 +249,7 @@
 
                                 <div class="symbol symbol-50px me-4">
                                     <span class="symbol-label">
-                                        <i class="ki-outline ki-chart fs-2qx text-success"></i>
+                                        <i class="ki-outline ki-watch fs-2qx text-success"></i>
                                     </span>
                                 </div>
 
@@ -307,6 +320,58 @@
                 </div>
             </div>
 
+            <!-- Starlink Buttons Last card -->
+            <div class="row g-4 mt-4">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-body">
+                            <div class="row g-6">
+                                <!-- Auto Top Up -->
+                                <div class="col-md-6 d-flex justify-content-between align-items-start">
+                                    <div class="me-4">
+                                        <label class="fs-6 fw-semibold form-label mb-1">
+                                            <span class="required">Auto Top Up</span>
+                                        </label>
+                                        <div class="text-muted fs-7">
+                                            Automatically buy more data for this billing cycle whenever you run out.
+                                            Unused data expires at the end of each billing cycle.
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-switch form-check-custom form-check-solid">
+                                        <input class="form-check-input control-switch" type="checkbox" value="1"
+                                            data-control="auto_topup">
+                                    </div>
+                                </div>
+
+                                <!-- One time top up -->
+                                <div class="col-md-6 d-flex justify-content-between align-items-start">
+
+                                    <div class="me-4">
+
+                                        <label class="fs-6 fw-semibold form-label mb-1">
+                                            <span class="required">One Time Top Up</span>
+                                        </label>
+
+                                        <div class="text-muted fs-7">
+                                            Add data to subscription
+                                        </div>
+
+                                    </div>
+
+                                    <button class="btn btn-sm btn-light onetime-topup-btn">
+                                        <i class="bi bi-plus-circle"></i> Add
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- END of starlink Buttons -->
+
         </div>
     </div>
 
@@ -324,8 +389,10 @@
 
             let chart = null;
 
-            // Helper function to format totals in MB / GB
+            const initialUsage = @json($usage);
+
             function formatDataSize(valueInMb) {
+
                 if (valueInMb >= 1024) {
                     return (valueInMb / 1024).toFixed(2) + " GB";
                 } else if (valueInMb >= 1) {
@@ -333,63 +400,65 @@
                 } else {
                     return (valueInMb * 1024).toFixed(2) + " KB";
                 }
+
             }
 
             function renderChart(data) {
 
-                // Dynamically show MB / GB
-                document.getElementById('totalDownload').innerText = formatDataSize(data.total_download);
-                document.getElementById('totalUpload').innerText = formatDataSize(data.total_upload);
+                // Show billing cycle totals
+                document.getElementById("currentCycle").innerText =
+                    formatDataSize(data.current_cycle_total_gb * 1024);
+
+                document.getElementById("previousCycle").innerText =
+                    formatDataSize(data.previous_cycle_total_gb * 1024);
+
 
                 const options = {
+
                     series: [{
-                            name: "Download",
-                            data: data.download.map(Number)
-                        },
-                        {
-                            name: "Upload",
-                            data: data.upload.map(Number)
-                        }
-                    ],
+                        name: "Daily Usage",
+                        data: data.usage.map(Number)
+                    }],
+
                     chart: {
-                        type: 'bar',
+                        type: "bar",
                         height: 300,
                         toolbar: {
                             show: false
                         }
                     },
+
                     noData: {
-                        text: 'No data available on this orbit ...',
-                        align: 'center',
-                        verticalAlign: 'middle',
+                        text: "No data available on this orbit ...",
+                        align: "center",
+                        verticalAlign: "middle",
                         style: {
-                            color: '#6c757d',
-                            fontSize: '16px',
-                            fontFamily: 'Inter, sans-serif'
+                            color: "#6c757d",
+                            fontSize: "16px",
+                            fontFamily: "Inter, sans-serif"
                         }
                     },
+
                     plotOptions: {
                         bar: {
                             borderRadius: 6,
-                            columnWidth: '45%',
-                            dataLabels: {
-                                position: 'top'
-                            }
+                            columnWidth: "60%",
+                            distributed: false
                         }
                     },
+
                     stroke: {
                         show: true,
                         width: 2,
-                        colors: ['transparent']
+                        colors: ["transparent"]
                     },
-                    zoom: {
-                        enabled: false
-                    },
+
                     animations: {
                         enabled: true,
                         easing: "easeinout",
                         speed: 800
                     },
+
                     fill: {
                         type: "gradient",
                         gradient: {
@@ -400,21 +469,14 @@
                             stops: [0, 100]
                         }
                     },
-                    colors: ["#1B84FF", "#17C653"],
-                    dataLabels: {
-                        enabled: false
-                    },
-                    markers: {
-                        size: 4,
-                        strokeWidth: 2,
-                        hover: {
-                            size: 6
-                        }
-                    },
+
+                    colors: ["#1B84FF"],
+
                     grid: {
                         borderColor: "#f1f1f1",
                         strokeDashArray: 4
                     },
+
                     xaxis: {
                         type: "datetime",
                         categories: data.labels,
@@ -425,6 +487,10 @@
                             }
                         }
                     },
+                    dataLabels: {
+                        enabled: false
+                    },
+
                     yaxis: {
                         min: 0,
                         decimalsInFloat: 1,
@@ -436,14 +502,14 @@
                             }
                         }
                     },
+
                     tooltip: {
                         theme: "light",
-                        shared: true,
-                        intersect: false,
                         y: {
-                            formatter: val => val.toFixed(2) + " Mbps"
+                            formatter: val => formatDataSize(val)
                         }
                     },
+
                     legend: {
                         position: "top",
                         horizontalAlign: "right",
@@ -452,26 +518,38 @@
                             colors: "#212529"
                         }
                     },
+
+                    // Vertical billing cycle separator (no text label)
+                    annotations: {
+                        xaxis: [{
+                            x: data.cycle_reset_date,
+                            borderColor: "#FF4560",
+                            strokeDashArray: 4
+                        }]
+                    }
+
                 };
 
-                if (chart) chart.destroy();
-                chart = new ApexCharts(document.querySelector("#tsokotsa_chart"), options);
+                if (chart) {
+                    chart.destroy();
+                }
+
+                chart = new ApexCharts(
+                    document.querySelector("#tsokotsa_chart"),
+                    options
+                );
+
                 chart.render();
             }
 
-            // Initial render
-            const initialUsage = @json($usage);
             renderChart(initialUsage);
 
-            // Buttons for Current / Last month
-            window.loadChart = function(month, serviceLine) {
-                fetch(`/starlink/${serviceLine}/monthly-usage?month=${month}`)
-                    .then(res => res.json())
-                    .then(data => renderChart(data));
+            // Reset chart button
+            window.resetChart = function() {
+                renderChart(initialUsage);
             };
 
         });
-
 
         // Reusable Modal
 
@@ -577,5 +655,129 @@
         });
 
         // END Reusable Modal 
+
+
+        // Start button for topup and switchbox
+
+        $(document).ready(function() {
+
+            /*
+            |--------------------------------------------------------------------------
+            | AUTO TOP UP SWITCH
+            |--------------------------------------------------------------------------
+            */
+
+            $(".control-switch").on("change", function() {
+
+                let toggle = $(this);
+                let value = toggle.is(":checked") ? 1 : 0;
+
+                Swal.fire({
+                    title: "Confirm Change",
+                    text: "Are you sure you want to update Auto Top Up?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, update",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        $.ajax({
+                            url: "/starlink/update-auto-topup",
+                            method: "POST",
+                            data: {
+                                value: value,
+                                service_line: "{{ $service_line }}",
+                                _token: "{{ csrf_token() }}"
+                            },
+
+                            success: function() {
+
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Updated",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+
+                            },
+
+                            error: function() {
+
+                                Swal.fire("Error", "Unable to update setting", "error");
+
+                                toggle.prop("checked", !value);
+
+                            }
+                        });
+
+                    } else {
+
+                        toggle.prop("checked", !value);
+
+                    }
+
+                });
+
+            });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | ONE TIME TOP UP BUTTON
+            |--------------------------------------------------------------------------
+            */
+
+            $(".onetime-topup-btn").click(function() {
+
+                Swal.fire({
+                    title: "Add Data Top Up",
+                    text: "Add additional data to this subscription?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, add data",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        $.ajax({
+                            url: "/starlink/add-topup",
+                            method: "POST",
+                            data: {
+                                service_line: "{{ $service_line }}",
+                                _token: "{{ csrf_token() }}"
+                            },
+
+                            success: function() {
+
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Top Up Added",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+
+                            },
+
+                            error: function() {
+
+                                Swal.fire(
+                                    "Error",
+                                    "Unable to add top up",
+                                    "error"
+                                );
+
+                            }
+                        });
+
+                    }
+
+                });
+
+            });
+
+        });
     </script>
 @endpush

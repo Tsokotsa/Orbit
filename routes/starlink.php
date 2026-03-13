@@ -28,8 +28,8 @@ Route::group(['middleware' => ['auth', 'permission: view starlink account']], fu
 
     Route::put('/starlink/activate-plan', [StarlinkController::class, 'activate_line']);
 
-
-
+    // Starlink Device /starlink/view-device
+    Route::get('/starlink/view-device/{serviceLine}', [StarlinkController::class, 'view_device']);
 
     Route::get('/starlink/telemetry', [StarlinkController::class, 'telemetry']);
 

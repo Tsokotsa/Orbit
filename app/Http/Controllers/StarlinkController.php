@@ -9,6 +9,7 @@ use App\Models\StarlinkTelemetry;
 use App\Models\StarlinkRouterUsage;
 use Throwable;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -105,6 +106,47 @@ class StarlinkController extends Controller
         // }
     }
 
+    // public function view_subscriber(Request $request, $serviceLine)
+    // {
+    //     $user = auth()->user();
+    //     $service_line = $serviceLine;
+    //     $accountId = $request->acc_n;
+
+    //     $usage_monthly = $this->usageMonthly($service_line, $accountId);
+
+    //     $usage_today = $this->starlink->dataUsage($service_line, $accountId);
+
+    //     $account = StarlinkAccount::where('id', $accountId)->first();
+    //     $subscriber = $this->starlink->getServiceLine($service_line, $accountId);
+
+    //     $dataBlock = collect(
+    //         data_get($usage_today, 'content.results.0.servicePlan.dataPoolUsage.dataBlocks', [])
+    //     )->first();
+
+    //     $totalAmountGB = $dataBlock['totalAmountGB'] ?? 0;
+    //     $consumedAmountGB = $dataBlock['consumedAmountGB'] ?? 0;
+
+    //     $percentage = $totalAmountGB > 0 ? ($consumedAmountGB / $totalAmountGB) * 100 : 0;
+
+    //     $usage_today = [
+    //         'total_usage' => round($consumedAmountGB, 2),
+    //         'limit' => $totalAmountGB,
+    //         'percentage' => round($percentage, 2)
+    //     ];
+
+    //     return view("starlink.view-subscriber")
+    //         ->with([
+    //             'account' => $account,
+    //             'subscriber' => $subscriber,
+    //             'user' => $user,
+    //             'usage' => $usage_monthly,
+    //             'today_use' => $usage_today,
+    //             'service_line' => $service_line
+    //         ]);
+    // }
+
+
+
     public function view_subscriber(Request $request, $serviceLine)
     {
         $user = auth()->user();
@@ -115,42 +157,7 @@ class StarlinkController extends Controller
 
         $usage_today = $this->starlink->dataUsage($service_line, $accountId);
 
-        $account = StarlinkAccount::where('id', $accountId)->first();
-        $subscriber = $this->starlink->getServiceLine($service_line, $accountId);
-
-        $today = Carbon::today()->toDateString();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Get all daily usage records
-        |--------------------------------------------------------------------------
-        */
-
-        $daily = collect(data_get($usage_today, 'content.results.0.billingCycles', []))
-            ->flatMap(fn($cycle) => $cycle['dailyDataUsage'] ?? []);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Find today's usage
-        |--------------------------------------------------------------------------
-        */
-
-        $today_record = $daily->first(function ($d) use ($today) {
-            return Carbon::parse($d['date'])->toDateString() === $today;
-        });
-
-        $today_usage = $today_record
-            ? ($today_record['priorityGB'] ?? 0)
-            + ($today_record['optInPriorityGB'] ?? 0)
-            + ($today_record['standardGB'] ?? 0)
-            + ($today_record['nonBillableGB'] ?? 0)
-            : 0;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Get Data Pool values
-        |--------------------------------------------------------------------------
-        */
+        $account = StarlinkAccount::find($accountId);
 
         $dataBlock = collect(
             data_get($usage_today, 'content.results.0.servicePlan.dataPoolUsage.dataBlocks', [])
@@ -159,34 +166,97 @@ class StarlinkController extends Controller
         $totalAmountGB = $dataBlock['totalAmountGB'] ?? 0;
         $consumedAmountGB = $dataBlock['consumedAmountGB'] ?? 0;
 
-        $percentage = $totalAmountGB > 0
-            ? ($consumedAmountGB / $totalAmountGB) * 100
-            : 0;
+        $percentage = $totalAmountGB > 0 ? ($consumedAmountGB / $totalAmountGB) * 100 : 0;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Final variable passed to Blade
-        |--------------------------------------------------------------------------
-        */
+
+        $subscriber = $this->starlink->getServiceLine($service_line, $accountId);
 
         $usage_today = [
-            'today_usage' => round($today_usage, 2),
             'total_usage' => round($consumedAmountGB, 2),
             'limit' => $totalAmountGB,
             'percentage' => round($percentage, 2)
         ];
 
-        return view("starlink.view-subscriber")
-            ->with([
-                'account' => $account,
-                'subscriber' => $subscriber,
-                'user' => $user,
-                'usage' => $usage_monthly,
-                'today_use' => $usage_today,
-                'service_line' => $service_line
-            ]);
+        return view("starlink.view-subscriber")->with([
+            'account' => $account,
+            'subscriber' => $subscriber,
+            'user' => $user,
+            'usage' => $usage_monthly,
+            'today_use' => $usage_today,
+            'service_line' => $service_line
+        ]);
     }
 
+    public function view_device(Request $request, $serviceLine)
+    {
+        $user = auth()->user();
+
+        $service_line = $serviceLine;
+        $accountId = $request->acc_n;
+
+        $device_data = [];
+
+        // Get device from Starlink API
+        $device = $this->starlink->getUserTerminalByServiceLine($service_line, $accountId);
+
+        $device_status = $this->starlink->telemetryTimeFilter($device['routers'][0]['routerId'], $device['userTerminalId'], $accountId);
+
+        // dd($device_status);
+
+        if (!empty($device)) {
+
+            $device_data = [
+                'kit' => $device['kitSerialNumber'] ?? null,
+                'dish_sn' => $device['dishSerialNumber'] ?? null,
+                'router_id' => $device['routers'][0]['routerId'] ?? null,
+                'terminal_id' => $device['userTerminalId'] ?? null,
+            ];
+
+            // Fetch telemetry if IDs exist
+            if (!empty($device_data['router_id']) && !empty($device_data['terminal_id'])) {
+
+                $telemetry = $this->starlink->telemetry(
+                    $device_data['router_id'],
+                    $device_data['terminal_id'],
+                    $accountId
+                );
+
+                $router = !empty($telemetry['content']['routers'])
+                    ? reset($telemetry['content']['routers'])
+                    : [];
+
+                $terminal = !empty($telemetry['content']['userTerminals'])
+                    ? reset($telemetry['content']['userTerminals'])
+                    : [];
+
+                $device_data['software_version'] = $terminal['softwareVersion'] ?? null;
+
+                // Convert uptimeSeconds to human-readable
+                if (!empty($terminal['uptimeSeconds'])) {
+                    $device_data['uptime'] = CarbonInterval::seconds($terminal['uptimeSeconds'])
+                        ->cascade()
+                        ->forHumans(['short' => true]); // e.g., "2d 5h 30m"
+                } else {
+                    $device_data['uptime'] = '—';
+                }
+
+                $device_data['starlink_id'] = $terminal['userTerminalId'] ?? null;
+
+                // Short timestamp for last updated
+                $device_data['router_last_updated'] = isset($router['timestamp'])
+                    ? Carbon::parse($router['timestamp'])->diffForHumans() // e.g., "5 minutes ago"
+                    : '—';
+            }
+        }
+
+        return view('starlink.view-device', [
+            'user' => $user,
+            'device_data' => $device_data,
+            'service_line' => $service_line,
+            'accountId' => $accountId,
+            'device_status' => $device_status
+        ]);
+    }
 
 
     public function update_nickname(Request $request)
@@ -196,8 +266,6 @@ class StarlinkController extends Controller
         $acc_id = $request->account_id;
         $sl = $request->service_line;
         $nickname = $request->nickname;
-
-        //$starlink_acc = StarlinkAccount::where('id', $acc_id)->first();  // IMPACT ACC
 
         try {
 
@@ -404,101 +472,155 @@ class StarlinkController extends Controller
         ]);
     }
 
-    public function usageMonthly($service_line, $acc_id, $returnJson = false)
+    // public function usageMonthly($service_line, $acc_id, $returnJson = false)
+    // {
+    //     Log::info("TSOKOTSA =========== Getting Service Line for {$service_line} and ACC: {$acc_id}");
+
+    //     $sl = $this->starlink->getUserTerminalByServiceLine($service_line, $acc_id);
+
+    //     // ✅ Validate service line response safely
+    //     if (!$sl || empty($sl['routerId'])) {
+    //         Log::warning("Service Line {$service_line} has no router assigned or not found.");
+
+    //         return $returnJson
+    //             ? response()->json($this->emptyUsageResponse())
+    //             : $this->emptyUsageResponse();
+    //     }
+
+    //     $routerId = $sl['routerId'];
+    //     $device = "Router-" . $routerId;
+
+    //     Log::info("TSOKOTSA +++++++++++++++++++++++++ Querying Router [ {$device} ] +++++++++++++++++++++++++++++");
+
+    //     $month = request('month', 'current');
+    //     $now = now(); // Africa/Maputo
+
+    //     if ($month === 'last') {
+    //         $start = $now->copy()->subMonth()->startOfMonth();
+    //         $end = $now->copy()->subMonth()->endOfMonth();
+    //     } else {
+    //         $start = $now->copy()->startOfMonth();
+    //         $end = $now->copy()->endOfMonth();
+    //     }
+
+    //     $queryStart = $start->copy()->startOfDay();
+    //     $queryEnd = $end->copy()->endOfDay();
+
+    //     Log::info("Querying usage from {$queryStart} to {$queryEnd}");
+
+    //     // ✅ Fetch & aggregate usage safely
+    //     $usageCollection = StarlinkRouterUsage::where('device_id', $device)
+    //         ->whereBetween('recorded_at', [$queryStart, $queryEnd])
+    //         ->get();
+
+    //     // If no records found — return structured empty response
+    //     if ($usageCollection->isEmpty()) {
+    //         Log::info("No usage records found for {$device}");
+
+    //         return $returnJson
+    //             ? response()->json($this->emptyUsageResponse())
+    //             : $this->emptyUsageResponse();
+    //     }
+
+    //     $usage = $usageCollection
+    //         ->groupBy(function ($item) {
+    //             return \Carbon\Carbon::parse($item->recorded_at)->format('Y-m-d');
+    //         })
+    //         ->map(function ($items) {
+    //             return (object) [
+    //                 'download_mb' => $items->sum(fn($row) => ($row->rx_mbps * 60) / 8),
+    //                 'upload_mb' => $items->sum(fn($row) => ($row->tx_mbps * 60) / 8),
+    //             ];
+    //         });
+
+    //     $period = \Carbon\CarbonPeriod::create(
+    //         $start->copy()->startOfDay(),
+    //         $end->copy()->startOfDay()
+    //     );
+
+    //     $labels = [];
+    //     $download = [];
+    //     $upload = [];
+
+    //     foreach ($period as $date) {
+    //         $day = $date->format('Y-m-d');
+    //         $labels[] = $day;
+
+    //         if (isset($usage[$day])) {
+    //             $download[] = round($usage[$day]->download_mb, 2);
+    //             $upload[] = round($usage[$day]->upload_mb, 2);
+    //         } else {
+    //             $download[] = 0;
+    //             $upload[] = 0;
+    //         }
+    //     }
+
+    //     $result = [
+    //         'labels' => $labels,
+    //         'download' => $download,
+    //         'upload' => $upload,
+    //         'total_download' => round(array_sum($download), 2),
+    //         'total_upload' => round(array_sum($upload), 2),
+    //     ];
+
+    //     return $returnJson
+    //         ? response()->json($result)
+    //         : $result;
+    // }
+
+    public function usageMonthly($serviceLine, $accountId)
     {
-        Log::info("TSOKOTSA =========== Getting Service Line for {$service_line} and ACC: {$acc_id}");
+        $response = $this->starlink->dataUsage($serviceLine, $accountId);
 
-        $sl = $this->starlink->getUserTerminalByServiceLine($service_line, $acc_id);
-
-        // ✅ Validate service line response safely
-        if (!$sl || empty($sl['routerId'])) {
-            Log::warning("Service Line {$service_line} has no router assigned or not found.");
-
-            return $returnJson
-                ? response()->json($this->emptyUsageResponse())
-                : $this->emptyUsageResponse();
-        }
-
-        $routerId = $sl['routerId'];
-        $device = "Router-" . $routerId;
-
-        Log::info("TSOKOTSA +++++++++++++++++++++++++ Querying Router [ {$device} ] +++++++++++++++++++++++++++++");
-
-        $month = request('month', 'current');
-        $now = now(); // Africa/Maputo
-
-        if ($month === 'last') {
-            $start = $now->copy()->subMonth()->startOfMonth();
-            $end = $now->copy()->subMonth()->endOfMonth();
-        } else {
-            $start = $now->copy()->startOfMonth();
-            $end = $now->copy()->endOfMonth();
-        }
-
-        $queryStart = $start->copy()->startOfDay();
-        $queryEnd = $end->copy()->endOfDay();
-
-        Log::info("Querying usage from {$queryStart} to {$queryEnd}");
-
-        // ✅ Fetch & aggregate usage safely
-        $usageCollection = StarlinkRouterUsage::where('device_id', $device)
-            ->whereBetween('recorded_at', [$queryStart, $queryEnd])
-            ->get();
-
-        // If no records found — return structured empty response
-        if ($usageCollection->isEmpty()) {
-            Log::info("No usage records found for {$device}");
-
-            return $returnJson
-                ? response()->json($this->emptyUsageResponse())
-                : $this->emptyUsageResponse();
-        }
-
-        $usage = $usageCollection
-            ->groupBy(function ($item) {
-                return \Carbon\Carbon::parse($item->recorded_at)->format('Y-m-d');
-            })
-            ->map(function ($items) {
-                return (object) [
-                    'download_mb' => $items->sum(fn($row) => ($row->rx_mbps * 60) / 8),
-                    'upload_mb' => $items->sum(fn($row) => ($row->tx_mbps * 60) / 8),
-                ];
-            });
-
-        $period = \Carbon\CarbonPeriod::create(
-            $start->copy()->startOfDay(),
-            $end->copy()->startOfDay()
-        );
+        $cycles = data_get($response, 'content.results.0.billingCycles', []);
 
         $labels = [];
-        $download = [];
-        $upload = [];
+        $usage = [];
 
-        foreach ($period as $date) {
-            $day = $date->format('Y-m-d');
-            $labels[] = $day;
+        $previousTotal = 0;
+        $currentTotal = 0;
+        $cycleResetDate = null;
 
-            if (isset($usage[$day])) {
-                $download[] = round($usage[$day]->download_mb, 2);
-                $upload[] = round($usage[$day]->upload_mb, 2);
-            } else {
-                $download[] = 0;
-                $upload[] = 0;
+        foreach ($cycles as $index => $cycle) {
+
+            // Build graph data
+            foreach ($cycle['dailyDataUsage'] ?? [] as $day) {
+
+                $date = Carbon::parse($day['date'])->format('Y-m-d');
+
+                $usageMb = ($day['priorityGB'] ?? 0) * 1024;
+
+                $labels[] = $date;
+                $usage[] = round($usageMb, 2);
+            }
+
+            // Extract totals directly from API
+            $block = data_get($cycle, 'dataPoolUsage.0.dataBlocks.0');
+
+            if ($block) {
+
+                if ($index === count($cycles) - 1) {
+                    $currentTotal = $block['consumedAmountGB'] ?? 0;
+
+                    // Billing cycle reset line for graph
+                    $cycleResetDate = $cycle['startDate'] ?? null;
+
+                } else {
+                    $previousTotal = $block['consumedAmountGB'] ?? 0;
+                }
             }
         }
 
-        $result = [
-            'labels' => $labels,
-            'download' => $download,
-            'upload' => $upload,
-            'total_download' => round(array_sum($download), 2),
-            'total_upload' => round(array_sum($upload), 2),
+        return [
+            "labels" => $labels,
+            "usage" => $usage,
+            "previous_cycle_total_gb" => $previousTotal,
+            "current_cycle_total_gb" => $currentTotal,
+            "cycle_reset_date" => $cycleResetDate
         ];
-
-        return $returnJson
-            ? response()->json($result)
-            : $result;
     }
+
+
 
     private function emptyUsageResponse()
     {

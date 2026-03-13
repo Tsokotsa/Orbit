@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
 use Throwable;
+use Carbon\Carbon;
 
 class StarlinkService
 {
@@ -160,23 +161,33 @@ class StarlinkService
         return $this->request('get', '/user-terminals', [], $accountId, $silent);
     }
 
+    // public function getUserTerminalByServiceLine(string $serviceLineNumber, ?int $accountId = null): array
+    // {
+    //     Log::info("Running function " . __FUNCTION__ . " For SL: [ $serviceLineNumber ]");
+
+    //     $res = $this->request('get', '/user-terminals', ['serviceLineNumbers' => $serviceLineNumber], $accountId);
+
+    //     $results = $res['content']['results'] ?? [];
+    //     if (!empty($results) && !empty($results[0]['routers'])) {
+    //         return $results[0]['routers'][0];
+    //     }
+    //     return [];
+    // }
+
     public function getUserTerminalByServiceLine(string $serviceLineNumber, ?int $accountId = null): array
     {
         Log::info("Running function " . __FUNCTION__ . " For SL: [ $serviceLineNumber ]");
 
-        $res = $this->request(
-            'get',
-            '/user-terminals',
-            [
-                'serviceLineNumbers' => $serviceLineNumber
-            ],
-            $accountId
-        );
+        $res = $this->request('get', '/user-terminals', [
+            'serviceLineNumbers' => $serviceLineNumber
+        ], $accountId);
 
         $results = $res['content']['results'] ?? [];
-        if (!empty($results) && !empty($results[0]['routers'])) {
-            return $results[0]['routers'][0];
+
+        if (!empty($results)) {
+            return $results[0]; // return full service line object
         }
+
         return [];
     }
 
@@ -333,12 +344,30 @@ class StarlinkService
     }
 
 
-    public function dataUsage(string $serviceLineNumber, ?int $accountId = null): array
+    // public function dataUsage(string $serviceLineNumber, ?int $accountId = null): array
+    // {
+    //     $endpoint = "/data-usage/query";
+
+    //     $payload = [
+    //         'serviceLineNumbers' => [$serviceLineNumber], // must be array
+    //     ];
+
+    //     Log::info("Data Usage is being queried for", [
+    //         'serviceLine' => $serviceLineNumber,
+    //         'accountId' => $accountId,
+    //     ]);
+
+    //     return $this->request('post', $endpoint, $payload, $accountId);
+    // }
+
+    public function dataUsage(string $serviceLineNumber, int $accountId)
     {
         $endpoint = "/data-usage/query";
 
         $payload = [
-            'serviceLineNumbers' => [$serviceLineNumber], // must be array
+            "serviceLineNumbers" => [$serviceLineNumber],
+            "previousBillingCycles" => 1,
+            "activeServiceLinesOnly" => true
         ];
 
         Log::info("Data Usage is being queried for", [
@@ -348,5 +377,88 @@ class StarlinkService
 
         return $this->request('post', $endpoint, $payload, $accountId);
     }
+
+    public function telemetry(string $routerId, string $terminalId, int $accountId)
+    {
+        $endpoint = "/telemetry/query";
+
+        $payload = [
+            "includeUserTerminals" => true,
+            "includeRouters" => true,
+            "routerIds" => [$routerId],
+            "userTerminalIds" => [$terminalId]
+        ];
+
+        Log::info("Starlink telemetry is being queried", [
+            'routerId' => $routerId,
+            'terminalId' => $terminalId,
+            'accountId' => $accountId,
+        ]);
+
+        return $this->request('post', $endpoint, $payload, $accountId);
+    }
+
+    public function telemetryTimeFilter(
+        string $routerId,
+        string $terminalId,
+        int $accountId,
+        string $range = '15m'
+    ) {
+
+        $endpoint = "/telemetry/query";
+
+        $endTime = Carbon::now();
+
+        switch ($range) {
+
+            case '30m':
+                $startTime = $endTime->copy()->subMinutes(30);
+                $granularity = "1m";
+                break;
+
+            case '1h':
+                $startTime = $endTime->copy()->subHour();
+                $granularity = "5m";
+                break;
+
+            case '1mo':
+                $startTime = $endTime->copy()->subMonth();
+                $granularity = "1d";
+                break;
+
+            case '15m':
+            default:
+                $startTime = $endTime->copy()->subMinutes(15);
+                $granularity = "1m";
+        }
+
+        $payload = [
+            "includeUserTerminals" => true,
+            "includeRouters" => true,
+            "routerIds" => [$routerId],
+            "userTerminalIds" => [$terminalId],
+
+            "metrics" => [
+                "ping_latency_ms",
+                "ping_loaded_latency_ms",
+                "ping_drop_rate"
+            ],
+
+            "startTime" => $startTime->toIso8601String(),
+            "endTime" => $endTime->toIso8601String(),
+
+            // IMPORTANT for graph
+            "granularity" => $granularity
+        ];
+
+        Log::info("Starlink telemetry graph query", [
+            'routerId' => $routerId,
+            'terminalId' => $terminalId,
+            'range' => $range
+        ]);
+
+        return $this->request('post', $endpoint, $payload, $accountId);
+    }
+
 
 }
