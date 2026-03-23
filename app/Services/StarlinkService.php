@@ -61,9 +61,11 @@ class StarlinkService
         string $endpoint,
         array $payload = [],
         ?int $accountId = null,
-        bool $silent = false // useful for jobs
+        bool $silent = false
     ): array {
+
         $url = $this->apiBase . $endpoint;
+
         $correlationId = (string) Str::uuid();
         $startTime = microtime(true);
 
@@ -71,28 +73,51 @@ class StarlinkService
 
             $response = Http::withToken($this->getAccessToken($accountId))
                         ->acceptJson()
-                        ->timeout(20)
-                        ->retry(3, 500, function ($exception, $request) {
-                            return $exception instanceof \Illuminate\Http\Client\ConnectionException;
-                        })
+                        ->connectTimeout(10)
+                        ->timeout(90)
+
+                        ->retry(
+                            4,
+                            function ($attempt) {
+                                return 1000 * $attempt; // exponential backoff
+                            },
+                            function ($exception, $request) {
+
+                                if ($exception instanceof \Illuminate\Http\Client\ConnectionException) {
+                                    return true;
+                                }
+
+                                if ($exception instanceof \Illuminate\Http\Client\RequestException) {
+                                    $status = $exception->response?->status();
+
+                                    return in_array($status, [429, 500, 502, 503, 504]);
+                                }
+
+                                return false;
+                            }
+                        )
+
                         ->withHeaders([
                             'X-Correlation-ID' => $correlationId,
                         ])
+
                 ->$method($url, $payload);
 
             $duration = round((microtime(true) - $startTime) * 1000, 2);
 
             if (!$response->successful()) {
-                Log::error('Starlink API failure', [
+
+                Log::warning('Starlink API returned non-success status', [
                     'correlation_id' => $correlationId,
-                    'method' => strtoupper($method),
                     'endpoint' => $endpoint,
+                    'method' => strtoupper($method),
                     'account_id' => $accountId,
                     'status' => $response->status(),
                     'duration_ms' => $duration,
-                    'response_body' => $response->body(),
+                    'body' => $response->body(),
                 ]);
             } else {
+
                 Log::info('Starlink API success', [
                     'correlation_id' => $correlationId,
                     'endpoint' => $endpoint,
@@ -111,7 +136,6 @@ class StarlinkService
                 'endpoint' => $endpoint,
                 'account_id' => $accountId,
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             if (!$silent) {
@@ -180,7 +204,7 @@ class StarlinkService
 
         $res = $this->request('get', '/user-terminals', [
             'serviceLineNumbers' => $serviceLineNumber
-        ], $accountId);
+        ], $accountId, $silent = true);
 
         $results = $res['content']['results'] ?? [];
 
@@ -399,7 +423,7 @@ class StarlinkService
     }
 
     public function telemetryTimeFilter(
-        string $routerId,
+        ?string $routerId,
         string $terminalId,
         int $accountId,
         string $range = '15m'
@@ -410,7 +434,6 @@ class StarlinkService
         $endTime = Carbon::now();
 
         switch ($range) {
-
             case '30m':
                 $startTime = $endTime->copy()->subMinutes(30);
                 $granularity = "1m";
@@ -426,7 +449,6 @@ class StarlinkService
                 $granularity = "1d";
                 break;
 
-            case '15m':
             default:
                 $startTime = $endTime->copy()->subMinutes(15);
                 $granularity = "1m";
@@ -434,8 +456,7 @@ class StarlinkService
 
         $payload = [
             "includeUserTerminals" => true,
-            "includeRouters" => true,
-            "routerIds" => [$routerId],
+            "includeRouters" => !empty($routerId),
             "userTerminalIds" => [$terminalId],
 
             "metrics" => [
@@ -446,16 +467,13 @@ class StarlinkService
 
             "startTime" => $startTime->toIso8601String(),
             "endTime" => $endTime->toIso8601String(),
-
-            // IMPORTANT for graph
             "granularity" => $granularity
         ];
 
-        Log::info("Starlink telemetry graph query", [
-            'routerId' => $routerId,
-            'terminalId' => $terminalId,
-            'range' => $range
-        ]);
+        // Only add router filter if router exists
+        if (!empty($routerId)) {
+            $payload["routerIds"] = [$routerId];
+        }
 
         return $this->request('post', $endpoint, $payload, $accountId);
     }

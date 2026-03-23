@@ -13,6 +13,7 @@ use App\Models\OdooPartner;
 use App\Models\OdooInvoice;
 use App\Helpers\Tsokotsa\generalHelpers;
 use App\Http\Controllers\ServiceController;
+use App\Models\StarlinkDataUsageNotification;
 
 
 
@@ -201,6 +202,21 @@ class ClientController extends Controller
                 return view('clients.tabs.contacts', [
                     'contacts' => $contacts,
                     'cid' => $clientId
+                ]);
+
+            case 'notifications':
+
+                $clientId = $request->query('client_id');
+                $userId = auth()->id(); // currently logged-in user
+
+                $contacts_notifications = StarlinkDataUsageNotification::where('client_id', $clientId)->get();
+
+                //dd($contacts);
+                Log::info("Accessed the ====    NOTIFICATIONS TAB    ===========");
+
+                return view('clients.tabs.notifications', [
+                    'cid' => $clientId,
+                    'contacts_notification' => $contacts_notifications
                 ]);
 
             case 'finance':

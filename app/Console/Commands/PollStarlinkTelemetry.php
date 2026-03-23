@@ -11,16 +11,17 @@ use Log;
 
 class PollStarlinkTelemetry extends Command
 {
-    protected $signature = 'starlink:poll';
+    protected $signature = 'starlink:poll {jobId}';
     protected $description = 'Poll Starlink telemetry stream';
 
     public function handle(): int
     {
-        \App\Jobs\PollStarlinkTelemetryJob::dispatch();
-        $this->info('Starlink poll job dispatched');
+        $jobId = $this->argument('jobId');
+
+        \App\Jobs\PollStarlinkTelemetryJob::dispatch($jobId);
+
+        $this->info("Starlink poll job dispatched for jobId {$jobId}");
 
         return self::SUCCESS;
     }
-
-
 }

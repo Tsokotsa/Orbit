@@ -4,70 +4,82 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Services\Starlink\TelemetryProcessor;
 use App\Models\StarlinkAccount;
 
 class StarlinkTelemetryPoller extends Command
 {
-    protected $signature = 'starlink:poll {accountId?}';
+    protected $signature = 'starlink:poll {jobId?}';
     protected $description = 'Poll Starlink Telemetry Stream (Enterprise Mode)';
-
-    // public function handle(TelemetryProcessor $processor)
-    // {
-    //     $accountId = $this->argument('accountId');
-
-    //     Log::channel('starlink')->info('Starlink telemetry poller started', [
-    //         'account_id' => $accountId,
-    //     ]);
-
-    //     try {
-    //         $processor->pollAndProcess($accountId);
-    //     } catch (\Throwable $e) {
-    //         Log::channel('starlink')->critical(
-    //             'Telemetry Poll failed',
-    //             ['message' => $e->getMessage()]
-    //         );
-    //     }
-
-
-    // }
 
     public function handle(TelemetryProcessor $processor)
     {
-        if (app()->environment('local')) {
-            Log::warning('This Action will be aborted — running in LOCAL environment.');
-            return;
+        $jobId = $this->argument('jobId');
+
+        try {
+
+            if (app()->environment('local2')) {
+                Log::warning('Telemetry polling disabled in LOCAL');
+                return Command::SUCCESS;
+            }
 
             $accounts = StarlinkAccount::where('active', 'y')->get();
 
             if ($accounts->isEmpty()) {
-                Log::channel('starlink')->warning('No active Starlink accounts found');
+                Log::warning('No active Starlink accounts found');
                 return Command::FAILURE;
             }
 
-            Log::channel('starlink')->info('Starlink telemetry poller started', [
+            Log::info('Starlink telemetry poller started', [
                 'accounts_count' => $accounts->count(),
+                'jobId' => $jobId
             ]);
 
+            $totalRecords = 0;
+
             foreach ($accounts as $account) {
-                try {
-                    Log::channel('starlink')->info('Polling account', [
-                        'account_name' => $account->account_name,
-                    ]);
 
-                    $processor->pollAndProcess($account->id);
+                Log::info('Polling account', [
+                    'account_name' => $account->account_name,
+                ]);
 
-                } catch (\Throwable $e) {
-                    Log::channel('starlink')->critical('Telemetry poll failed', [
-                        'account_name' => $account->account_name,
-                        'message' => $e->getMessage(),
+                $count = $processor->pollAndProcess($account->id);
+
+                $totalRecords += $count;
+            }
+
+            // ✅ Update job tracker
+            if ($jobId) {
+                DB::table('starlink_telemetry_refresh')
+                    ->where('id', $jobId)
+                    ->update([
+                        'status' => 'done',
+                        'records_updated' => $totalRecords,
+                        'notes' => "Updated {$totalRecords} telemetry records",
+                        'updated_at' => now(),
                     ]);
-                }
             }
 
             return Command::SUCCESS;
+
+        } catch (\Throwable $e) {
+
+            Log::critical('Starlink telemetry poll failed', [
+                'message' => $e->getMessage(),
+            ]);
+
+            if ($jobId) {
+                DB::table('starlink_telemetry_refresh')
+                    ->where('id', $jobId)
+                    ->update([
+                        'status' => 'failed',
+                        'notes' => $e->getMessage(),
+                        'updated_at' => now(),
+                    ]);
+            }
+
+            return Command::FAILURE;
         }
     }
-
-
 }

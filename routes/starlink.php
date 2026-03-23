@@ -33,6 +33,16 @@ Route::group(['middleware' => ['auth', 'permission: view starlink account']], fu
 
     Route::get('/starlink/telemetry', [StarlinkController::class, 'telemetry']);
 
+    // Refresh Starlink Telemetry Trigger button
+    // web.php
+    Route::post('/starlink/refresh-telemetry', [StarlinkController::class, 'refreshTelemetry'])->name('starlink.refresh-telemetry');
+
+    Route::get('/starlink/refresh-status/{jobId}', [StarlinkController::class, 'refreshStatus']);
+
+    // Store notifications 
+
+    Route::post('/starlink/notifications/store', [StarlinkController::class, 'storeNotification']);
+
 
     // Testing Graph
 

@@ -11,10 +11,13 @@ use Throwable;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
+use App\Jobs\PollStarlinkTelemetryJob;
+use App\Models\StarlinkDataUsageNotification;
 
 class StarlinkController extends Controller
 {
@@ -106,47 +109,6 @@ class StarlinkController extends Controller
         // }
     }
 
-    // public function view_subscriber(Request $request, $serviceLine)
-    // {
-    //     $user = auth()->user();
-    //     $service_line = $serviceLine;
-    //     $accountId = $request->acc_n;
-
-    //     $usage_monthly = $this->usageMonthly($service_line, $accountId);
-
-    //     $usage_today = $this->starlink->dataUsage($service_line, $accountId);
-
-    //     $account = StarlinkAccount::where('id', $accountId)->first();
-    //     $subscriber = $this->starlink->getServiceLine($service_line, $accountId);
-
-    //     $dataBlock = collect(
-    //         data_get($usage_today, 'content.results.0.servicePlan.dataPoolUsage.dataBlocks', [])
-    //     )->first();
-
-    //     $totalAmountGB = $dataBlock['totalAmountGB'] ?? 0;
-    //     $consumedAmountGB = $dataBlock['consumedAmountGB'] ?? 0;
-
-    //     $percentage = $totalAmountGB > 0 ? ($consumedAmountGB / $totalAmountGB) * 100 : 0;
-
-    //     $usage_today = [
-    //         'total_usage' => round($consumedAmountGB, 2),
-    //         'limit' => $totalAmountGB,
-    //         'percentage' => round($percentage, 2)
-    //     ];
-
-    //     return view("starlink.view-subscriber")
-    //         ->with([
-    //             'account' => $account,
-    //             'subscriber' => $subscriber,
-    //             'user' => $user,
-    //             'usage' => $usage_monthly,
-    //             'today_use' => $usage_today,
-    //             'service_line' => $service_line
-    //         ]);
-    // }
-
-
-
     public function view_subscriber(Request $request, $serviceLine)
     {
         $user = auth()->user();
@@ -159,9 +121,10 @@ class StarlinkController extends Controller
 
         $account = StarlinkAccount::find($accountId);
 
-        $dataBlock = collect(
-            data_get($usage_today, 'content.results.0.servicePlan.dataPoolUsage.dataBlocks', [])
-        )->first();
+        $dataBlocks = data_get($usage_today, 'content.results.0.servicePlan.dataPoolUsage.dataBlocks', []);
+
+        $dataBlock = collect($dataBlocks)
+            ->first(fn($block) => isset($block['totalAmountGB']) && $block['totalAmountGB'] > 0);
 
         $totalAmountGB = $dataBlock['totalAmountGB'] ?? 0;
         $consumedAmountGB = $dataBlock['consumedAmountGB'] ?? 0;
@@ -190,65 +153,96 @@ class StarlinkController extends Controller
     public function view_device(Request $request, $serviceLine)
     {
         $user = auth()->user();
+        // Get Last executed Job
+        $last_executed = DB::table("starlink_telemetry_refresh")
+            ->where("status", "done")
+            ->latest('updated_at')
+            ->first();
+
+        //dd($last_executed->updated_at);
 
         $service_line = $serviceLine;
         $accountId = $request->acc_n;
 
         $device_data = [];
 
-        // Get device from Starlink API
+        // Get device from Starlink API (basic info, you can cache this too if needed)
         $device = $this->starlink->getUserTerminalByServiceLine($service_line, $accountId);
 
-        $device_status = $this->starlink->telemetryTimeFilter($device['routers'][0]['routerId'], $device['userTerminalId'], $accountId);
+        //dd($device);
 
-        // dd($device_status);
+        // Safely extract IDs
+        $routerId = data_get($device, 'routers.0.routerId');
+        $terminalId = $device['userTerminalId'] ?? null;
+
+        // Fetch latest telemetry snapshot from local DB
+        $telemetry = null;
+        if ($terminalId) {
+            $telemetry = StarlinkRouterUsage::where('user_terminal_id', $terminalId)->first();
+        }
 
         if (!empty($device)) {
 
             $device_data = [
                 'kit' => $device['kitSerialNumber'] ?? null,
                 'dish_sn' => $device['dishSerialNumber'] ?? null,
-                'router_id' => $device['routers'][0]['routerId'] ?? null,
-                'terminal_id' => $device['userTerminalId'] ?? null,
+                'router_id' => $routerId,
+                'terminal_id' => $terminalId,
             ];
 
-            // Fetch telemetry if IDs exist
-            if (!empty($device_data['router_id']) && !empty($device_data['terminal_id'])) {
+            if ($telemetry) {
 
-                $telemetry = $this->starlink->telemetry(
-                    $device_data['router_id'],
-                    $device_data['terminal_id'],
-                    $accountId
-                );
-
-                $router = !empty($telemetry['content']['routers'])
-                    ? reset($telemetry['content']['routers'])
-                    : [];
-
-                $terminal = !empty($telemetry['content']['userTerminals'])
-                    ? reset($telemetry['content']['userTerminals'])
-                    : [];
-
-                $device_data['software_version'] = $terminal['softwareVersion'] ?? null;
+                $device_data['software_version'] = $telemetry->terminal_sw ?? null;
 
                 // Convert uptimeSeconds to human-readable
-                if (!empty($terminal['uptimeSeconds'])) {
-                    $device_data['uptime'] = CarbonInterval::seconds($terminal['uptimeSeconds'])
+                if (!empty($telemetry->terminal_uptime)) {
+                    $device_data['uptime'] = CarbonInterval::seconds($telemetry->terminal_uptime)
                         ->cascade()
-                        ->forHumans(['short' => true]); // e.g., "2d 5h 30m"
+                        ->forHumans(['short' => true]);
                 } else {
                     $device_data['uptime'] = '—';
                 }
 
-                $device_data['starlink_id'] = $terminal['userTerminalId'] ?? null;
+                $device_data['starlink_id'] = $telemetry->user_terminal_id ?? null;
 
-                // Short timestamp for last updated
-                $device_data['router_last_updated'] = isset($router['timestamp'])
-                    ? Carbon::parse($router['timestamp'])->diffForHumans() // e.g., "5 minutes ago"
+                // Last router update
+                $device_data['router_last_updated'] = isset($last_executed->updated_at)
+                    ? Carbon::parse($last_executed->updated_at)->diffForHumans()
                     : '—';
             }
         }
 
+        // Prepare device_status for graphs (same format as before)
+        $device_status = [
+            'content' => [
+                'routers' => $telemetry ? [
+                    $routerId => [
+                        'routerId' => $routerId,
+                        'internetPingLatencyMs' => $telemetry->internet_latency ?? null,
+                        'internetPingDropRate' => $telemetry->internet_drop ?? null,
+                        'popPingLatencyMs' => $telemetry->pop_latency ?? null,
+                        'popPingDropRate' => $telemetry->pop_drop ?? null,
+                        'dishPingLatencyMs' => $telemetry->dish_latency ?? null,
+                        'dishPingDropRate' => $telemetry->dish_drop ?? null,
+                        'clients2GhzRxRateMbpsAvg' => $telemetry->clients_2ghz_rx_rate_avg ?? 0,
+                        'clients2GhzTxRateMbpsAvg' => $telemetry->clients_2ghz_tx_rate_avg ?? 0,
+                        'clients5GhzRxRateMbpsAvg' => $telemetry->clients_5ghz_rx_rate_avg ?? 0,
+                        'clients5GhzTxRateMbpsAvg' => $telemetry->clients_5ghz_tx_rate_avg ?? 0,
+                    ]
+                ] : [],
+                'userTerminals' => $telemetry ? [
+                    $terminalId => [
+                        'userTerminalId' => $terminalId,
+                        'timestamp' => $telemetry->timestamp,
+                        'downlinkThroughputMbps' => $telemetry->downlink_mbps ?? 0,
+                        'uplinkThroughputMbps' => $telemetry->uplink_mbps ?? 0,
+                        'signalQuality' => $telemetry->signal_quality ?? 0,
+                        'obstructionPercentTime' => $telemetry->obstruction_percent_time ?? 0,
+                    ]
+                ] : []
+            ]
+        ];
+        // dd($device_status);
         return view('starlink.view-device', [
             'user' => $user,
             'device_data' => $device_data,
@@ -257,8 +251,6 @@ class StarlinkController extends Controller
             'device_status' => $device_status
         ]);
     }
-
-
     public function update_nickname(Request $request)
     {
         //$serviceLineNumber = "SL-DF-9678649-75021-72";
@@ -472,103 +464,7 @@ class StarlinkController extends Controller
         ]);
     }
 
-    // public function usageMonthly($service_line, $acc_id, $returnJson = false)
-    // {
-    //     Log::info("TSOKOTSA =========== Getting Service Line for {$service_line} and ACC: {$acc_id}");
-
-    //     $sl = $this->starlink->getUserTerminalByServiceLine($service_line, $acc_id);
-
-    //     // ✅ Validate service line response safely
-    //     if (!$sl || empty($sl['routerId'])) {
-    //         Log::warning("Service Line {$service_line} has no router assigned or not found.");
-
-    //         return $returnJson
-    //             ? response()->json($this->emptyUsageResponse())
-    //             : $this->emptyUsageResponse();
-    //     }
-
-    //     $routerId = $sl['routerId'];
-    //     $device = "Router-" . $routerId;
-
-    //     Log::info("TSOKOTSA +++++++++++++++++++++++++ Querying Router [ {$device} ] +++++++++++++++++++++++++++++");
-
-    //     $month = request('month', 'current');
-    //     $now = now(); // Africa/Maputo
-
-    //     if ($month === 'last') {
-    //         $start = $now->copy()->subMonth()->startOfMonth();
-    //         $end = $now->copy()->subMonth()->endOfMonth();
-    //     } else {
-    //         $start = $now->copy()->startOfMonth();
-    //         $end = $now->copy()->endOfMonth();
-    //     }
-
-    //     $queryStart = $start->copy()->startOfDay();
-    //     $queryEnd = $end->copy()->endOfDay();
-
-    //     Log::info("Querying usage from {$queryStart} to {$queryEnd}");
-
-    //     // ✅ Fetch & aggregate usage safely
-    //     $usageCollection = StarlinkRouterUsage::where('device_id', $device)
-    //         ->whereBetween('recorded_at', [$queryStart, $queryEnd])
-    //         ->get();
-
-    //     // If no records found — return structured empty response
-    //     if ($usageCollection->isEmpty()) {
-    //         Log::info("No usage records found for {$device}");
-
-    //         return $returnJson
-    //             ? response()->json($this->emptyUsageResponse())
-    //             : $this->emptyUsageResponse();
-    //     }
-
-    //     $usage = $usageCollection
-    //         ->groupBy(function ($item) {
-    //             return \Carbon\Carbon::parse($item->recorded_at)->format('Y-m-d');
-    //         })
-    //         ->map(function ($items) {
-    //             return (object) [
-    //                 'download_mb' => $items->sum(fn($row) => ($row->rx_mbps * 60) / 8),
-    //                 'upload_mb' => $items->sum(fn($row) => ($row->tx_mbps * 60) / 8),
-    //             ];
-    //         });
-
-    //     $period = \Carbon\CarbonPeriod::create(
-    //         $start->copy()->startOfDay(),
-    //         $end->copy()->startOfDay()
-    //     );
-
-    //     $labels = [];
-    //     $download = [];
-    //     $upload = [];
-
-    //     foreach ($period as $date) {
-    //         $day = $date->format('Y-m-d');
-    //         $labels[] = $day;
-
-    //         if (isset($usage[$day])) {
-    //             $download[] = round($usage[$day]->download_mb, 2);
-    //             $upload[] = round($usage[$day]->upload_mb, 2);
-    //         } else {
-    //             $download[] = 0;
-    //             $upload[] = 0;
-    //         }
-    //     }
-
-    //     $result = [
-    //         'labels' => $labels,
-    //         'download' => $download,
-    //         'upload' => $upload,
-    //         'total_download' => round(array_sum($download), 2),
-    //         'total_upload' => round(array_sum($upload), 2),
-    //     ];
-
-    //     return $returnJson
-    //         ? response()->json($result)
-    //         : $result;
-    // }
-
-    public function usageMonthly($serviceLine, $accountId)
+    public function usageMonthly(string $serviceLine, int $accountId): array
     {
         $response = $this->starlink->dataUsage($serviceLine, $accountId);
 
@@ -576,50 +472,56 @@ class StarlinkController extends Controller
 
         $labels = [];
         $usage = [];
-
-        $previousTotal = 0;
-        $currentTotal = 0;
+        $previousTotal = 0.0;
+        $currentTotal = 0.0;
         $cycleResetDate = null;
 
         foreach ($cycles as $index => $cycle) {
 
-            // Build graph data
+            // --- Build daily usage for graph ---
             foreach ($cycle['dailyDataUsage'] ?? [] as $day) {
+                $date = isset($day['date']) ? Carbon::parse($day['date'])->format('Y-m-d') : null;
+                if (!$date)
+                    continue;
 
-                $date = Carbon::parse($day['date'])->format('Y-m-d');
+                // Sum daily usage across multiple blocks if present
+                $dailyUsageGB = 0.0;
 
-                $usageMb = ($day['priorityGB'] ?? 0) * 1024;
+                // Check if the day has multiple blocks usage
+                if (!empty($day['priorityGB'])) {
+                    $dailyUsageGB += (float) $day['priorityGB'];
+                }
 
+                $usageMb = $dailyUsageGB * 1024; // Convert GB to MB
                 $labels[] = $date;
                 $usage[] = round($usageMb, 2);
             }
 
-            // Extract totals directly from API
-            $block = data_get($cycle, 'dataPoolUsage.0.dataBlocks.0');
+            // --- Calculate total consumed GB for this cycle ---
+            $dataBlocks = data_get($cycle, 'dataPoolUsage.0.dataBlocks', []);
 
-            if ($block) {
+            // Sum all non-empty blocks
+            $cycleConsumedGB = collect($dataBlocks)
+                ->filter(fn($block) => isset($block['totalAmountGB']) && $block['totalAmountGB'] > 0)
+                ->sum('consumedAmountGB');
 
-                if ($index === count($cycles) - 1) {
-                    $currentTotal = $block['consumedAmountGB'] ?? 0;
-
-                    // Billing cycle reset line for graph
-                    $cycleResetDate = $cycle['startDate'] ?? null;
-
-                } else {
-                    $previousTotal = $block['consumedAmountGB'] ?? 0;
-                }
+            // Determine if this is the current (last) cycle
+            if ($index === count($cycles) - 1) {
+                $currentTotal = $cycleConsumedGB;
+                $cycleResetDate = $cycle['startDate'] ?? null;
+            } else {
+                $previousTotal = $cycleConsumedGB;
             }
         }
 
         return [
             "labels" => $labels,
             "usage" => $usage,
-            "previous_cycle_total_gb" => $previousTotal,
-            "current_cycle_total_gb" => $currentTotal,
+            "previous_cycle_total_gb" => round($previousTotal, 2),
+            "current_cycle_total_gb" => round($currentTotal, 2),
             "cycle_reset_date" => $cycleResetDate
         ];
     }
-
 
 
     private function emptyUsageResponse()
@@ -631,6 +533,138 @@ class StarlinkController extends Controller
             'total_download' => 0,
             'total_upload' => 0,
         ];
+    }
+
+    public function refreshTelemetry(Request $request)
+    {
+        $user = auth()->user();
+
+        try {
+            $running = DB::table('starlink_telemetry_refresh')
+                ->where('status', 'running')
+                ->exists();
+
+            if ($running) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Telemetry job already running'
+                ]);
+            }
+
+            // Insert job record
+            $jobId = DB::table('starlink_telemetry_refresh')->insertGetId([
+                'status' => 'running',
+                'executed_by' => "manual | Triggered by {$user->id}",
+                'records_updated' => 0,
+                'notes' => 'Started',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            Log::info("Starting Starlink telemetry refresh JOBID = $jobId");
+
+            // Dispatch a job per account
+            $accounts = StarlinkAccount::where('active', 'y')->get();
+            foreach ($accounts as $account) {
+                PollStarlinkTelemetryJob::dispatch($jobId, $account->id);
+            }
+
+            return response()->json([
+                'success' => true,
+                'job_id' => $jobId,
+                'message' => 'Telemetry refresh job started'
+            ]);
+
+        } catch (\Throwable $e) {
+
+            Log::error("Failed to start telemetry refresh: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Optional: frontend can poll this endpoint to check progress
+    public function refreshStatus(int $jobId)
+    {
+        $job = DB::table('starlink_telemetry_refresh')->where('id', $jobId)->first();
+
+        if (!$job) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Job not found'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $job->status,
+            'records' => $job->records_updated,
+            'notes' => $job->notes
+        ]);
+    }
+
+    public function storeNotification(Request $request)
+    {
+        $user = auth()->user();
+
+        Log::info("Storing Notification for [ STARLINK USAGE NOTIFIATIONS ]");
+
+        try {
+
+            $validated = $request->validate([
+                'client_id' => 'required|string',
+                'threshold_percent' => 'required|integer',
+                'channels' => 'nullable|array',
+                'name' => 'nullable|string',
+                'surname' => 'nullable|string',
+                'mobile_number' => 'nullable|string',
+                'email' => 'nullable|email',
+                'whatsapp_nr' => 'nullable|string',
+                'telegram_id' => 'nullable|string',
+                'greetings' => 'nullable|string',
+            ]);
+
+            // Handle "none"
+            $channels = $validated['channels'] ?? [];
+
+            if (in_array('none', $channels)) {
+                $channels = [];
+            }
+
+            $notification = StarlinkDataUsageNotification::updateOrCreate([
+                'client_id' => $validated['client_id'],
+                'service_id' => $request->service_id ?? null,
+                'threshold_percent' => $validated['threshold_percent'],
+                'channels' => $channels,
+                'name' => $validated['name'] ?? null,
+                'surname' => $validated['surname'] ?? null,
+                'mobile_number' => $validated['mobile_number'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'whatsapp_nr' => $validated['whatsapp_nr'] ?? null,
+                'telegram_id' => $validated['telegram_id'] ?? null,
+                'active' => true,
+            ]);
+
+            Log::info("Notificatiion stored for " . $validated['client_id'] . " " . $validated['name'] . " " . $validated['surname']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Notification saved successfully',
+                'data' => $notification
+            ]);
+
+        } catch (\Throwable $e) {
+
+            \Log::error("Notification save failed: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
 }

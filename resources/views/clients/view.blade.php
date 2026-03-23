@@ -63,6 +63,12 @@
                         <!--end::Nav item-->
                         <!--begin::Nav item-->
                         <li class="nav-item mt-2">
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab"
+                                data-tab="notifications" href="#">Notifications</a>
+                        </li>
+                        <!--end::Nav item-->
+                        <!--begin::Nav item-->
+                        <li class="nav-item mt-2">
                             <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="finance"
                                 href="#">Finance Data</a>
                         </li>
@@ -1168,5 +1174,97 @@
             });
 
         });
+    </script>
+
+    <script>
+        // Notifications Modal Options #
+        $(document).on('change', '[name="channels[]"]', function() {
+            let values = $(this).val() || [];
+
+            // If "none" is selected → reset everything
+            if (values.includes('none')) {
+                $(this).val(['none']).trigger('change.select2');
+
+                $('[name="mobile_number"]').closest('.fv-row').hide();
+                $('[name="email"]').closest('.fv-row').hide();
+                $('[name="whatsapp_nr"]').closest('.fv-row').hide();
+                $('[name="telegram_id"]').closest('.fv-row').hide();
+
+                return;
+            }
+
+            // Remove "none" if other options selected
+            values = values.filter(v => v !== 'none');
+
+            $(this).val(values).trigger('change.select2');
+
+            $('[name="mobile_number"]').closest('.fv-row').toggle(values.includes('sms'));
+            $('[name="email"]').closest('.fv-row').toggle(values.includes('email'));
+            $('[name="whatsapp_nr"]').closest('.fv-row').toggle(values.includes('whatsapp'));
+            $('[name="telegram_id"]').closest('.fv-row').toggle(values.includes('telegram'));
+
+        }).trigger('change');
+        // END Of notifications Modal
+
+        // Start Submit The Notification Options #
+        $(document).on('submit', '#kt_modal_new_target_form', function(e) {
+            e.preventDefault();
+
+            let form = $(this);
+            let formData = form.serialize();
+
+            Swal.fire({
+                title: "Save Notification?",
+                text: "This will register the notification contact",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes, save",
+                cancelButtonText: "Cancel",
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: "/starlink/notifications/store",
+                        type: "POST",
+                        data: formData,
+                        beforeSend: function() {
+                            form.find('[type="submit"]').attr('disabled', true);
+                        },
+                        success: function(response) {
+
+                            Swal.fire({
+                                icon: "success",
+                                title: "Saved",
+                                text: response.message ||
+                                    "Notification created successfully",
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+
+                            $('#contact_notification_modal').modal('hide');
+
+                            // Optional: reload or append dynamically
+                            location.reload();
+                        },
+                        error: function(xhr) {
+
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: xhr.responseJSON?.message ||
+                                    "Something went wrong"
+                            });
+                        },
+                        complete: function() {
+                            form.find('[type="submit"]').attr('disabled', false);
+                        }
+                    });
+
+                }
+
+            });
+        });
+        // End Submit notification Options
     </script>
 @endpush

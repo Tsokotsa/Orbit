@@ -3,112 +3,84 @@
 namespace App\Services\Starlink;
 
 use App\Models\StarlinkRouterUsage;
-use App\Services\StarlinkService; // ✅ corrected namespace
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use App\Services\StarlinkService;
 use Illuminate\Support\Facades\Log;
 
 class TelemetryProcessor
 {
-    public function __construct(
-
-        protected StarlinkService $starlinkService
-    ) {
+    public function __construct(protected StarlinkService $starlinkService)
+    {
     }
 
-    public function pollAndProcess(?int $accountId = null): void
+    public function pollAndProcess(?int $accountId = null): int
     {
+        $count = 0;
+
+        Log::info("Polling telemetry for account $accountId");
+
         $payload = [
-            'batchSize' => 1000,
-            'maxLingerMs' => 15000,
+            "includeRouters" => true,
+            "includeUserTerminals" => true,
         ];
 
         $response = $this->starlinkService->request(
             'post',
-            '/telemetry/stream',
+            '/telemetry/query',
             $payload,
             $accountId,
             silent: true
         );
 
-        if (empty($response['data']['values'])) {
-            Log::channel('starlink')->info('Telemetry: No data returned');
-            return;
+        $terminals = data_get($response, 'content.userTerminals', []);
+        $routers = data_get($response, 'content.routers', []);
+
+        if (empty($terminals)) {
+            Log::info("No terminals for account $accountId");
+            return 0;
         }
 
-        $this->process($response);
-    }
+        foreach ($terminals as $terminalId => $terminal) {
+            $router = collect($routers)->firstWhere('userTerminalId', $terminalId);
 
-    protected function process(array $payload): void
-    {
-        $columns = $payload['data']['columnNamesByDeviceType']['r'] ?? [];
-        $rows = $payload['data']['values'] ?? [];
+            StarlinkRouterUsage::updateOrCreate(
+                ['user_terminal_id' => $terminalId],
+                [
+                    'router_id' => $router['routerId'] ?? null,
+                    'recorded_at' => $terminal['timestamp'] ?? now(),
+                    'last_seen' => now(),
+                    'downlink_mbps' => $terminal['downlinkThroughputMbps'] ?? null,
+                    'uplink_mbps' => $terminal['uplinkThroughputMbps'] ?? null,
+                    'signal_quality' => $terminal['signalQuality'] ?? null,
+                    'terminal_uptime' => $terminal['uptimeSeconds'] ?? null,
+                    'terminal_sw' => $terminal['softwareVersion'] ?? null,
+                    'obstruction_percent_time' => $terminal['obstructionPercentTime'] ?? null,
+                    'internet_latency' => $router['internetPingLatencyMs'] ?? null,
+                    'internet_drop' => $router['internetPingDropRate'] ?? null,
+                    'pop_latency' => $router['popPingLatencyMs'] ?? null,
+                    'pop_drop' => $router['popPingDropRate'] ?? null,
+                    'dish_latency' => $router['dishPingLatencyMs'] ?? null,
+                    'dish_drop' => $router['dishPingDropRate'] ?? null,
+                    'router_uptime' => $router['uptimeSeconds'] ?? null,
+                    'router_sw' => $router['softwareVersion'] ?? null,
+                    'router_hw_version' => $router['hardwareVersion'] ?? null,
+                    'clients' => $router['clients'] ?? null,
+                    'clients_2ghz' => $router['clients2Ghz'] ?? null,
+                    'clients_5ghz' => $router['clients5Ghz'] ?? null,
+                    'clientsEthernet' => $router['clientsEthernet'] ?? null,
+                    'clients_2ghz_rx_rate_avg' => $router['clients2GhzRxRateMbpsAvg'] ?? null,
+                    'clients_2ghz_tx_rate_avg' => $router['clients2GhzTxRateMbpsAvg'] ?? null,
+                    'clients_5ghz_rx_rate_avg' => $router['clients5GhzRxRateMbpsAvg'] ?? null,
+                    'clients_5ghz_tx_rate_avg' => $router['clients5GhzTxRateMbpsAvg'] ?? null,
+                    'wan_rx_bytes' => $router['wanRxBytes'] ?? null,
+                    'wan_tx_bytes' => $router['wanTxBytes'] ?? null,
+                ]
+            );
 
-        if (empty($columns)) {
-            Log::channel('starlink')->warning('Telemetry: Router columns missing');
-            return;
+            $count++;
         }
 
-        $indexMap = [
-            'device' => array_search('DeviceId', $columns),
-            'timestamp' => array_search('UtcTimestampNs', $columns),
-            'wan_tx' => array_search('WanTxBytes', $columns),
-            'wan_rx' => array_search('WanRxBytes', $columns),
-        ];
+        Log::info("Updated $count terminals for account $accountId");
 
-        foreach ($rows as $row) {
-
-            if ($row[0] !== 'r') {
-                continue;
-            }
-
-            DB::transaction(function () use ($row, $indexMap) {
-
-                $deviceId = $row[$indexMap['device']] ?? null;
-                $timestampNs = $row[$indexMap['timestamp']] ?? null;
-
-                if (!$deviceId || !$timestampNs) {
-                    return;
-                }
-
-                $timestamp = Carbon::createFromTimestamp(
-                    $timestampNs / 1_000_000_000
-                );
-
-                $wanTx = $row[$indexMap['wan_tx']] ?? 0;
-                $wanRx = $row[$indexMap['wan_rx']] ?? 0;
-
-                $previous = StarlinkRouterUsage::where('device_id', $deviceId)
-                    ->orderByDesc('recorded_at')
-                    ->lockForUpdate()
-                    ->first();
-
-                $deltaTx = $previous ? max(0, $wanTx - $previous->wan_tx_bytes) : 0;
-                $deltaRx = $previous ? max(0, $wanRx - $previous->wan_rx_bytes) : 0;
-
-                // Convert to Mbps (15-second interval)
-                $txMbps = ($deltaTx * 8) / (15 * 1_000_000);
-                $rxMbps = ($deltaRx * 8) / (15 * 1_000_000);
-
-                StarlinkRouterUsage::updateOrCreate(
-                    [
-                        'device_id' => $deviceId,
-                        'recorded_at' => $timestamp,
-                    ],
-                    [
-                        'wan_tx_bytes' => $wanTx,
-                        'wan_rx_bytes' => $wanRx,
-                        'delta_tx_bytes' => $deltaTx,
-                        'delta_rx_bytes' => $deltaRx,
-                        'tx_mbps' => $txMbps,
-                        'rx_mbps' => $rxMbps,
-                    ]
-                );
-            });
-        }
-
-        Log::channel('starlink')->info('Telemetry batch processed', [
-            'rows_count' => count($rows),
-        ]);
+        return $count;
     }
 }

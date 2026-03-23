@@ -1,6 +1,11 @@
 @extends('layouts.master')
 {{-- {{ dd($service_line) }} --}}
 @section('content')
+    @php
+        $terminal = !empty($device_status['content']['userTerminals'])
+            ? reset($device_status['content']['userTerminals'])
+            : [];
+    @endphp
     <div id="kt_app_content" class="app-content flex-column-fluid">
         <div id="kt_app_content_container" class="app-container container-fluid">
 
@@ -100,34 +105,37 @@
             <!-- Begin of device info -->
             <!-- DEVICE INFO CARD -->
             <div class="card mt-6 bg-dark border border-gray-700">
-                <div class="card-header border-0">
-                    <h3 class="card-title text-white">
+                <div class="card-header border-0 d-flex justify-content-between align-items-center">
+                    <!-- Title -->
+                    <h3 class="card-title text-white mb-0">
                         <i class="ki-outline ki-satellite fs-2 me-2 text-primary"></i>
                         Device Information
                     </h3>
+
+                    <!-- Refresh Button -->
+                    <button id="refreshTelemetryBtn" class="btn btn-sm btn-primary refresh-telemetry"
+                        data-terminal="{{ $device_data['terminal_id'] ?? '' }}"
+                        data-router="{{ $device_data['router_id'] ?? '' }}" title="Refresh telemetry data">
+                        <i class="ki-outline ki-refresh fs-3 me-1"></i> Refresh
+                    </button>
                 </div>
 
                 <div class="card-body">
 
                     <div class="row g-5">
-
                         <!-- Starlink ID -->
                         <div class="col-md-4 d-flex align-items-center">
-                            <i class="ki-outline ki-satellite fs-2 text-primary me-3"></i>
                             <div>
                                 <div class="text-gray-400 fs-7">Starlink ID</div>
-                                <div class="fw-bold text-white">
-                                    {{ $device_data['terminal_id'] }}
-                                </div>
+                                <div class="fw-bold text-white">{{ $device_data['terminal_id'] ?? '' }}</div>
                             </div>
                         </div>
 
                         <!-- Software Version -->
                         <div class="col-md-4 d-flex align-items-center">
-                            <i class="ki-outline ki-code fs-2 text-info me-3"></i>
                             <div>
                                 <div class="text-gray-400 fs-7">Software Version</div>
-                                <div class="fw-bold text-white">
+                                <div class="fw-bold text-white badge badge-success">
                                     {{ $device_data['software_version'] ?? '—' }}
                                 </div>
                             </div>
@@ -138,31 +146,23 @@
                             <i class="ki-outline ki-time fs-2 text-success me-3"></i>
                             <div>
                                 <div class="text-gray-400 fs-7">Uptime</div>
-                                <div class="fw-bold text-white">
-                                    {{ $device_data['uptime'] ?? '—' }}
-                                </div>
+                                <div class="fw-bold text-white">{{ $device_data['uptime'] ?? '—' }}</div>
                             </div>
                         </div>
 
                         <!-- Serial Number -->
                         <div class="col-md-4 d-flex align-items-center">
-                            <i class="ki-outline ki-barcode fs-2 text-light me-3"></i>
                             <div>
                                 <div class="text-gray-400 fs-7">Serial Number</div>
-                                <div class="fw-bold text-white">
-                                    {{ $device_data['dish_sn'] }}
-                                </div>
+                                <div class="fw-bold text-white">{{ $device_data['dish_sn'] ?? '' }}</div>
                             </div>
                         </div>
 
                         <!-- Kit Number -->
                         <div class="col-md-4 d-flex align-items-center">
-                            <i class="ki-outline ki-chip fs-2 text-warning me-3"></i>
                             <div>
                                 <div class="text-gray-400 fs-7">Kit Number</div>
-                                <div class="fw-bold text-white">
-                                    {{ $device_data['kit'] }}
-                                </div>
+                                <div class="fw-bold text-white">{{ $device_data['kit'] ?? '' }}</div>
                             </div>
                         </div>
 
@@ -171,9 +171,7 @@
                             <i class="ki-outline ki-watch fs-2 text-gray-300 me-3"></i>
                             <div>
                                 <div class="text-gray-400 fs-7">Last Updated</div>
-                                <div class="fw-bold text-white">
-                                    {{ $device_data['router_last_updated'] ?? '—' }}
-                                </div>
+                                <div class="fw-bold text-white">{{ $device_data['router_last_updated'] ?? '—' }}</div>
                             </div>
                         </div>
 
@@ -202,34 +200,37 @@
 
                             <div class="row g-4 text-center">
 
-                                <div class="col-4">
-                                    <div id="internetDrop"></div>
-                                    <div class="text-gray-400 fs-7">Internet Drop</div>
-                                </div>
-
-                                <div class="col-4">
+                                <!-- Gauges -->
+                                <div class="col-6 pb-10">
                                     <div id="internetLatency"></div>
                                     <div class="text-gray-400 fs-7">Internet Latency</div>
                                 </div>
 
-                                <div class="col-4">
+                                <div class="col-6 pb-10">
                                     <div id="popLatency"></div>
                                     <div class="text-gray-400 fs-7">POP Latency</div>
                                 </div>
 
-                                <div class="col-4">
+                                <!-- Drop metrics -->
+                                <div class="col-3">
+                                    <div id="internetDrop"></div>
+                                    <div class="text-gray-400 fs-7">Internet Drop</div>
+                                </div>
+
+                                <div class="col-3">
                                     <div id="popDrop"></div>
                                     <div class="text-gray-400 fs-7">POP Drop</div>
                                 </div>
 
-                                <div class="col-4">
-                                    <div id="dishLatency"></div>
-                                    <div class="text-gray-400 fs-7">Dish Latency</div>
-                                </div>
-
-                                <div class="col-4">
+                                <div class="col-3">
                                     <div id="dishDrop"></div>
                                     <div class="text-gray-400 fs-7">Dish Drop</div>
+                                </div>
+
+                                <!-- Dish latency -->
+                                <div class="col-3">
+                                    <div id="dishLatency"></div>
+                                    <div class="text-gray-400 fs-7">Dish Latency</div>
                                 </div>
 
                             </div>
@@ -249,15 +250,14 @@
                         <div class="card-header border-0">
                             <h3 class="card-title text-white">
                                 <i class="ki-outline ki-chart-bar fs-2 me-2 text-primary"></i>
-                                Throughput & Client Metrics
+                                Avarage Wi-Fi Throughput
                             </h3>
                         </div>
 
                         <div class="card-body">
-
-                            <!-- Future ApexCharts Graph -->
-                            <div id="throughputChart" style="height:320px;"></div>
-
+                            <!-- Combined Throughput-->
+                            <div id="chart"></div>
+                            <!-- End of thoughput graph -->
                         </div>
 
                     </div>
@@ -331,6 +331,7 @@
             });
 
         });
+
         // END REBOOT confirm
 
         // Start Ping Graph
@@ -339,18 +340,14 @@
 
             const telemetry = @json($device_status ?? []);
 
-            console.log("Telemetry:", telemetry);
-
             const routers = telemetry?.content?.routers || {};
             const router = Object.values(routers)[0] || {};
-
-            console.log("Router:", router);
 
             function num(v) {
                 return Number(v ?? 0);
             }
 
-            function createGauge(element, value) {
+            function createGauge(element, value, max = 200) {
 
                 const options = {
 
@@ -359,7 +356,6 @@
                     chart: {
                         height: 160,
                         type: 'radialBar',
-                        offsetY: -10,
                         sparkline: {
                             enabled: true
                         }
@@ -367,51 +363,255 @@
 
                     plotOptions: {
                         radialBar: {
+
                             startAngle: -90,
                             endAngle: 90,
 
+                            hollow: {
+                                size: "60%"
+                            },
+
                             track: {
-                                background: "#e7e7e7",
-                                strokeWidth: '97%',
-                                margin: 5
+                                background: "#2a2a2a"
                             },
 
                             dataLabels: {
+
                                 name: {
                                     show: false
                                 },
 
                                 value: {
-                                    offsetY: -2,
-                                    fontSize: '20px',
-                                    color: '#ffffff', // <-- Make value text visible on dark background
+                                    offsetY: -5,
+                                    fontSize: "20px",
+                                    color: "#ffffff",
+
                                     formatter: function(val) {
-                                        return Number(val).toFixed(2);
+                                        return val.toFixed(1) + " ms";
                                     }
                                 }
                             }
                         }
                     },
 
-                    labels: ['']
+                    fill: {
+                        type: "gradient",
+                        gradient: {
+                            shade: "dark",
+                            type: "horizontal",
+                            gradientToColors: ["#00E396"],
+                            stops: [0, 100]
+                        }
+                    },
+
+                    labels: ['Latency'],
+
                 };
 
-                const chart = new ApexCharts(
-                    document.querySelector(element),
-                    options
-                );
-
-                chart.render();
+                new ApexCharts(document.querySelector(element), options).render();
             }
 
-            // Create all gauges
+            function updateMetric(element, value, unit = "") {
+
+                const el = document.querySelector(element);
+
+                let color = "text-success";
+
+                if (value > 1) color = "text-warning";
+                if (value > 5) color = "text-danger";
+
+                el.innerHTML = `
+            <div class="fs-2 fw-bold ${color}">
+                ${value.toFixed(2)} ${unit}
+            </div>
+        `;
+            }
+
+            // Gauges
             createGauge("#internetLatency", num(router.internetPingLatencyMs));
-            createGauge("#internetDrop", num(router.internetPingDropRate));
             createGauge("#popLatency", num(router.popPingLatencyMs));
-            createGauge("#popDrop", num(router.popPingDropRate));
-            createGauge("#dishLatency", num(router.dishPingLatencyMs));
-            createGauge("#dishDrop", num(router.dishPingDropRate));
+
+            // Numeric metrics
+            updateMetric("#internetDrop", num(router.internetPingDropRate), "%");
+            updateMetric("#popDrop", num(router.popPingDropRate), "%");
+            updateMetric("#dishLatency", num(router.dishPingLatencyMs), "ms");
+            updateMetric("#dishDrop", num(router.dishPingDropRate), "%");
 
         });
+        // END Of Gauges
+    </script>
+
+
+
+    <script>
+        @php
+            // Grab the routerId from the device_status
+            $routerId = !empty($device_status['content']['routers']) ? array_key_first($device_status['content']['routers']) : null;
+
+            $router = $routerId
+                ? $device_status['content']['routers'][$routerId]
+                : [
+                    'clients2GhzRxRateMbpsAvg' => 0,
+                    'clients2GhzTxRateMbpsAvg' => 0,
+                    'clients5GhzRxRateMbpsAvg' => 0,
+                    'clients5GhzTxRateMbpsAvg' => 0,
+                ];
+        @endphp
+        document.addEventListener("DOMContentLoaded", function() {
+
+            var data = {
+                clients2GhzRxRateAvg: Number(@json($router['clients2GhzRxRateMbpsAvg'] ?? 0)),
+                clients2GhzTxRateAvg: Number(@json($router['clients2GhzTxRateMbpsAvg'] ?? 0)),
+                clients5GhzRxRateAvg: Number(@json($router['clients5GhzRxRateMbpsAvg'] ?? 0)),
+                clients5GhzTxRateAvg: Number(@json($router['clients5GhzTxRateMbpsAvg'] ?? 0)),
+            };
+
+            var options = {
+                series: [{
+                    name: "Throughput",
+                    data: [
+                        data.clients2GhzRxRateAvg,
+                        data.clients2GhzTxRateAvg,
+                        data.clients5GhzRxRateAvg,
+                        data.clients5GhzTxRateAvg
+                    ]
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 260,
+                    background: 'transparent'
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: true,
+                        borderRadius: 6,
+                        barHeight: "45%"
+                    }
+                },
+                colors: ['#00E396', '#FEB019', '#008FFB', '#775DD0'],
+                dataLabels: {
+                    enabled: true,
+                    textAnchor: 'start',
+                    offsetX: 30,
+                    style: {
+                        colors: ['#ffffff'],
+                        fontSize: '12px'
+                    },
+                    formatter: function(val) {
+                        return val.toFixed(1) + " Mbps";
+                    }
+                },
+                grid: {
+                    show: false
+                },
+                xaxis: {
+                    categories: ['2.4GHz RX', '2.4GHz TX', '5GHz RX', '5GHz TX'],
+                    labels: {
+                        style: {
+                            colors: '#cbd5e1'
+                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: '#cbd5e1'
+                        }
+                    }
+                },
+                tooltip: {
+                    theme: "dark",
+                    y: {
+                        formatter: function(val) {
+                            return val.toFixed(1) + " Mbps";
+                        }
+                    }
+                },
+            };
+
+            var chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+
+        });
+
+
+        // Refresh graph data
+        $(document).on("click", ".refresh-telemetry", function() {
+
+            let btn = $(this);
+            let originalHtml = btn.html();
+
+            Swal.fire({
+                title: "Refresh Graph",
+                text: "This will take some time to process?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes, refresh data",
+                cancelButtonText: "Cancel",
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    // Disable button + spinner
+                    btn.prop("disabled", true);
+                    btn.html('<i class="fa fa-spinner fa-spin"></i> Refreshing...');
+
+                    $.ajax({
+                        url: "/starlink/refresh-telemetry",
+                        method: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+
+                        success: function(data) {
+
+                            Swal.fire({
+                                icon: "success",
+                                title: "Completed",
+                                text: data.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+
+                            // Optional: reload graph or page
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1500);
+
+                        },
+
+                        error: function(data) {
+
+                            Swal.fire(
+                                "Error",
+                                data.responseJSON?.message || "Something went wrong",
+                                "error"
+                            );
+
+                        },
+
+                        complete: function() {
+
+                            // Restore button
+                            btn.prop("disabled", false);
+                            btn.html(originalHtml);
+
+                        }
+                    });
+
+                }
+
+            });
+
+        });
+
+
+        // END Of refresh
     </script>
 @endpush
