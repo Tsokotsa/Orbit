@@ -15,6 +15,7 @@ use App\Services\StarlinkService;
 use App\Jobs\SyncOdooPartnersJob;
 use App\Jobs\ExportPrepaidBillingJob;
 
+
 // Send SMS
 // Schedule::command('send-sms-cmd')->everyFifteenSeconds(); // This Works
 
@@ -36,7 +37,12 @@ Schedule::command('starlink:refresh-token')->everyTenMinutes();
 Schedule::job(new SyncOdooPartnersJob)->everyFifteenMinutes();
 
 // Command For Starlink Pool Latest
-Schedule::command('starlink:poll')->everyTwoHours(); //Should be disabled on dev
+//Schedule::command('starlink:poll')->everyMinute(); //Should be disabled on dev
+Schedule::command('starlink:poll')
+    ->everyTwoHours()
+    ->withoutOverlapping()
+    ->runInBackground();
+
 
 // Sync Starlink main Accounts
 Schedule::job(new SyncStarlinkAccountsJob)->everySixHours();

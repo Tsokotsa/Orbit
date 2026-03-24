@@ -540,31 +540,51 @@ class StarlinkController extends Controller
         $user = auth()->user();
 
         try {
-            $running = DB::table('starlink_telemetry_refresh')
+
+            // Block if a job is currently running
+            $isRunning = DB::table('starlink_telemetry_refresh')
                 ->where('status', 'running')
                 ->exists();
 
-            if ($running) {
+            if ($isRunning) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Telemetry job already running'
+                    'message' => 'Telemetry job already running. Please wait.'
                 ]);
             }
 
-            // Insert job record
+            // Get last executed job
+            $lastJob = DB::table('starlink_telemetry_refresh')
+                ->latest('executed_at')
+                ->first();
+
+            // sBlock if last execution < 15 minutes
+            if ($lastJob && $lastJob->executed_at && now()->diffInMinutes($lastJob->executed_at) < 15) {
+
+                $nextAllowed = \Carbon\Carbon::parse($lastJob->executed_at)->addMinutes(15);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Telemetry was refreshed recently. Try again at ' . $nextAllowed->format('H:i:s')
+                ]);
+            }
+
+            // Create job record
             $jobId = DB::table('starlink_telemetry_refresh')->insertGetId([
                 'status' => 'running',
-                'executed_by' => "manual | Triggered by {$user->id}",
+                'executed_by' => "manual | user {$user->id}",
                 'records_updated' => 0,
-                'notes' => 'Started',
+                'notes' => 'Started manually',
+                'executed_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
             Log::info("Starting Starlink telemetry refresh JOBID = $jobId");
 
-            // Dispatch a job per account
+            // Dispatch jobs per account
             $accounts = StarlinkAccount::where('active', 'y')->get();
+
             foreach ($accounts as $account) {
                 PollStarlinkTelemetryJob::dispatch($jobId, $account->id);
             }
