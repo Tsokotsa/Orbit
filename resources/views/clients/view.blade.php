@@ -191,7 +191,7 @@
 
         // Init Datatable if loaded by Ajax all datatables on tabs
         function initDataTables() {
-            $('#tab-content table').each(function() {
+            $('#tab-content table.datatable').each(function() {
                 if (!$.fn.DataTable.isDataTable(this)) {
                     $(this).DataTable({
                         //pageLength: 5,
@@ -819,10 +819,6 @@
         });
     </script>
 
-
-
-
-
     <script>
         "use strict";
 
@@ -1266,5 +1262,60 @@
             });
         });
         // End Submit notification Options
+    </script>
+
+    <script>
+        // Start Starlink service show select 2
+        let serviceSelectInitialized = false;
+
+        $(document).on('focus', '#service_id', function() {
+
+            if (serviceSelectInitialized) return;
+
+            console.log("Lazy init Select2 triggered");
+
+            let $el = $(this);
+
+            $el.select2({
+                dropdownParent: $('#contact_notification_modal'),
+                width: '100%',
+
+                ajax: {
+                    url: '/starlink/services',
+                    dataType: 'json',
+                    delay: 300,
+
+                    data: function(params) {
+                        console.log("Searching:", params.term);
+
+                        return {
+                            q: params.term || ''
+                        };
+                    },
+
+                    processResults: function(data) {
+                        console.log("Results:", data);
+
+                        return {
+                            results: data.results || []
+                        };
+                    },
+
+                    error: function(xhr) {
+                        console.error("Select2 AJAX error:", xhr);
+                    },
+
+                    cache: true
+                },
+
+                placeholder: "Search user terminal or router",
+                minimumInputLength: 1,
+                allowClear: true
+            });
+
+            serviceSelectInitialized = true;
+
+        });
+        // End of starlink service select 2
     </script>
 @endpush

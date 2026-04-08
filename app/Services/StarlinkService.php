@@ -216,9 +216,46 @@ class StarlinkService
     }
 
 
+    // public function allSubscribers(?int $accountId = null): array
+    // {
+    //     return $this->request('get', '/service-lines', [], $accountId);
+    // }
+
     public function allSubscribers(?int $accountId = null): array
     {
-        return $this->request('get', '/service-lines', [], $accountId);
+        $all = [];
+        $pageIndex = 0; // Starlink uses 0-based index
+        $limit = 100;
+
+        do {
+            $response = $this->request('get', '/service-lines', [
+                'pageIndex' => $pageIndex,
+                'limit' => $limit
+            ], $accountId);
+
+            $content = $response['content'] ?? [];
+
+            $results = $content['results'] ?? [];
+            $isLastPage = $content['isLastPage'] ?? true;
+
+            // Merge results
+            $all = array_merge($all, $results);
+
+            \Log::info("Subscribers page {$pageIndex} fetched: " . count($results));
+
+            $pageIndex++;
+
+            // Safety break (avoid infinite loop)
+            if ($pageIndex > 5) {
+                \Log::warning('Pagination stopped at 5 pages (safety limit)');
+                break;
+            }
+
+        } while (!$isLastPage);
+
+        \Log::info('Total subscribers fetched: ' . count($all));
+
+        return $all;
     }
 
     public function getServiceLine(string $serviceLineNumber, ?int $accountId = null): array

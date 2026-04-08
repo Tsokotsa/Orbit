@@ -60,23 +60,24 @@ class StarlinkController extends Controller
         }
     }
 
+    // public function subscribersAjax(Request $request)
+    // {
+    //     $accountNumber = $request->input('account_number');
+
+    //     $subscribers = $this->starlink->allSubscribers($accountNumber);
+
+    //     // Transform into DataTables expected structure
+    //     return datatables()->of($subscribers['content']['results'] ?? [])->toJson();
+    // }
+
     public function subscribersAjax(Request $request)
     {
         $accountNumber = $request->input('account_number');
 
-        // Find Starlink account ID for this number
-        // $account = StarlinkAccount::where('account_number', $accountNumber)->first();
-        // if (!$account) {
-        //     return response()->json(['data' => []]);
-        // }
-
-
-
-        // $subscribers = $this->starlink->allSubscribers($account->id);
         $subscribers = $this->starlink->allSubscribers($accountNumber);
 
-        // Transform into DataTables expected structure
-        return datatables()->of($subscribers['content']['results'] ?? [])->toJson();
+        // Wrap array in a collection so DataTables can handle it
+        return datatables()->of(collect($subscribers)->take(500))->toJson();
     }
 
 
@@ -555,11 +556,13 @@ class StarlinkController extends Controller
 
             // Get last executed job
             $lastJob = DB::table('starlink_telemetry_refresh')
-                ->latest('executed_at')
+                ->whereNotNull('executed_at')
+                ->orderByDesc('executed_at')
                 ->first();
 
+            //dd($lastJob);
             // sBlock if last execution < 15 minutes
-            if ($lastJob && $lastJob->executed_at && now()->diffInMinutes($lastJob->executed_at) < 15) {
+            if ($lastJob && $lastJob->executed_at && \Carbon\Carbon::parse($lastJob->executed_at)->gt(now()->subMinutes(15))) {
 
                 $nextAllowed = \Carbon\Carbon::parse($lastJob->executed_at)->addMinutes(15);
 
@@ -683,6 +686,54 @@ class StarlinkController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Starlink Service to populate nitifications select 2
+    public function getStarlinkServices(Request $request)
+    {
+        try {
+
+            $search = $request->get('q');
+
+            Log::info('Starlink service search', [
+                'query' => $search
+            ]);
+
+            $services = StarlinkRouterUsage::query()
+                ->when($search, function ($q) use ($search) {
+                    $q->where('user_terminal_id', 'like', "%{$search}%")
+                        ->orWhere('router_id', 'like', "%{$search}%");
+                })
+                ->orderByDesc('last_seen')
+                ->limit(20)
+                ->get(['user_terminal_id', 'router_id']);
+
+            $results = $services->map(function ($item) {
+                return [
+                    'id' => $item->user_terminal_id, //  (real ID)
+                    'text' => "{$item->user_terminal_id} | {$item->router_id}"
+                ];
+            });
+
+            Log::info('Starlink service results', [
+                'count' => $results->count()
+            ]);
+
+            return response()->json([
+                'results' => $results
+            ]);
+
+        } catch (Throwable $e) {
+
+            Log::error('Starlink service search failed', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'results' => [],
+                'error' => 'Failed to load services'
             ], 500);
         }
     }

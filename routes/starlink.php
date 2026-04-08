@@ -43,6 +43,10 @@ Route::group(['middleware' => ['auth', 'permission: view starlink account']], fu
 
     Route::post('/starlink/notifications/store', [StarlinkController::class, 'storeNotification']);
 
+    // Load Ajax user terminals starlink
+
+    Route::get('/starlink/services', [StarlinkController::class, 'getStarlinkServices']);
+
 
     // Testing Graph
 

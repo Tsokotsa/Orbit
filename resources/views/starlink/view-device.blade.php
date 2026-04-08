@@ -575,8 +575,8 @@
                                 icon: "success",
                                 title: "Completed",
                                 text: data.message,
-                                timer: 2000,
-                                showConfirmButton: false
+                                timer: 4000,
+                                showConfirmButton: true
                             });
 
                             // Optional: reload graph or page

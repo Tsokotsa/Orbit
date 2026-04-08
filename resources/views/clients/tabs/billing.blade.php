@@ -44,7 +44,8 @@
         <!--begin::Table wrapper-->
         <div class="table-responsive">
             <!--begin::Table-->
-            <table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9" id="client_billing">
+            <table class="table datatable align-middle table-row-bordered table-row-solid gy-4 gs-9"
+                id="client_billing">
                 <!--begin::Thead-->
                 <thead class="fs-5 fw-semibold bg-lighten fw-semibold fs-6 text-muted">
                     <tr>
