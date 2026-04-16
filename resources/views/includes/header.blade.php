@@ -130,7 +130,8 @@
                                   <!--begin::Avatar-->
                                   <div class="symbol symbol-50px me-5">
                                       <img alt="User avatar"
-                                          @if ($user?->avatarpath) { src="{{ asset($user?->avatarpath['file_path'] . '/' . $user?->avatarpath['file_name']) }}" } @else { src="{{ asset('assets/media/avatars/blank.png') }}" } @endif />
+                                          src="{{ asset($user->avatarpath ?? 'assets/media/avatars/blank.png') }}" />
+                                      {{-- @if ($user?->avatarpath) { src="{{ asset($user?->avatarpath['file_path'] . '/' . $user?->avatarpath['file_name']) }}" } @else { src="{{ asset('assets/media/avatars/blank.png') }}" } @endif /> --}}
                                       {{-- <img alt="Logo" src="{{ asset($user->avatar) }}"> --}}
                                   </div>
                                   <!--end::Avatar-->
