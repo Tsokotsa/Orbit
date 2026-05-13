@@ -297,7 +297,7 @@
             // Prevent reloading every time
             if (container.dataset.loaded) return;
 
-            fetch("{{ route('assets.tab') }}")
+            fetch("{{ route('clients.assets-tab') }}")
                 .then(response => response.text())
                 .then(html => {
                     container.innerHTML = html;

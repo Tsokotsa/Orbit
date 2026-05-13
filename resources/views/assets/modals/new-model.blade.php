@@ -123,7 +123,7 @@
 
                     $.ajax({
                         type: "POST",
-                        url: "/model/add",
+                        url: "/models/add",
                         data: form_data,
 
                         success: function(response) {

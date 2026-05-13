@@ -48,6 +48,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'avatar' => 'array',
         ];
     }
 
@@ -56,10 +57,10 @@ class User extends Authenticatable
         return "{$this->name} {$this->surname}";
     }
 
-    public function getAvatarPathAttribute()
-    {
-        return json_decode($this->avatar, true);
-    }
+    // public function getAvatarPathAttribute()
+    // {
+    //     return json_decode($this->avatar, true);
+    // }
 
     public function validatePassword($request)
     {
@@ -82,5 +83,33 @@ class User extends Authenticatable
         static::created(function ($user) {
             $user->assignRole('viewer');
         });
+    }
+
+    // public function getAvatarUrlAttribute()
+    // {
+    //     try {
+    //         if (!$this->avatarpath) {
+    //             return asset('assets/media/avatars/blank.png');
+    //         }
+
+    //         return asset(
+    //             is_array($this->avatarpath)
+    //             ? $this->avatarpath['file_path'] . '/' . $this->avatarpath['file_name']
+    //             : $this->avatarpath
+    //         );
+    //     } catch (\Throwable $e) {
+    //         return asset('assets/media/avatars/blank.png');
+    //     }
+    // }
+
+    public function getAvatarUrlAttribute()
+    {
+        if (!$this->avatar) {
+            return asset('assets/media/avatars/blank.png');
+        }
+
+        return asset(
+            $this->avatar['file_path'] . '/' . $this->avatar['file_name']
+        );
     }
 }

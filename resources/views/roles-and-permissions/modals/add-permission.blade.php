@@ -1,5 +1,4 @@
-<!--begin::Modal - Update email-->
-<div class="modal fade" id="kt_modal_update_email" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="kt_modal_add_permission" tabindex="-1" style="display: none" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
         <!--begin::Modal content-->
@@ -7,10 +6,10 @@
             <!--begin::Modal header-->
             <div class="modal-header">
                 <!--begin::Modal title-->
-                <h2 class="fw-bold">Update Email Address</h2>
+                <h2 class="fw-bold">Add Permission</h2>
                 <!--end::Modal title-->
                 <!--begin::Close-->
-                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close">
+                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-permissions-modal-action="close">
                     <i class="ki-outline ki-cross fs-1"></i>
                 </div>
                 <!--end::Close-->
@@ -19,51 +18,72 @@
             <!--begin::Modal body-->
             <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                 <!--begin::Form-->
-                <form id="kt_modal_update_email_form" class="form fv-plugins-bootstrap5 fv-plugins-framework"
-                    action="#">
+                <form id="kt_modal_add_permission_form" class="form fv-plugins-bootstrap5 fv-plugins-framework">
                     @csrf
-                    <!--begin::Notice-->
-                    <!--begin::Notice-->
-                    <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed mb-9 p-6">
-                        <!--begin::Icon-->
-                        <i class="ki-outline ki-information fs-2tx text-primary me-4"></i>
-                        <!--end::Icon-->
-                        <!--begin::Wrapper-->
-                        <div class="d-flex flex-stack flex-grow-1">
-                            <!--begin::Content-->
-                            <div class="fw-semibold">
-                                <div class="fs-6 text-gray-700">Please note that a valid email address
-                                    is required to complete the email verification.</div>
-                            </div>
-                            <!--end::Content-->
-                        </div>
-                        <!--end::Wrapper-->
-                    </div>
-                    <!--end::Notice-->
-                    <!--end::Notice-->
                     <!--begin::Input group-->
                     <div class="fv-row mb-7 fv-plugins-icon-container">
                         <!--begin::Label-->
                         <label class="fs-6 fw-semibold form-label mb-2">
-                            <span class="required">Email Address</span>
+                            <span class="required">Permission Name</span>
+                            <span class="ms-2" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true"
+                                data-bs-content="permission names is required to be unique." data-kt-initialized="1">
+                                <i class="ki-outline ki-information fs-7"></i>
+                            </span>
                         </label>
                         <!--end::Label-->
                         <!--begin::Input-->
-                        <input class="form-control form-control-solid" placeholder="" name="profile_email"
-                            value="{{ $user_edit->email }}">
-                        <input class="form-control form-control-solid" placeholder="" hidden name="uid"
-                            value="{{ $user_edit->id }}">
+                        <input class="form-control form-control-solid" placeholder="Enter a permission name"
+                            name="permission_name">
                         <!--end::Input-->
                         <div
                             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                         </div>
                     </div>
                     <!--end::Input group-->
+                    <!--begin::Input group-->
+                    <div class="fv-row mb-7 fv-plugins-icon-container">
+                        <!--begin::Label-->
+                        <label class="fs-6 fw-semibold form-label mb-2">
+                            <span class="required">Description</span>
+                            <span class="ms-2" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-html="true"
+                                data-bs-content="permission names is required to be unique." data-kt-initialized="1">
+                                <i class="ki-outline ki-information fs-7"></i>
+                            </span>
+                        </label>
+                        <!--end::Label-->
+                        <!--begin::Input-->
+                        <input class="form-control form-control-solid" placeholder="Enter permission description"
+                            name="permission_description">
+                        <!--end::Input-->
+                        <div
+                            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                        </div>
+                    </div>
+                    <!--end::Input group-->
+                    <!--begin::Input group-->
+                    <div class="fv-row mb-7">
+                        <!--begin::Checkbox-->
+                        <div class="form-check form-switch form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" name="permission_status"
+                                checked="checked" />
+                            <label class="form-check-label" for="flexSwitchChecked">
+                                Permission status
+                            </label>
+                        </div>
+                        <!--end::Checkbox-->
+                    </div>
+                    <!--end::Input group-->
+                    <!--begin::Disclaimer-->
+                    <div class="text-gray-600">This is just adding process you still need to
+                        <strong class="me-1">Link the </strong>permission to a
+                        <strong class="me-1">Role</strong>.
+                    </div>
+                    <!--end::Disclaimer-->
                     <!--begin::Actions-->
                     <div class="text-center pt-15">
                         <button type="reset" class="btn btn-light me-3"
-                            data-kt-users-modal-action="cancel">Discard</button>
-                        <button type="submit" class="btn btn-primary update-email" data-kt-users-modal-action="submit">
+                            data-kt-permissions-modal-action="cancel">Discard</button>
+                        <button type="submit" class="btn btn-primary" data-kt-permissions-modal-action="submit">
                             <span class="indicator-label">Submit</span>
                             <span class="indicator-progress">Please wait...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -79,30 +99,36 @@
     </div>
     <!--end::Modal dialog-->
 </div>
-<!--end::Modal - Update email-->
 
 @push('scripts')
     <script>
         "use strict";
 
         // Class definition
-        var KTUsersUpdateEmail = function() {
+        var KTUsersAddPermission = function() {
             // Shared variables
-            const element = document.getElementById('kt_modal_update_email');
-            const form = element.querySelector('#kt_modal_update_email_form');
+            const element = document.getElementById('kt_modal_add_permission');
+            const form = element.querySelector('#kt_modal_add_permission_form');
             const modal = new bootstrap.Modal(element);
 
             // Init add schedule modal
-            var initUpdateEmail = () => {
+            var initAddPermission = () => {
 
                 // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
                 var validator = FormValidation.formValidation(
                     form, {
                         fields: {
-                            'profile_email': {
+                            'permission_name': {
                                 validators: {
                                     notEmpty: {
-                                        message: 'Email address is required'
+                                        message: 'permission name is required'
+                                    }
+                                }
+                            },
+                            'permission_description': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'permission description is required'
                                     }
                                 }
                             },
@@ -120,16 +146,16 @@
                 );
 
                 // Close button handler
-                const closeButton = element.querySelector('[data-kt-users-modal-action="close"]');
+                const closeButton = element.querySelector('[data-kt-permissions-modal-action="close"]');
                 closeButton.addEventListener('click', e => {
                     e.preventDefault();
 
                     Swal.fire({
-                        text: "Are you sure you would like to cancel?",
+                        text: "Are you sure you would like to close?",
                         icon: "warning",
                         showCancelButton: true,
                         buttonsStyling: false,
-                        confirmButtonText: "Yes, cancel it!",
+                        confirmButtonText: "Yes, close it!",
                         cancelButtonText: "No, return",
                         customClass: {
                             confirmButton: "btn btn-primary",
@@ -137,24 +163,13 @@
                         }
                     }).then(function(result) {
                         if (result.value) {
-                            form.reset(); // Reset form	
                             modal.hide(); // Hide modal				
-                        } else if (result.dismiss === 'cancel') {
-                            Swal.fire({
-                                text: "Your form has not been cancelled!.",
-                                icon: "error",
-                                buttonsStyling: false,
-                                confirmButtonText: "Ok, got it!",
-                                customClass: {
-                                    confirmButton: "btn btn-primary",
-                                }
-                            });
                         }
                     });
                 });
 
                 // Cancel button handler
-                const cancelButton = element.querySelector('[data-kt-users-modal-action="cancel"]');
+                const cancelButton = element.querySelector('[data-kt-permissions-modal-action="cancel"]');
                 cancelButton.addEventListener('click', e => {
                     e.preventDefault();
 
@@ -188,7 +203,7 @@
                 });
 
                 // Submit button handler
-                const submitButton = element.querySelector('[data-kt-users-modal-action="submit"]');
+                const submitButton = element.querySelector('[data-kt-permissions-modal-action="submit"]');
                 submitButton.addEventListener('click', function(e) {
                     // Prevent default button action
                     e.preventDefault();
@@ -199,20 +214,18 @@
                             console.log('validated!');
 
                             if (status == 'Valid') {
-                                var form_data = $('#kt_modal_update_email_form').serialize();
                                 // Show loading indication
                                 submitButton.setAttribute('data-kt-indicator', 'on');
 
                                 // Disable button to avoid multiple click 
                                 submitButton.disabled = true;
 
+                                // Simulate form submission. For more info check the plugin's official documentation: https://sweetalert2.github.io/
+                                var form_data = $('#kt_modal_add_permission_form').serialize();
                                 $.ajax({
                                     type: "POST",
-                                    processData: false, // Important!
-                                    url: "/user/update-email",
-                                    //data: form_data + '&user-avatar=' + avatar, // serializes the form's elements.
-                                    data: form_data, // serializes the form's elements.                                                                                                                                                                
-                                    cache: false,
+                                    url: "/permission/add",
+                                    data: form_data, // serializes the form's elements.
                                     success: function(response) {
                                         Swal.fire({
                                             title: "Wooohooo!",
@@ -229,12 +242,6 @@
                                     },
 
                                     error: function(xhr, status, error) {
-                                        // Remove loading indication
-                                        submitButton.removeAttribute(
-                                            'data-kt-indicator');
-
-                                        // Enable button
-                                        submitButton.disabled = false;
                                         var responseJson = JSON.parse(xhr.responseText);
                                         // Access the message property from the response
                                         var errorMessage = responseJson.message;
@@ -260,6 +267,17 @@
                                     },
 
                                 });
+                            } else {
+                                // Show popup warning. For more info check the plugin's official documentation: https://sweetalert2.github.io/
+                                Swal.fire({
+                                    text: "Sorry, looks like there are some errors detected, please try again.",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Ok, got it!",
+                                    customClass: {
+                                        confirmButton: "btn btn-primary"
+                                    }
+                                });
                             }
                         });
                     }
@@ -269,14 +287,14 @@
             return {
                 // Public functions
                 init: function() {
-                    initUpdateEmail();
+                    initAddPermission();
                 }
             };
         }();
 
         // On document ready
         KTUtil.onDOMContentLoaded(function() {
-            KTUsersUpdateEmail.init();
+            KTUsersAddPermission.init();
         });
     </script>
 @endpush

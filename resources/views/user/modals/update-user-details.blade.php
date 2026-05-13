@@ -7,7 +7,8 @@
             <!--begin::Form-->
             <form class="form" action="#" id="kt_modal_update_user_form" enctype="multipart/form-data">
                 @csrf
-                <input class="form-control form-control-solid" placeholder="" hidden name="uid" value="{{ $user->id }}">
+                <input class="form-control form-control-solid" placeholder="" hidden name="uid"
+                    value="{{ $user_edit->id }}">
                 <!--begin::Modal header-->
                 <div class="modal-header" id="kt_modal_update_user_header">
                     <!--begin::Modal title-->
@@ -69,10 +70,8 @@
                                     <div class="image-input image-input-outline image-input-placeholder"
                                         data-kt-image-input="true">
                                         <!--begin::Preview existing avatar-->
-                                        {{-- <div class="image-input-wrapper w-125px h-125px" style="background-image: url(assets/media/avatars/300-6.jpg)"> --}}
-                                        <div class="image-input-wrapper w-125px h-125px" style="background-image: url(@if($user->avatarpath) {{ asset($user->avatarpath["file_path"].'/' .$user->avatarpath["file_name"]) }} @else {{ asset('assets/media/avatars/blank.png') }} @endif)">    
-                                        </div>
-                                        {{-- <img alt="User avatar" @if($user->avatarpath) { src="{{ asset($user->avatarpath["file_path"].'/' .$user->avatarpath["file_name"]) }}" } @else { src="{{ asset('assets/media/avatars/blank.png') }}" } @endif/> --}}
+                                        <div class="image-input-wrapper w-125px h-125px"
+                                            style="background-image: url( {{ $user_edit?->avatar_url }})"></div>
                                         <!--end::Preview existing avatar-->
                                         <!--begin::Edit-->
                                         <label
@@ -119,7 +118,7 @@
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input class="form-control form-control-solid" placeholder="" name="name"
-                                        value="{{ $user->name }}">
+                                        value="{{ $user_edit->name }}">
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Col-->
@@ -130,7 +129,7 @@
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input class="form-control form-control-solid" placeholder="" name="surname"
-                                        value="{{ $user->surname }}">
+                                        value="{{ $user_edit->surname }}">
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Col-->
@@ -149,7 +148,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="email" class="form-control form-control-solid" placeholder=""
-                                    name="email" value="{{ $user->email }}">
+                                    name="email" value="{{ $user_edit->email }}">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -262,7 +261,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input class="form-control form-control-solid" placeholder="" name="address1"
-                                    value="{{ $user->address }}">
+                                    value="{{ $user_edit->address }}">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -692,8 +691,8 @@
                     // Prevent default button action
                     e.preventDefault();
                     // var form_data = $('#kt_modal_update_user_form').serialize();
-                    var form = $('#kt_modal_update_user_form')[0];                                                                                                                                                             
-                    var form_data = new FormData(form);   
+                    var form = $('#kt_modal_update_user_form')[0];
+                    var form_data = new FormData(form);
                     // Show loading indication
                     submitButton.setAttribute('data-kt-indicator', 'on');
 
@@ -707,7 +706,7 @@
                         url: "/user/update-details",
                         data: form_data, // serializes the form's elements.                                                                                                                                                                
                         contentType: false, // Important!                                                                                                                                                                   
-                        cache: false,   
+                        cache: false,
                         success: function(response) {
                             Swal.fire({
                                 title: "Wooohooo!",

@@ -19,12 +19,14 @@
             <!--begin::Modal body-->
             <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                 <!--begin::Form-->
-                <form id="kt_modal_update_password_form" class="form fv-plugins-bootstrap5 fv-plugins-framework" action="#">
+                <form id="kt_modal_update_password_form" class="form fv-plugins-bootstrap5 fv-plugins-framework"
+                    action="#">
                     @csrf
                     <!--begin::Input group=-->
                     <div class="fv-row mb-10 fv-plugins-icon-container">
                         <label class="required form-label fs-6 mb-2">Current Password</label>
-                        <input class="form-control form-control-lg form-control-solid" type="password" placeholder="" name="current_password" autocomplete="off">
+                        <input class="form-control form-control-lg form-control-solid" type="password" placeholder=""
+                            name="current_password" autocomplete="off">
                         <div
                             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                         </div>
@@ -39,8 +41,10 @@
                             <!--end::Label-->
                             <!--begin::Input wrapper-->
                             <div class="position-relative mb-3">
-                                <input class="form-control form-control-lg form-control-solid" type="password" placeholder="" name="new_password" autocomplete="off">
-                                <input class="form-control form-control-solid" placeholder="" hidden name="uid" value="{{ $user->id }}">
+                                <input class="form-control form-control-lg form-control-solid" type="password"
+                                    placeholder="" name="new_password" autocomplete="off">
+                                <input class="form-control form-control-solid" placeholder="" hidden name="uid"
+                                    value="{{ $user_edit->id }}">
                                 <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
                                     data-kt-password-meter-control="visibility">
                                     <i class="ki-outline ki-eye-slash fs-1"></i>
@@ -74,7 +78,8 @@
                     <!--begin::Input group=-->
                     <div class="fv-row mb-10 fv-plugins-icon-container">
                         <label class="form-label fw-semibold fs-6 mb-2">Confirm New Password</label>
-                        <input class="form-control form-control-lg form-control-solid" type="password" placeholder="" name="confirm_password" autocomplete="off">
+                        <input class="form-control form-control-lg form-control-solid" type="password" placeholder=""
+                            name="confirm_password" autocomplete="off">
                         <div
                             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                         </div>
@@ -103,161 +108,160 @@
 <!--end::Modal - Update password-->
 
 @push('scripts')
-<script>
-"use strict";
+    <script>
+        "use strict";
 
-// Class definition
-var KTUsersUpdatePassword = function () {
-    // Shared variables
-    const element = document.getElementById('kt_modal_update_password');
-    const form = element.querySelector('#kt_modal_update_password_form');
-    const modal = new bootstrap.Modal(element);
+        // Class definition
+        var KTUsersUpdatePassword = function() {
+            // Shared variables
+            const element = document.getElementById('kt_modal_update_password');
+            const form = element.querySelector('#kt_modal_update_password_form');
+            const modal = new bootstrap.Modal(element);
 
-    // Init add schedule modal
-    var initUpdatePassword = () => {
+            // Init add schedule modal
+            var initUpdatePassword = () => {
 
-        // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
-        var validator = FormValidation.formValidation(
-            form,
-            {
-                fields: {
-                    'current_password': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Current password is required'
-                            }
-                        }
-                    },
-                    'new_password': {
-                        validators: {
-                            notEmpty: {
-                                message: 'The password is required'
-                            },
-                            callback: {
-                                message: 'Please enter valid password',
-                                callback: function (input) {
-                                    if (input.value.length > 0) {
-                                        return validatePassword();
+                // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
+                var validator = FormValidation.formValidation(
+                    form, {
+                        fields: {
+                            'current_password': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Current password is required'
                                     }
                                 }
-                            }
-                        }
-                    },
-                    'confirm_password': {
-                        validators: {
-                            notEmpty: {
-                                message: 'The password confirmation is required'
                             },
-                            identical: {
-                                compare: function () {
-                                    return form.querySelector('[name="new_password"]').value;
-                                },
-                                message: 'The password and its confirm are not the same'
-                            }
+                            'new_password': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The password is required'
+                                    },
+                                    callback: {
+                                        message: 'Please enter valid password',
+                                        callback: function(input) {
+                                            if (input.value.length > 0) {
+                                                return validatePassword();
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            'confirm_password': {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The password confirmation is required'
+                                    },
+                                    identical: {
+                                        compare: function() {
+                                            return form.querySelector('[name="new_password"]').value;
+                                        },
+                                        message: 'The password and its confirm are not the same'
+                                    }
+                                }
+                            },
+                        },
+
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap: new FormValidation.plugins.Bootstrap5({
+                                rowSelector: '.fv-row',
+                                eleInvalidClass: '',
+                                eleValidClass: ''
+                            })
                         }
-                    },
-                },
+                    }
+                );
 
-                plugins: {
-                    trigger: new FormValidation.plugins.Trigger(),
-                    bootstrap: new FormValidation.plugins.Bootstrap5({
-                        rowSelector: '.fv-row',
-                        eleInvalidClass: '',
-                        eleValidClass: ''
-                    })
-                }
-            }
-        );
+                // Close button handler
+                const closeButton = element.querySelector('[data-kt-users-modal-action="close"]');
+                closeButton.addEventListener('click', e => {
+                    e.preventDefault();
 
-        // Close button handler
-        const closeButton = element.querySelector('[data-kt-users-modal-action="close"]');
-        closeButton.addEventListener('click', e => {
-            e.preventDefault();
-
-            Swal.fire({
-                text: "Are you sure you would like to cancel?",
-                icon: "warning",
-                showCancelButton: true,
-                buttonsStyling: false,
-                confirmButtonText: "Yes, cancel it!",
-                cancelButtonText: "No, return",
-                customClass: {
-                    confirmButton: "btn btn-primary",
-                    cancelButton: "btn btn-active-light"
-                }
-            }).then(function (result) {
-                if (result.value) {
-                    form.reset(); // Reset form	
-                    modal.hide(); // Hide modal				
-                } else if (result.dismiss === 'cancel') {
                     Swal.fire({
-                        text: "Your form has not been cancelled!.",
-                        icon: "error",
+                        text: "Are you sure you would like to cancel?",
+                        icon: "warning",
+                        showCancelButton: true,
                         buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
+                        confirmButtonText: "Yes, cancel it!",
+                        cancelButtonText: "No, return",
                         customClass: {
                             confirmButton: "btn btn-primary",
+                            cancelButton: "btn btn-active-light"
+                        }
+                    }).then(function(result) {
+                        if (result.value) {
+                            form.reset(); // Reset form	
+                            modal.hide(); // Hide modal				
+                        } else if (result.dismiss === 'cancel') {
+                            Swal.fire({
+                                text: "Your form has not been cancelled!.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary",
+                                }
+                            });
                         }
                     });
-                }
-            });
-        });
+                });
 
-        // Cancel button handler
-        const cancelButton = element.querySelector('[data-kt-users-modal-action="cancel"]');
-        cancelButton.addEventListener('click', e => {
-            e.preventDefault();
+                // Cancel button handler
+                const cancelButton = element.querySelector('[data-kt-users-modal-action="cancel"]');
+                cancelButton.addEventListener('click', e => {
+                    e.preventDefault();
 
-            Swal.fire({
-                text: "Are you sure you would like to cancel?",
-                icon: "warning",
-                showCancelButton: true,
-                buttonsStyling: false,
-                confirmButtonText: "Yes, cancel it!",
-                cancelButtonText: "No, return",
-                customClass: {
-                    confirmButton: "btn btn-primary",
-                    cancelButton: "btn btn-active-light"
-                }
-            }).then(function (result) {
-                if (result.value) {
-                    form.reset(); // Reset form	
-                    modal.hide(); // Hide modal				
-                } else if (result.dismiss === 'cancel') {
                     Swal.fire({
-                        text: "Your form has not been cancelled!.",
-                        icon: "error",
+                        text: "Are you sure you would like to cancel?",
+                        icon: "warning",
+                        showCancelButton: true,
                         buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
+                        confirmButtonText: "Yes, cancel it!",
+                        cancelButtonText: "No, return",
                         customClass: {
                             confirmButton: "btn btn-primary",
+                            cancelButton: "btn btn-active-light"
+                        }
+                    }).then(function(result) {
+                        if (result.value) {
+                            form.reset(); // Reset form	
+                            modal.hide(); // Hide modal				
+                        } else if (result.dismiss === 'cancel') {
+                            Swal.fire({
+                                text: "Your form has not been cancelled!.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-primary",
+                                }
+                            });
                         }
                     });
-                }
-            });
-        });
+                });
 
-        // Submit button handler
-        const submitButton = element.querySelector('[data-kt-users-modal-action="submit"]');
-        submitButton.addEventListener('click', function (e) {
-            // Prevent default button action
-            e.preventDefault();
+                // Submit button handler
+                const submitButton = element.querySelector('[data-kt-users-modal-action="submit"]');
+                submitButton.addEventListener('click', function(e) {
+                    // Prevent default button action
+                    e.preventDefault();
 
-            // Validate form before submit
-            if (validator) {
-                validator.validate().then(function (status) {
-                    console.log('validated!');
+                    // Validate form before submit
+                    if (validator) {
+                        validator.validate().then(function(status) {
+                            console.log('validated!');
 
-                    if (status == 'Valid') {
-                        var form_data = $('#kt_modal_update_password_form').serialize();
-                        // Show loading indication
-                        submitButton.setAttribute('data-kt-indicator', 'on');
+                            if (status == 'Valid') {
+                                var form_data = $('#kt_modal_update_password_form').serialize();
+                                // Show loading indication
+                                submitButton.setAttribute('data-kt-indicator', 'on');
 
-                        // Disable button to avoid multiple click 
-                        submitButton.disabled = true;
+                                // Disable button to avoid multiple click 
+                                submitButton.disabled = true;
 
-                        // Simulate form submission. For more info check the plugin's official documentation: https://sweetalert2.github.io/
-                        $.ajax({
+                                // Simulate form submission. For more info check the plugin's official documentation: https://sweetalert2.github.io/
+                                $.ajax({
                                     type: "POST",
                                     processData: false, // Important!
                                     url: "/user/update-passwd",
@@ -281,7 +285,8 @@ var KTUsersUpdatePassword = function () {
 
                                     error: function(xhr, status, error) {
                                         // Remove loading indication
-                                        submitButton.removeAttribute('data-kt-indicator');
+                                        submitButton.removeAttribute(
+                                            'data-kt-indicator');
 
                                         // Enable button
                                         submitButton.disabled = false;
@@ -310,23 +315,23 @@ var KTUsersUpdatePassword = function () {
                                     },
 
                                 });
+                            }
+                        });
                     }
                 });
             }
+
+            return {
+                // Public functions
+                init: function() {
+                    initUpdatePassword();
+                }
+            };
+        }();
+
+        // On document ready
+        KTUtil.onDOMContentLoaded(function() {
+            KTUsersUpdatePassword.init();
         });
-    }
-
-    return {
-        // Public functions
-        init: function () {
-            initUpdatePassword();
-        }
-    };
-}();
-
-// On document ready
-KTUtil.onDOMContentLoaded(function () {
-    KTUsersUpdatePassword.init();
-});
-</script>
+    </script>
 @endpush
