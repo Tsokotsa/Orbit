@@ -64,6 +64,19 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/users/update-role', [UserController::class, 'updateRole'])->name('users.update.role');
 
+    Route::prefix('admin/users')->middleware(['auth'])->group(function () {
+
+        Route::get('{user}/permissions', [UserController::class, 'permissions'])
+            ->name('admin.users.permissions');
+
+        Route::post('{user}/permissions/assign', [UserController::class, 'assignPermission'])
+            ->name('admin.users.permissions.assign')->middleware('permission:admin.users.permissions.assign');
+
+        Route::delete('{user}/permissions/remove', [UserController::class, 'removePermission'])
+            ->name('admin.users.permissions.remove');
+
+    });
+
 
 
 

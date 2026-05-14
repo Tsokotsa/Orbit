@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -303,5 +304,81 @@ class UserController extends Controller
         Log::info("Finding user with ID $uid");
 
         return view('user.edit', ['user_edit' => $user_edit, 'user' => $user]);
+    }
+
+    public function permissions(User $user)
+    {
+        $permissions = Permission::query()
+            ->orderBy('name')
+            ->get()
+            ->map(function ($permission) use ($user) {
+
+                $parts = explode('.', $permission->name);
+
+                return [
+
+                    'id' => $permission->id,
+
+                    'name' => $permission->name,
+
+                    'model' => $parts[0] ?? '-',
+
+                    'action' => $parts[1] ?? '-',
+
+                    'assigned' => $user->hasPermissionTo($permission->name),
+                ];
+            });
+
+        return response()->json([
+            'data' => $permissions
+        ]);
+    }
+
+    public function assignPermission(Request $request, User $user)
+    {
+        $request->validate([
+            'permission_id' => ['required', 'exists:permissions,id']
+        ]);
+
+        $permission = Permission::findOrFail($request->permission_id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Prevent duplicate assignment
+        |--------------------------------------------------------------------------
+        */
+        if (!$user->hasPermissionTo($permission->name)) {
+
+            $user->givePermissionTo($permission->name);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permission assigned successfully'
+        ]);
+    }
+
+    public function removePermission(Request $request, User $user)
+    {
+        $request->validate([
+            'permission_id' => ['required', 'exists:permissions,id']
+        ]);
+
+        $permission = Permission::findOrFail($request->permission_id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Remove only if assigned
+        |--------------------------------------------------------------------------
+        */
+        if ($user->hasPermissionTo($permission->name)) {
+
+            $user->revokePermissionTo($permission->name);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permission removed successfully'
+        ]);
     }
 }

@@ -51,7 +51,7 @@
                             <button class="btn btn-light-primary" data-bs-toggle="modal"
                                 data-bs-target="#linkPermissionsModal" data-role-id="{{ $role->id }}">
                                 <i class="ki-outline ki-plus fs-2"></i>
-                                Link Permissions
+                                Link Permissions | {{ $role->name }}
                             </button>
                         </div>
 

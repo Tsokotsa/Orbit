@@ -343,6 +343,7 @@
     </div>
 
     @include('user.modals.add')
+    @include('user.modals.link-permission')
 @endsection
 
 @push('scripts')
@@ -450,10 +451,39 @@
                             className: 'text-end',
                             render: function(data, type, row) {
 
-                                return `<div class="actions">
-                                            <a href="/user/${data}/edit"><i class="las la-user-edit fs-1 text-dark" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#edit-contact"></i></a>
-                                            <i class="las la-trash-alt text-danger fs-1 delete-contact" style="cursor: pointer;"></i>
-                                        </div>`;
+                                return `
+    <div class="actions d-flex align-items-center gap-2">
+
+        <!-- Assign Permission -->
+        @can('admin.users.permissions')
+        <i 
+            class="ki-outline ki-shield-tick fs-2 text-success assign-permission"
+            style="cursor: pointer;"
+            data-bs-toggle="modal"
+            data-bs-target="#linkUserPermissionsModal"
+            data-user-id="${data}"
+            title="Assign Permissions">
+        </i>
+        @endcan
+        <!-- Edit User -->
+        <a href="/user/${data}/edit">
+            <i 
+                class="las la-user-edit fs-1 text-dark"
+                style="cursor: pointer;"
+                title="Edit User">
+            </i>
+        </a>
+
+        <!-- Delete User -->
+        <i 
+            class="las la-trash-alt text-danger fs-1 delete-contact"
+            style="cursor: pointer;"
+            data-id="${data}"
+            title="Delete User">
+        </i>
+
+    </div>
+`;
                             },
                         },
 

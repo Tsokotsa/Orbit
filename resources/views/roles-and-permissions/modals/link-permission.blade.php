@@ -6,7 +6,7 @@
             <div class="modal-header">
                 <h3 class="modal-title">
                     <i class="ki-outline ki-shield-tick fs-2 text-primary me-2"></i>
-                    Assign Permissions
+                    {{ $role->name }} <small class="text-muted fs-7"> | Assign Permissions</small>
                 </h3>
 
                 <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal">
