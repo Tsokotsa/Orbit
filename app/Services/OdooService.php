@@ -31,7 +31,8 @@ class OdooService
     protected function http()
     {
         return Http::withOptions([
-            'verify' => !app()->environment(['local', 'uat']),
+#            'verify' => !app()->environment(['local', 'uat']),
+	'verify' => '/etc/pki/tls/certs/ca-bundle.crt',
         ]);
     }
 
