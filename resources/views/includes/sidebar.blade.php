@@ -119,28 +119,34 @@
                     <!--begin:Menu item-->
                     <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link" href="/asset">
-                            <span class="menu-bullet">
-                                <span class="bullet bullet-dot"></span>
-                            </span>
-                            <span class="menu-title">Assets</span>
-                        </a>
+                        @can('assets.view')
+                            <a class="menu-link" href="/asset">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Assets</span>
+                            </a>
+                        @endcan
                         <!--end:Menu link-->
                         <!--begin:Menu link-->
-                        <a class="menu-link" href="/calix">
-                            <span class="menu-bullet">
-                                <span class="bullet bullet-dot"></span>
-                            </span>
-                            <span class="menu-title">Calix</span>
-                        </a>
+                        @can('calix.view')
+                            <a class="menu-link" href="/calix">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Calix</span>
+                            </a>
+                        @endcan
                         <!--end:Menu link-->
                         <!--begin:Menu link-->
-                        <a class="menu-link" href="/starlink">
-                            <span class="menu-bullet">
-                                <span class="bullet bullet-dot"></span>
-                            </span>
-                            <span class="menu-title">Starlink</span>
-                        </a>
+                        @can('starlink.view')
+                            <a class="menu-link" href="/starlink">
+                                <span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>
+                                <span class="menu-title">Starlink</span>
+                            </a>
+                        @endcan
                         <!--end:Menu link-->
                         <!--begin:Menu link-->
                         <a class="menu-link" href="/billing">
@@ -357,7 +363,7 @@
                             <!--begin:Menu item-->
                             <div class="menu-item">
                                 <!--begin:Menu link-->
-                                <a class="menu-link" href="{{ route('list-contacts') }}">
+                                <a class="menu-link" href="{{ route('contact.view') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
@@ -369,7 +375,7 @@
                             <!--begin:Menu item-->
                             <div class="menu-item">
                                 <!--begin:Menu link-->
-                                <a class="menu-link" href="/contact/addbulk">
+                                <a class="menu-link" href="/contact/bulk">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
@@ -476,7 +482,7 @@
                             <!--begin:Menu item-->
                             <div class="menu-item">
                                 <!--begin:Menu link-->
-                                <a class="menu-link" href="{{ @route('list-email') }}">
+                                <a class="menu-link" href="{{ @route('email.list') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
@@ -532,7 +538,7 @@
                             <!--begin:Menu item-->
                             <div class="menu-item">
                                 <!--begin:Menu link-->
-                                <a class="menu-link" href="{{ @route('list-sms') }}">
+                                <a class="menu-link" href="{{ @route('sms.view') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
@@ -586,7 +592,7 @@
                             <!--begin:Menu item-->
                             <div class="menu-item">
                                 <!--begin:Menu link-->
-                                <a class="menu-link" href="{{ @route('list-telegram') }}">
+                                <a class="menu-link" href="{{ @route('telegram.view') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
@@ -944,7 +950,7 @@
                     <!--begin:Menu item-->
                     <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link" href="{{ route('list-role-perm') }}">
+                        <a class="menu-link" href="{{ route('admin.view-role-perm') }}">
                             <span class="menu-bullet">
                                 <i class="las la-key fs-2"></i>
                             </span>
@@ -956,7 +962,7 @@
                     <!--begin:Menu item-->
                     <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link" href="{{ route('list-users') }}">
+                        <a class="menu-link" href="{{ route('user.view') }}">
                             <span class="menu-bullet">
                                 <i class="las la-user fs-2"></i>
                             </span>

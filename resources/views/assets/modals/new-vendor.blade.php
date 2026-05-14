@@ -144,7 +144,7 @@
                     let formData = new FormData(form);
 
                     $.ajax({
-                        url: '/vendor/add',
+                        url: '/vendors/add',
                         type: 'POST',
                         data: formData,
                         processData: false, // VERY IMPORTANT

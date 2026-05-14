@@ -1,171 +1,267 @@
-<!--begin::Modal - Update role-->
+<!--begin::Modal-->
 <div class="modal fade" id="kt_modal_update_role" tabindex="-1" aria-hidden="true">
-    <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
-        <!--begin::Modal content-->
-        <div class="modal-content">
-            <!--begin::Modal header-->
-            <div class="modal-header">
-                <!--begin::Modal title-->
-                <h2 class="fw-bold">Update User Role</h2>
-                <!--end::Modal title-->
-                <!--begin::Close-->
-                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close">
+        <div class="modal-content rounded-4 shadow-sm">
+
+            <!-- Header -->
+            <div class="modal-header border-0 pt-7">
+
+                <div>
+                    <h2 class="fw-bold mb-1 d-flex align-items-center">
+                        <i class="ki-outline ki-shield-tick fs-1 text-primary me-3"></i>
+                        Update User Role
+                    </h2>
+
+                    <div class="text-muted fs-6">
+                        Manage user access permissions
+                    </div>
+                </div>
+
+                <div class="btn btn-sm btn-icon btn-active-light-primary" data-bs-dismiss="modal">
                     <i class="ki-outline ki-cross fs-1"></i>
                 </div>
-                <!--end::Close-->
+
             </div>
-            <!--end::Modal header-->
-            <!--begin::Modal body-->
-            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-                <!--begin::Form-->
-                <form id="kt_modal_update_role_form" class="form" action="#">
-                    <!--begin::Notice-->
-                    <!--begin::Notice-->
-                    <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed mb-9 p-6">
-                        <!--begin::Icon-->
-                        <i class="ki-outline ki-information fs-2tx text-primary me-4"></i>
-                        <!--end::Icon-->
-                        <!--begin::Wrapper-->
-                        <div class="d-flex flex-stack flex-grow-1">
-                            <!--begin::Content-->
+
+            <!-- Body -->
+            <div class="modal-body px-10 pb-10 pt-2">
+
+                <!-- Loading State -->
+                <div id="role_modal_loader" class="text-center py-20">
+
+                    <div class="spinner-border text-primary mb-5" style="width: 3rem; height: 3rem;">
+                    </div>
+
+                    <div class="fw-semibold fs-4 text-gray-700">
+                        Loading user information...
+                    </div>
+
+                </div>
+
+                <!-- Actual Content -->
+                <div id="role_modal_content" class="d-none">
+
+                    <form id="kt_modal_update_role_form" method="POST" action="{{ route('users.update.role') }}">
+
+                        @csrf
+
+                        <input type="hidden" name="user_id" id="modal_user_id">
+
+                        <!-- Warning -->
+                        <div
+                            class="notice d-flex bg-light-warning rounded-3 border-warning border border-dashed p-5 mb-8">
+
+                            <i class="ki-outline ki-information-4 fs-2tx text-warning me-4"></i>
+
                             <div class="fw-semibold">
-                                <div class="fs-6 text-gray-700">Please note that reducing a user role
-                                    rank, that user will lose all priviledges that was assigned to the
-                                    previous role.</div>
+
+                                <h5 class="mb-1 text-gray-900">
+                                    Role Permission Notice
+                                </h5>
+
+                                <div class="fs-7 text-gray-700">
+                                    Changing user roles will automatically update
+                                    permissions and system access.
+                                </div>
+
                             </div>
-                            <!--end::Content-->
+
                         </div>
-                        <!--end::Wrapper-->
-                    </div>
-                    <!--end::Notice-->
-                    <!--end::Notice-->
-                    <!--begin::Input group-->
-                    <div class="fv-row mb-7">
-                        <!--begin::Label-->
-                        <label class="fs-6 fw-semibold form-label mb-5">
-                            <span class="required">Select a user role</span>
-                        </label>
-                        <!--end::Label-->
-                        <!--begin::Input row-->
-                        <div class="d-flex">
-                            <!--begin::Radio-->
-                            <div class="form-check form-check-custom form-check-solid">
-                                <!--begin::Input-->
-                                <input class="form-check-input me-3" name="user_role" type="radio" value="0"
-                                    id="kt_modal_update_role_option_0" checked="checked">
-                                <!--end::Input-->
-                                <!--begin::Label-->
-                                <label class="form-check-label" for="kt_modal_update_role_option_0">
-                                    <div class="fw-bold text-gray-800">Administrator</div>
-                                    <div class="text-gray-600">Best for business owners and company
-                                        administrators</div>
-                                </label>
-                                <!--end::Label-->
+
+                        <!-- User Info -->
+                        <div class="card border border-gray-200 mb-8">
+
+                            <div class="card-body d-flex align-items-center p-5">
+
+                                <div class="symbol symbol-65px me-5">
+
+                                    <div id="modal_user_initial"
+                                        class="symbol-label fs-2 fw-bold bg-light-primary text-primary">
+                                    </div>
+
+                                </div>
+
+                                <div class="flex-grow-1">
+
+                                    <div id="modal_user_name" class="fw-bold fs-3 text-gray-900 mb-1">
+                                    </div>
+
+                                    <div id="modal_user_email" class="text-muted fs-6">
+                                    </div>
+
+                                </div>
+
                             </div>
-                            <!--end::Radio-->
+
                         </div>
-                        <!--end::Input row-->
-                        <div class="separator separator-dashed my-5"></div>
-                        <!--begin::Input row-->
-                        <div class="d-flex">
-                            <!--begin::Radio-->
-                            <div class="form-check form-check-custom form-check-solid">
-                                <!--begin::Input-->
-                                <input class="form-check-input me-3" name="user_role" type="radio" value="1"
-                                    id="kt_modal_update_role_option_1">
-                                <!--end::Input-->
-                                <!--begin::Label-->
-                                <label class="form-check-label" for="kt_modal_update_role_option_1">
-                                    <div class="fw-bold text-gray-800">Developer</div>
-                                    <div class="text-gray-600">Best for developers or people primarily
-                                        using the API</div>
-                                </label>
-                                <!--end::Label-->
+
+                        <!-- Roles -->
+                        <div class="mb-10">
+
+                            <label class="required fw-semibold fs-6 mb-3 d-block">
+                                Assign Roles
+                            </label>
+
+                            <select name="roles[]" id="roles_select" class="form-select form-select-solid" multiple>
+                            </select>
+
+                            <div class="text-muted fs-7 mt-2">
+                                Users can have multiple roles assigned.
                             </div>
-                            <!--end::Radio-->
+
                         </div>
-                        <!--end::Input row-->
-                        <div class="separator separator-dashed my-5"></div>
-                        <!--begin::Input row-->
-                        <div class="d-flex">
-                            <!--begin::Radio-->
-                            <div class="form-check form-check-custom form-check-solid">
-                                <!--begin::Input-->
-                                <input class="form-check-input me-3" name="user_role" type="radio" value="2"
-                                    id="kt_modal_update_role_option_2">
-                                <!--end::Input-->
-                                <!--begin::Label-->
-                                <label class="form-check-label" for="kt_modal_update_role_option_2">
-                                    <div class="fw-bold text-gray-800">Analyst</div>
-                                    <div class="text-gray-600">Best for people who need full access to
-                                        analytics data, but don't need to update business settings</div>
-                                </label>
-                                <!--end::Label-->
-                            </div>
-                            <!--end::Radio-->
+
+                        <!-- Footer -->
+                        <div class="d-flex justify-content-end">
+
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+
+                            <button type="submit" class="btn btn-primary">
+
+                                <span class="indicator-label">
+                                    <i class="ki-outline ki-check fs-2"></i>
+                                    Update Role
+                                </span>
+
+                            </button>
+
                         </div>
-                        <!--end::Input row-->
-                        <div class="separator separator-dashed my-5"></div>
-                        <!--begin::Input row-->
-                        <div class="d-flex">
-                            <!--begin::Radio-->
-                            <div class="form-check form-check-custom form-check-solid">
-                                <!--begin::Input-->
-                                <input class="form-check-input me-3" name="user_role" type="radio" value="3"
-                                    id="kt_modal_update_role_option_3">
-                                <!--end::Input-->
-                                <!--begin::Label-->
-                                <label class="form-check-label" for="kt_modal_update_role_option_3">
-                                    <div class="fw-bold text-gray-800">Support</div>
-                                    <div class="text-gray-600">Best for employees who regularly refund
-                                        payments and respond to disputes</div>
-                                </label>
-                                <!--end::Label-->
-                            </div>
-                            <!--end::Radio-->
-                        </div>
-                        <!--end::Input row-->
-                        <div class="separator separator-dashed my-5"></div>
-                        <!--begin::Input row-->
-                        <div class="d-flex">
-                            <!--begin::Radio-->
-                            <div class="form-check form-check-custom form-check-solid">
-                                <!--begin::Input-->
-                                <input class="form-check-input me-3" name="user_role" type="radio" value="4"
-                                    id="kt_modal_update_role_option_4">
-                                <!--end::Input-->
-                                <!--begin::Label-->
-                                <label class="form-check-label" for="kt_modal_update_role_option_4">
-                                    <div class="fw-bold text-gray-800">Trial</div>
-                                    <div class="text-gray-600">Best for people who need to preview
-                                        content data, but don't need to make any updates</div>
-                                </label>
-                                <!--end::Label-->
-                            </div>
-                            <!--end::Radio-->
-                        </div>
-                        <!--end::Input row-->
-                    </div>
-                    <!--end::Input group-->
-                    <!--begin::Actions-->
-                    <div class="text-center pt-15">
-                        <button type="reset" class="btn btn-light me-3"
-                            data-kt-users-modal-action="cancel">Discard</button>
-                        <button type="submit" class="btn btn-primary" data-kt-users-modal-action="submit">
-                            <span class="indicator-label">Submit</span>
-                            <span class="indicator-progress">Please wait...
-                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                    </div>
-                    <!--end::Actions-->
-                </form>
-                <!--end::Form-->
+
+                    </form>
+
+                </div>
+
             </div>
-            <!--end::Modal body-->
+
         </div>
-        <!--end::Modal content-->
     </div>
-    <!--end::Modal dialog-->
 </div>
-<!--end::Modal - Update role-->
+<!--end::Modal-->
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+
+            // Init Select2
+            $('#roles_select').select2({
+                dropdownParent: $('#kt_modal_update_role'),
+                width: '100%',
+                placeholder: 'Select roles'
+            });
+
+
+
+
+            // Open modal
+            $('.btn-edit-role').on('click', function() {
+
+                let userId = $(this).data('user-id');
+
+                // Reset state
+                $('#role_modal_loader').removeClass('d-none');
+                $('#role_modal_content').addClass('d-none');
+
+                // Open modal immediately
+                $('#kt_modal_update_role').modal('show');
+
+                // Fetch data
+                $.ajax({
+                    url: '/users/' + userId + '/roles',
+                    type: 'GET',
+
+                    success: function(response) {
+
+                        let user = response.user;
+                        let roles = response.roles;
+
+                        // Fill user info
+                        $('#modal_user_id').val(user.id);
+
+                        $('#modal_user_name').text(user.name);
+
+                        $('#modal_user_email').text(user.email);
+
+                        $('#modal_user_initial')
+                            .text(user.name.charAt(0).toUpperCase());
+
+                        // Reset select
+                        $('#roles_select').empty();
+
+                        // Add roles
+                        $.each(roles, function(index, role) {
+
+                            let selected = user.roles.includes(role.name);
+
+                            $('#roles_select').append(
+                                new Option(
+                                    role.name,
+                                    role.name,
+                                    selected,
+                                    selected
+                                )
+                            );
+
+                        });
+
+                        // Refresh Select2
+                        $('#roles_select').trigger('change');
+
+                        // Hide loader
+                        $('#role_modal_loader').addClass('d-none');
+
+                        // Show content
+                        $('#role_modal_content').removeClass('d-none');
+
+                    },
+
+                    error: function() {
+
+                        $('#kt_modal_update_role').modal('hide');
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Unable to load user roles.'
+                        });
+
+                    }
+
+                });
+
+            });
+
+
+
+
+            // Submit Confirmation
+            $('#kt_modal_update_role_form').on('submit', function(e) {
+
+                e.preventDefault();
+
+                let form = this;
+
+                Swal.fire({
+                    title: 'Update User Role?',
+                    text: 'User permissions will be updated.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#009ef7',
+                    confirmButtonText: 'Yes, update',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        form.submit();
+
+                    }
+
+                });
+
+            });
+
+        });
+    </script>
+@endpush

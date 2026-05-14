@@ -192,7 +192,7 @@
 
                     $.ajax({
                         type: "POST",
-                        url: "/asset/store",
+                        url: "/assets/store",
                         data: form_data,
                         success: function(response) {
                             Swal.fire({

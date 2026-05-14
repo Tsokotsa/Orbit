@@ -119,7 +119,7 @@
                       <div class="cursor-pointer symbol symbol-40px"
                           data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                           data-kt-menu-placement="bottom-end">
-                          <img src="{{ asset($user?->avatar) }}" class="rounded-3" alt="user">
+                          <img src="{{ asset($user?->avatar_url) }}" class="rounded-3" alt="userssss">
                       </div>
                       <!--begin::User account menu-->
                       <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
@@ -129,8 +129,8 @@
                               <div class="menu-content d-flex align-items-center px-3">
                                   <!--begin::Avatar-->
                                   <div class="symbol symbol-50px me-5">
-                                      <img alt="User avatar"
-<img src="{{ asset($user->avatarpath ?? 'assets/media/avatars/blank.png') }}" />
+                                      <img alt="User avatar" <img
+                                          src="{{ asset($user->avatarpath ?? 'assets/media/avatars/blank.png') }}" />
                                       {{-- <img alt="Logo" src="{{ asset($user->avatar) }}"> --}}
                                   </div>
                                   <!--end::Avatar-->
@@ -152,7 +152,7 @@
                           <!--end::Menu separator-->
                           <!--begin::Menu item-->
                           <div class="menu-item px-5">
-                              <a href="account/overview.html" class="menu-link px-5">My Profile</a>
+                              <a href="/user/profile" class="menu-link px-5">My Profile</a>
                           </div>
                           <!--end::Menu item-->
                           <!--begin::Menu item-->
@@ -289,7 +289,7 @@
                           <!--end::Menu item-->
                           <!--begin::Menu item-->
                           <div class="menu-item px-5 my-1">
-                              <a href="account/settings.html" class="menu-link px-5">Account Settings</a>
+                              <a href="user/settings" class="menu-link px-5">Account Settings</a>
                           </div>
                           <!--end::Menu item-->
                           <!--begin::Menu item-->

@@ -21,19 +21,18 @@
                                     <div class="d-flex flex-center flex-column py-5">
                                         <!--begin::Avatar-->
                                         <div class="symbol symbol-100px symbol-circle mb-7">
-                                            <img @if ($user?->avatarpath) { src="{{ asset($user?->avatarpath['file_path'] . '/' . $user?->avatarpath['file_name']) }}" } @else { src="{{ asset('assets/media/avatars/blank.png') }}" } @endif
-                                                alt="avatar">
+                                            <img src="{{ $user_edit?->avatar_url }}" alt="image">
                                         </div>
                                         <!--end::Avatar-->
                                         <!--begin::Name-->
                                         <a href="#"
-                                            class="fs-3 text-gray-800 text-hover-primary fw-bold mb-3">{{ $user->full_name }}</a>
+                                            class="fs-3 text-gray-800 text-hover-primary fw-bold mb-3">{{ $user_edit->full_name }}</a>
                                         <!--end::Name-->
                                         <!--begin::Position-->
                                         <div class="mb-9">
                                             <!--begin::Badge-->
                                             <div class="badge badge-lg badge-light-primary d-inline">
-                                                {{ $user->roles[0]['name'] ?? 'Role not defined' }}</div>
+                                                {{ $user_edit->roles[0]['name'] ?? 'Role not defined' }}</div>
                                             <!--begin::Badge-->
                                         </div>
                                         <!--end::Position-->
@@ -102,25 +101,25 @@
                                         <div class="pb-5 fs-6">
                                             <!--begin::Details item-->
                                             <div class="fw-bold mt-5">Account ID</div>
-                                            <div class="text-gray-600">ID-{{ $user->id }}</div>
+                                            <div class="text-gray-600">ID-{{ $user_edit->id }}</div>
                                             <!--begin::Details item-->
                                             <!--begin::Details item-->
                                             <div class="fw-bold mt-5">Email</div>
                                             <div class="text-gray-600">
                                                 <a href="#"
-                                                    class="text-gray-600 text-hover-primary">{{ $user->email }}</a>
+                                                    class="text-gray-600 text-hover-primary">{{ $user_edit->email }}</a>
                                             </div>
                                             <!--begin::Details item-->
                                             <!--begin::Details item-->
                                             <div class="fw-bold mt-5">Address</div>
-                                            <div class="text-gray-600">{{ $user->address }}
+                                            <div class="text-gray-600">{{ $user_edit->address }}
                                                 {{-- <br> --}}
                                                 <br>Mozambique
                                             </div>
                                             <!--begin::Details item-->
                                             <!--begin::Details item-->
                                             <div class="fw-bold mt-5">Last Login</div>
-                                            <div class="text-gray-600">{{ $user->updated_at }}</div>
+                                            <div class="text-gray-600">{{ $user_edit->updated_at }}</div>
                                             <!--begin::Details item-->
                                         </div>
                                     </div>
@@ -380,65 +379,81 @@
                                     <!--begin::Card-->
                                     <div class="card pt-4 mb-6 mb-xl-9">
                                         <!--begin::Card header-->
-                                        <div class="card-header border-0">
-                                            <!--begin::Card title-->
+                                        <div
+                                            class="card-header border-0 d-flex justify-content-between align-items-center">
                                             <div class="card-title">
-                                                <h2>Profile</h2>
+                                                <h2 class="fw-bold">Profile</h2>
                                             </div>
-                                            <!--end::Card title-->
+
+
                                         </div>
                                         <!--end::Card header-->
+
                                         <!--begin::Card body-->
-                                        <div class="card-body pt-0 pb-5">
-                                            <!--begin::Table wrapper-->
-                                            <div class="table-responsive">
-                                                <!--begin::Table-->
-                                                <table class="table align-middle table-row-dashed gy-5"
-                                                    id="kt_table_users_login_session">
-                                                    <tbody class="fs-6 fw-semibold text-gray-600">
-                                                        <tr>
-                                                            <td>Email</td>
-                                                            <td>{{ $user->email }}</td>
-                                                            <td class="text-end">
-                                                                <button type="button"
-                                                                    class="btn btn-icon btn-active-light-primary w-30px h-30px ms-auto"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#kt_modal_update_email">
-                                                                    <i class="ki-outline ki-pencil fs-3"></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Password</td>
-                                                            <td>******</td>
-                                                            <td class="text-end">
-                                                                <button type="button"
-                                                                    class="btn btn-icon btn-active-light-primary w-30px h-30px ms-auto"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#kt_modal_update_password">
-                                                                    <i class="ki-outline ki-pencil fs-3"></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Role</td>
-                                                            <td>{{ $user->roles[0]['name'] ?? 'Role not defined' }}</td>
-                                                            @if ($user->hasRole('Admin'))
-                                                                <td class="text-end">
-                                                                    <button type="button"
-                                                                        class="btn btn-icon btn-active-light-primary w-30px h-30px ms-auto"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#kt_modal_update_role">
-                                                                        <i class="ki-outline ki-pencil fs-3"></i>
-                                                                    </button>
-                                                                </td>
-                                                            @endif
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                                <!--end::Table-->
+                                        <div class="card-body pt-0">
+
+                                            <div class="d-flex flex-column gap-5">
+
+                                                <!-- Email -->
+                                                <div
+                                                    class="d-flex justify-content-between align-items-center border-bottom pb-4">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <i class="ki-outline ki-sms fs-2 text-primary"></i>
+                                                        <div>
+                                                            <div class="fw-bold">Email</div>
+                                                            <div class="text-muted">{{ $user_edit->email }}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <button type="button"
+                                                        class="btn btn-icon btn-light btn-active-light-primary w-35px h-35px"
+                                                        data-bs-toggle="modal" data-bs-target="#kt_modal_update_email">
+                                                        <i class="ki-outline ki-pencil fs-3"></i>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Password -->
+                                                <div
+                                                    class="d-flex justify-content-between align-items-center border-bottom pb-4">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <i class="ki-outline ki-lock fs-2 text-warning"></i>
+                                                        <div>
+                                                            <div class="fw-bold">Password</div>
+                                                            <div class="text-muted">••••••••</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <button type="button"
+                                                        class="btn btn-icon btn-light btn-active-light-primary w-35px h-35px"
+                                                        data-bs-toggle="modal" data-bs-target="#kt_modal_update_password">
+                                                        <i class="ki-outline ki-pencil fs-3"></i>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Role -->
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <i class="ki-outline ki-user fs-2 text-success"></i>
+                                                        <div>
+                                                            <div class="fw-bold">Role</div>
+                                                            <div>
+                                                                <span class="badge badge-light-primary">
+                                                                    {{ $user_edit->roles[0]['name'] ?? 'Not defined' }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @can('user.edit-role')
+                                                        <button type="button"
+                                                            class="btn btn-icon btn-light btn-active-light-primary w-35px h-35px btn-edit-role"
+                                                            data-user-id="{{ $user->id }}">
+                                                            <i class="ki-outline ki-pencil fs-3"></i>
+                                                        </button>
+                                                    @endcan
+                                                </div>
+
                                             </div>
-                                            <!--end::Table wrapper-->
+
                                         </div>
                                         <!--end::Card body-->
                                     </div>
@@ -492,7 +507,7 @@
                                                 <!--begin::Content-->
                                                 <div class="d-flex flex-column">
                                                     <span>SMS</span>
-                                                    <span class="text-muted fs-6">{{ $user->tel1 }}</span>
+                                                    <span class="text-muted fs-6">{{ $user_edit->tel1 }}</span>
                                                 </div>
                                                 <!--end::Content-->
                                                 <!--begin::Action-->

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -73,17 +74,17 @@ class UserController extends Controller
 
         $password = $GH->User_Password();
         $file = [
-            'file_path' =>  "storage/$directoryPath",
-            'file_name' =>  $filename
+            'file_path' => "storage/$directoryPath",
+            'file_name' => $filename
         ];
 
-        $user->name         = $request->name;
-        $user->surname      = $request->surname;
-        $user->password     = $password;
-        $user->email        = $request->email;
-        $user->tel1         = $request->phone;
-        $user->avatar       = json_encode($file);
-        $user->telegram_id  = $request->telegram;
+        $user->name = $request->name;
+        $user->surname = $request->surname;
+        $user->password = $password;
+        $user->email = $request->email;
+        $user->tel1 = $request->phone;
+        $user->avatar = json_encode($file);
+        $user->telegram_id = $request->telegram;
         $user->save();
 
         // User created and saved into the DB 
@@ -102,12 +103,28 @@ class UserController extends Controller
         return response()->json(['message' => 'User successfull created'], 200);
     }
 
+    // public function get_user_avatar_path()
+    // {
+    //     $avatar_path = DB::table('app_paths')->where('model_name', 'user')->first();
+    //     Log::info("Getting the path to store the avatar. Path [ $avatar_path->storage_path ] found ....." . __FUNCTION__);
+
+    //     return $avatar_path->storage_path;
+    // }
+
     public function get_user_avatar_path()
     {
-        $avatar_path = DB::table('app_paths')->where('model_name', 'user')->first();
-        Log::info("Getting the path to store the avatar. Path [ $avatar_path->storage_path ] found ....." . __FUNCTION__);
+        $avatar_path = DB::table('app_paths')
+            ->where('model_name', 'user')
+            ->first();
 
-        return $avatar_path->storage_path;
+        if (!$avatar_path || !$avatar_path->storage_path) {
+            Log::warning("Avatar path not found, using default: user/avatar");
+            return 'user/avatar';
+        }
+
+        Log::info("Avatar path: {$avatar_path->storage_path}");
+
+        return trim($avatar_path->storage_path, '/');
     }
 
     /**
@@ -115,16 +132,18 @@ class UserController extends Controller
      */
     public function edit_user($uid)
     {
+        $user = Auth::user();
+
         $user_edit = User::find($uid);
         Log::info("Finding user with ID $uid");
 
-        return view('user.edit', ['user' => $user_edit]);
+        return view('user.edit', ['user_edit' => $user_edit, 'user' => $user]);
     }
 
     public function updateEmail(Request $request)
     {
-        $uid    = $request['uid'];
-        $email  = $request['profile_email'];
+        $uid = $request['uid'];
+        $email = $request['profile_email'];
         $user_to_update = User::find($uid);
 
         if ($user_to_update->email === $email) {
@@ -147,8 +166,8 @@ class UserController extends Controller
     public function updatePasswd(Request $request)
     {
 
-        $uid    = $request['uid'];
-        $password  = $request['new_password'];
+        $uid = $request['uid'];
+        $password = $request['new_password'];
         $GF = new generalHelpers;
         $user_model = new User();
         $validate = $user_model->validatePassword($request);
@@ -170,79 +189,94 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    public function getUserRoles(User $user)
+    {
+        $roles = Role::select('id', 'name')->get();
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name'),
+            ],
+            'roles' => $roles
+        ]);
+    }
+
+    public function updateRole(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'roles' => 'required|array'
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        $user->syncRoles($request->roles);
+
+        return redirect()
+            ->back()
+            ->with('success', 'User role updated successfully.');
+    }
+
     public function updateDetails(Request $request)
     {
-        $uid    = $request['uid'];
-        $user   = User::findOrFail($uid);
+        $user = User::findOrFail($request->uid);
 
-        //$user->fill($request->all());
+        // Keep current avatar by default
+        $file = $user->avatar;
 
-        // Need to replace old Avatar instead of adding new one
-        $avatar = json_decode($user->avatar);
-        if ($avatar) {
+        // Check if a new avatar was uploaded
+        if ($request->hasFile('user-avatar')) {
 
-            $avatar_path = $avatar->file_path;
-            $avatar_file = $avatar->file_name;
-        
-            $file_full_path = $avatar_path . '/' . $avatar_file;
+            // Delete old avatar if it exists
+            if (!empty($user->avatar['file_name'])) {
+                $oldFilePath = $this->get_user_avatar_path() . '/' . $user->avatar['file_name'];
 
-            $absolutePath = Storage::disk('public')->path("user/avatar/$avatar_file");
-
-            Log::notice("The file is $avatar_file and  The avatar full path is [ $file_full_path ] and absolute path $absolutePath");
-
-            if (Storage::disk('public')->exists("user/avatar/$avatar_file")) {
-                Log::warning("Avatar for user $user found and deleted $file_full_path ");
-                //unlink($absolutePath);
-                Storage::disk('public')->delete("user/avatar/$avatar_file");
-                $avatarPath = $request->file('user-avatar')->store($this->get_user_avatar_path(), 'public');
-                // Extract the dir name
-                $directoryPath = dirname($avatarPath);
-
-                // Extract the file name
-                $filename = basename($avatarPath);
-
-                $file = [
-                    'file_path' =>  "storage/$directoryPath",
-                    'file_name' =>  $filename,
-                ];
-            } else {
-                Log::warning("File $avatar_file not FOUND ...... ");
-                Log::info("New avatar will be creatted for user $user");
-                $avatarPath = $request->file('user-avatar')->store($this->get_user_avatar_path(), 'public');
-
-                // Extract the file name
-                $filename = basename($avatarPath);
-
-                // Extract the directory path without the filename
-                $directoryPath = dirname($avatarPath);
-                Log::info("New Avatar created $avatarPath/$filename");
-                $file = [
-                    'file_path' =>  "storage/$directoryPath",
-                    'file_name' =>  $filename
-                ];
+                if (Storage::disk('public')->exists($oldFilePath)) {
+                    Storage::disk('public')->delete($oldFilePath);
+                    Log::info("Old avatar deleted: {$oldFilePath}");
+                }
             }
-        } else {
-            $file = "$request->user-avatar";
+
+            // Store new avatar
+            $avatarPath = $request->file('user-avatar')->store(
+                $this->get_user_avatar_path(),
+                'public'
+            );
+
+            $file = [
+                'file_path' => 'storage/' . dirname($avatarPath),
+                'file_name' => basename($avatarPath),
+            ];
+
+            Log::info("New avatar uploaded", $file);
         }
 
-        $user->name         = $request->name;
-        $user->surname      = $request->surname;
-        $user->email        = $request->email;
-        $user->tel1         = $request->phone;
-        $user->avatar       = json_encode($file);
-        $user->telegram_id  = $request->telegram;
-        $result = $user->save();
+        // Update user fields
+        $user->name = $request->name;
+        $user->surname = $request->surname;
+        $user->email = $request->email;
+        $user->tel1 = $request->phone;
+        $user->telegram_id = $request->telegram;
 
-        if ($result) {
-            Log::info("User $user have successfuly updated details");
-            return response()->json(['message' => 'User details updated ..'], 200);
-        } else {
-            Log::warning("Error occurred updating details for user [ $user ]");
-            return response()->json(['message' => 'Error occured while updating user details'], 500);
+        // Save avatar as ARRAY (Laravel cast handles JSON automatically)
+        $user->avatar = $file;
+
+        if ($user->save()) {
+            Log::info("User {$user->id} updated successfully");
+
+            return response()->json([
+                'message' => 'User details updated successfully'
+            ], 200);
         }
+
+        Log::error("Failed updating user {$user->id}");
+
+        return response()->json([
+            'message' => 'Error occurred while updating user'
+        ], 500);
     }
 
     /**
@@ -259,5 +293,92 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function view_profile()
+    {
+        $user = Auth::user();
+        $uid = $user->id;
+
+        $user_edit = User::find($uid);
+        Log::info("Finding user with ID $uid");
+
+        return view('user.edit', ['user_edit' => $user_edit, 'user' => $user]);
+    }
+
+    public function permissions(User $user)
+    {
+        $permissions = Permission::query()
+            ->orderBy('name')
+            ->get()
+            ->map(function ($permission) use ($user) {
+
+                $parts = explode('.', $permission->name);
+
+                return [
+
+                    'id' => $permission->id,
+
+                    'name' => $permission->name,
+
+                    'model' => $parts[0] ?? '-',
+
+                    'action' => $parts[1] ?? '-',
+
+                    'assigned' => $user->hasPermissionTo($permission->name),
+                ];
+            });
+
+        return response()->json([
+            'data' => $permissions
+        ]);
+    }
+
+    public function assignPermission(Request $request, User $user)
+    {
+        $request->validate([
+            'permission_id' => ['required', 'exists:permissions,id']
+        ]);
+
+        $permission = Permission::findOrFail($request->permission_id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Prevent duplicate assignment
+        |--------------------------------------------------------------------------
+        */
+        if (!$user->hasPermissionTo($permission->name)) {
+
+            $user->givePermissionTo($permission->name);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permission assigned successfully'
+        ]);
+    }
+
+    public function removePermission(Request $request, User $user)
+    {
+        $request->validate([
+            'permission_id' => ['required', 'exists:permissions,id']
+        ]);
+
+        $permission = Permission::findOrFail($request->permission_id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Remove only if assigned
+        |--------------------------------------------------------------------------
+        */
+        if ($user->hasPermissionTo($permission->name)) {
+
+            $user->revokePermissionTo($permission->name);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permission removed successfully'
+        ]);
     }
 }

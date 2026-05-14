@@ -85,18 +85,21 @@
                             </div>
                             <!--end::Items-->
                             <div class="card-footer border-0 d-flex justify-content-center gap-3">
-                                <button type="button" class="btn btn-sm btn-light-primary" data-bs-toggle="modal"
-                                    data-bs-target="#vendorModal">
-                                    <i class="bi bi-plus-circle me-1"></i>
-                                    Add Vendor
-                                </button>
-                                <!-- Secondary button (modal trigger) -->
-
-                                <button type="button" class="btn btn-sm btn-success fw-semibold" data-bs-toggle="modal"
-                                    data-bs-target="#modelModal">
-                                    <i class="bi bi-plus-circle me-1"></i>
-                                    Add Model
-                                </button>
+                                @can('vendor.add')
+                                    <button type="button" class="btn btn-sm btn-light-primary" data-bs-toggle="modal"
+                                        data-bs-target="#vendorModal">
+                                        <i class="bi bi-plus-circle me-1"></i>
+                                        Add Vendor
+                                    </button>
+                                @endcan
+                                @can('model.add')
+                                    <!-- Secondary button (modal trigger) -->
+                                    <button type="button" class="btn btn-sm btn-success fw-semibold" data-bs-toggle="modal"
+                                        data-bs-target="#modelModal">
+                                        <i class="bi bi-plus-circle me-1"></i>
+                                        Add Model
+                                    </button>
+                                @endcan
                             </div>
 
                         </div>
@@ -230,11 +233,13 @@
                                         data-bs-target="#kt_modal_export_users">
                                         <i class="ki-outline ki-exit-up fs-2"></i>Export</button>
                                     <!--end::Export-->
-                                    <!--begin::Add user-->
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#assetModal">
-                                        <i class="ki-outline ki-plus fs-2"></i>New Asset</button>
-                                    <!--end::Add user-->
+                                    <!--begin::Add Asset -->
+                                    @can('asset.add')
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#assetModal">
+                                            <i class="ki-outline ki-plus fs-2"></i>New Asset</button>
+                                    @endcan
+                                    <!--end::Add Asset-->
                                 </div>
                                 <!--end::Toolbar-->
                                 <!--begin::Group actions-->
@@ -537,7 +542,7 @@
                         className: 'row-selected'
                     },
                     ajax: {
-                        url: "/assets/getAll",
+                        url: "/asset/data",
                     },
                     columns: [{
                             data: 'id'

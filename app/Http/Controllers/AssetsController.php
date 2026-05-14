@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use DB;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\Request;
@@ -10,6 +11,15 @@ use Str;
 
 class AssetsController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('permission:assets.view')->only(['view', 'get_all_ajax']);
+        $this->middleware('permission:assets.create')->only(['create', 'store']);
+
+        $this->middleware('permission:vendors.manage')->only(['get_all_vendors_ajax', 'add_vendor']);
+        $this->middleware('permission:models.manage')->only(['addModel']);
+    }
     public function view()
     {
         $user = auth()->user();
