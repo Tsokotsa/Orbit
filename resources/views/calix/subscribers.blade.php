@@ -217,7 +217,7 @@
             $('#subscribers-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('subscribers.datatable') }}',
+                ajax: '{{ route('calix.get-all') }}',
                 columns: [{
                         data: 'name',
                         name: 'name'

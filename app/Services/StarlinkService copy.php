@@ -269,7 +269,8 @@ class StarlinkService
         );
     }
 
-    public function updateNickname(string $serviceLineNumber, ?int $accountId = null, $nickname): array
+    // public function updateNickname(string $serviceLineNumber, ?int $accountId = null, $nickname): array
+    public function updateNickname(string $serviceLineNumber, string $nickname, ?int $accountId = null): array
     {
         $endpoint = "/service-lines/{$serviceLineNumber}/nickname";
 

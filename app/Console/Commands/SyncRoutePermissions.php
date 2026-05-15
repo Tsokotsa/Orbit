@@ -87,6 +87,14 @@ class SyncRoutePermissions extends Command
             }
 
             /**
+             * Skip generated/internal Laravel routes
+             */
+            if (Str::startsWith($routeName, 'generated::')) {
+                $skipped++;
+                continue;
+            }
+
+            /**
              * Skip excluded exact route names
              */
             if (in_array($routeName, $this->excludedRoutes)) {
