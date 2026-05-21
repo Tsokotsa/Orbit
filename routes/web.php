@@ -114,8 +114,6 @@ Route::middleware('auth')->group(function () {
 
     // END CONTACTS ROUTES 
 
-
-
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -160,4 +158,6 @@ require __DIR__ . '/assets.php';
 require __DIR__ . '/calix.php';
 require __DIR__ . '/odoo.php';
 require __DIR__ . '/recargaki.php';
+require __DIR__ . '/product.php';
+require __DIR__ . '/radius.php';
 

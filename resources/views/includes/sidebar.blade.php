@@ -166,6 +166,51 @@
             <!--begin:Menu item-->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
                 class="menu-item py-2">
+
+                <!--begin:Menu link-->
+                <span class="menu-link menu-center">
+                    <span class="menu-icon me-0">
+                        <i class="ki-outline ki-handcart fs-1"></i>
+                    </span>
+                </span>
+                <!--end:Menu link-->
+
+                <!--begin:Menu sub-->
+                <div class="menu-sub menu-sub-dropdown px-2 py-4 w-250px">
+
+                    <!--begin:Menu title-->
+                    <div class="menu-item">
+                        <div class="menu-content">
+                            <span class="menu-section fs-5 fw-bolder ps-1 py-1">
+                                Products &amp; Services
+                            </span>
+                        </div>
+                    </div>
+                    <!--end:Menu title-->
+
+                    <!--begin:Menu item-->
+                    <div class="menu-item">
+                        <a href="/product/list" class="menu-link">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+
+                            <span class="menu-title">
+                                List
+                            </span>
+                        </a>
+                    </div>
+                    <!--end:Menu item-->
+
+                </div>
+                <!--end:Menu sub-->
+
+            </div>
+            <!--end:Menu item-->
+
+            <!--begin:Menu item-->
+            <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
+                class="menu-item py-2">
                 <!--begin:Menu link-->
                 <span class="menu-link menu-center">
                     <span class="menu-icon me-0">
@@ -649,7 +694,7 @@
                     <div class="menu-item">
                         <!--begin:Menu content-->
                         <div class="menu-content">
-                            <span class="menu-section fs-5 fw-bolder ps-1 py-1">Help</span>
+                            <span class="menu-section fs-5 fw-bolder ps-1 py-1">Settings</span>
                         </div>
                         <!--end:Menu content-->
                     </div>
@@ -971,6 +1016,20 @@
                         <!--end:Menu link-->
                     </div>
                     <!--end:Menu item-->
+                    @can('radius.view')
+                        <!--begin:Menu item-->
+                        <div class="menu-item">
+                            <!--begin:Menu link-->
+                            <a class="menu-link" href="{{ route('radius.view') }}">
+                                <span class="menu-bullet">
+                                    <i class="las la-fingerprint fs-2"></i>
+                                </span>
+                                <span class="menu-title">Radius Mgmt</span>
+                            </a>
+                            <!--end:Menu link-->
+                        </div>
+                        <!--end:Menu item-->
+                    @endcan
                     <!--begin:Menu item-->
                     <div class="menu-item">
                         <!--begin:Menu link-->
