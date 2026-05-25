@@ -352,7 +352,7 @@
                                             data-url="{{ route('radius.users-list') }}">
 
                                             <span class="menu-icon">
-                                                <i class="ki-outline ki-profile-circle fs-2"></i>
+                                                <i class="ki-outline ki-user fs-2"></i>
                                             </span>
 
                                             <span class="menu-title">
@@ -762,34 +762,314 @@
 @endpush
 @push('scripts')
     <script>
+        // $(document).on('click', '.edit-user-btn', function() {
+
+        //     let username = $(this).data('username');
+        //     let profile = $(this).data('profile');
+        //     let framedip = $(this).data('framedip');
+        //     let suspended = $(this).data('suspended');
+
+        //     // fill modal fields
+        //     $('#edit_username').val(username);
+        //     $('#edit_username_display').val(username);
+
+        //     $('#edit_profile').val(profile).trigger('change');
+        //     $('#edit_framed_ip').val(framedip);
+
+        //     // store state
+        //     $('#is_suspended').val(suspended);
+
+        //     // toggle button UI
+        //     updateSuspendButton(suspended);
+
+        //     // open modal
+        //     const modal = new bootstrap.Modal(
+        //         document.getElementById('kt_modal_edit_user')
+        //     );
+
+        //     modal.show();
+        // });
+
         $(document).on('click', '.edit-user-btn', function() {
 
             let username = $(this).data('username');
-            let profile = $(this).data('profile');
-            let framedip = $(this).data('framedip');
-            let suspended = $(this).data('suspended');
 
-            // fill modal fields
-            $('#edit_username').val(username);
-            $('#edit_username_display').val(username);
+            /*
+            |--------------------------------------------------------------------------
+            | LOADING STATE
+            |--------------------------------------------------------------------------
+            */
 
-            $('#edit_profile').val(profile).trigger('change');
-            $('#edit_framed_ip').val(framedip);
+            Swal.fire({
+                text: 'Loading user details...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
-            // store state
-            $('#is_suspended').val(suspended);
+            /*
+            |--------------------------------------------------------------------------
+            | FETCH USER
+            |--------------------------------------------------------------------------
+            */
 
-            // toggle button UI
-            updateSuspendButton(suspended);
+            $.ajax({
 
-            // open modal
-            const modal = new bootstrap.Modal(
-                document.getElementById('kt_modal_edit_user')
-            );
+                url: "{{ url('/radius/user') }}/" + encodeURIComponent(username),
 
-            modal.show();
+                type: 'GET',
+
+                success: function(response) {
+
+                    Swal.close();
+
+                    if (!response.success) {
+
+                        toastr.error('Failed to load user');
+
+                        return;
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | RESET STATE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $('#rate_limit_source_wrapper')
+                        .addClass('d-none');
+
+                    $('#bandwidth_override_wrapper')
+                        .addClass('d-none');
+
+                    $('#enable_bandwidth_override')
+                        .prop('checked', false);
+
+                    $('#rate_limit_source_wrapper .rounded-3')
+                        .removeClass(
+                            'bg-light-success border-success bg-light-warning border-warning'
+                        )
+                        .addClass('bg-light-info border-info');
+
+                    $('#user_edit_download')
+                        .prop('readonly', false)
+                        .val('');
+
+                    $('#user_edit_upload')
+                        .prop('readonly', false)
+                        .val('');
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | FILL MODAL
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $('#edit_username')
+                        .val(response.username);
+
+                    $('#edit_username_display')
+                        .val(response.username);
+
+                    $('#edit_framed_ip')
+                        .val(response.framed_ip ?? '');
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | PROFILE SELECT
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $('#edit_profile')
+                        .val(response.profile)
+                        .trigger('change');
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | RATE LIMIT
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (response.rate_limit) {
+
+                        let rates = response.rate_limit.split('/');
+
+                        $('#user_edit_download')
+                            .val(rates[0] ?? '');
+
+                        $('#user_edit_upload')
+                            .val(rates[1] ?? '');
+
+                        $('#rate_limit_source_wrapper')
+                            .removeClass('d-none');
+
+                        $('#bandwidth_override_wrapper')
+                            .removeClass('d-none');
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | PROFILE CONTROLLED
+                        |--------------------------------------------------------------------------
+                        */
+
+                        if (response.rate_limit_source === 'profile') {
+
+                            $('#enable_bandwidth_override')
+                                .prop('checked', false);
+
+                            $('#rate_limit_source_wrapper .rounded-3')
+                                .removeClass(
+                                    'bg-light-success border-success bg-light-warning border-warning'
+                                )
+                                .addClass('bg-light-info border-info');
+
+                            $('#rate_limit_source_title')
+                                .text('Profile Controlled Bandwidth');
+
+                            $('#rate_limit_source_description')
+                                .text(
+                                    'Subscriber inherits bandwidth limits from assigned profile.'
+                                );
+
+                            $('#user_edit_download')
+                                .prop('readonly', true);
+
+                            $('#user_edit_upload')
+                                .prop('readonly', true);
+                        }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | USER OVERRIDE
+                        |--------------------------------------------------------------------------
+                        */
+                        else {
+
+                            $('#enable_bandwidth_override')
+                                .prop('checked', true);
+
+                            $('#rate_limit_source_wrapper .rounded-3')
+                                .removeClass(
+                                    'bg-light-info border-info bg-light-warning border-warning'
+                                )
+                                .addClass('bg-light-success border-success');
+
+                            $('#rate_limit_source_title')
+                                .text('User Bandwidth Override');
+
+                            $('#rate_limit_source_description')
+                                .text(
+                                    'Subscriber has custom bandwidth limits overriding profile values.'
+                                );
+
+                            $('#user_edit_download')
+                                .prop('readonly', false);
+
+                            $('#user_edit_upload')
+                                .prop('readonly', false);
+                        }
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | SUSPEND STATE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $('#is_suspended')
+                        .val(response.suspended ? 1 : 0);
+
+                    updateSuspendButton(response.suspended);
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | OPEN MODAL
+                    |--------------------------------------------------------------------------
+                    */
+
+                    const modal = new bootstrap.Modal(
+                        document.getElementById('kt_modal_edit_user')
+                    );
+
+                    modal.show();
+                },
+
+                error: function(xhr) {
+
+                    Swal.close();
+
+                    toastr.error(
+                        xhr.responseJSON?.message ||
+                        'Failed to fetch user details'
+                    );
+                }
+
+            });
+
         });
 
+        /*
+        |--------------------------------------------------------------------------
+        | BANDWIDTH OVERRIDE TOGGLE
+        |--------------------------------------------------------------------------
+        */
+
+        $(document).on('change', '#enable_bandwidth_override', function() {
+
+            let enabled = $(this).is(':checked');
+
+            $('#user_edit_download')
+                .prop('readonly', !enabled);
+
+            $('#user_edit_upload')
+                .prop('readonly', !enabled);
+
+            /*
+            |--------------------------------------------------------------------------
+            | PROFILE MODE
+            |--------------------------------------------------------------------------
+            */
+
+            if (!enabled) {
+
+                $('#rate_limit_source_wrapper .rounded-3')
+                    .removeClass(
+                        'bg-light-success border-success bg-light-warning border-warning'
+                    )
+                    .addClass('bg-light-info border-info');
+
+                $('#rate_limit_source_title')
+                    .text('Profile Controlled Bandwidth');
+
+                $('#rate_limit_source_description')
+                    .text(
+                        'Subscriber inherits bandwidth limits from assigned profile.'
+                    );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | OVERRIDE MODE
+            |--------------------------------------------------------------------------
+            */
+            else {
+
+                $('#rate_limit_source_wrapper .rounded-3')
+                    .removeClass(
+                        'bg-light-info border-info bg-light-success border-success'
+                    )
+                    .addClass('bg-light-warning border-warning');
+
+                $('#rate_limit_source_title')
+                    .text('Override Mode Enabled');
+
+                $('#rate_limit_source_description')
+                    .text(
+                        'Custom subscriber bandwidth will override profile limits.'
+                    );
+            }
+        });
         /*
         |--------------------------------------------------------------------------
         | SAVE CHANGES
@@ -1150,6 +1430,7 @@
                 // =========================
                 $('#edit_max_sessions').val(p.max_sessions ?? '');
                 $('#edit_idle_timeout').val(p.idle_timeout ?? '');
+                $('#edit_session_timeout').val(p.session_timeout ?? '');
 
                 // =========================
                 // AUTH TYPE (SUSPEND LOGIC)
@@ -1161,6 +1442,8 @@
                 $('#suspend_btn_text').text(
                     suspended ? 'Unsuspend' : 'Suspend'
                 );
+
+                $('#profile_edit_auth_type').val(p.auth_type ?? '');
 
                 // =========================
                 // SHOW MODAL
@@ -1187,21 +1470,31 @@
 
                 let group = $('#edit_profile_old').val();
 
-                $.post(`/radius/profiles/${group}/update`, {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    groupname: $('#edit_profile_name').val()
-                }, function() {
+                let formData = new FormData(document.getElementById('edit_profile_form'));
 
-                    Swal.fire('Updated', 'Profile updated', 'success')
-                        .then(() => location.reload());
-
+                $.ajax({
+                    url: `/radius/profiles/${group}/update`,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function() {
+                        Swal.fire('Updated', 'Profile updated', 'success')
+                            .then(() => location.reload());
+                    }
                 });
 
             });
 
         });
 
+        $.ajaxSetup({
 
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+
+        });
         // DELETE
         $(document).on('click', '.delete-profile-btn', function() {
 
@@ -1209,25 +1502,46 @@
 
             Swal.fire({
                 title: 'Delete Profile?',
+                text: 'This will permanently remove the profile and all its attributes.',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Delete'
+                confirmButtonText: 'Delete',
+                confirmButtonColor: '#d33'
             }).then((result) => {
 
                 if (!result.isConfirmed) return;
 
                 $.ajax({
+
                     url: `/radius/profiles/${group}`,
+
                     type: 'DELETE',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
+
                     success: function() {
 
-                        Swal.fire('Deleted', '', 'success')
-                            .then(() => location.reload());
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted',
+                            text: 'Profile deleted successfully'
+                        }).then(() => {
+
+                            location.reload();
+
+                        });
+
+                    },
+
+                    error: function(xhr) {
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed',
+                            text: xhr.responseJSON?.message ??
+                                'Unable to delete profile'
+                        });
 
                     }
+
                 });
 
             });

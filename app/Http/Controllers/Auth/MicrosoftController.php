@@ -39,7 +39,7 @@ class MicrosoftController extends Controller
 
         auth()->login($user);
 
-        //return redirect()->route('dashboard');
-        return redirect()->route('default');
+        return redirect()->route('dashboard');
+        //return redirect()->route('dashboard.view');
     }
 }

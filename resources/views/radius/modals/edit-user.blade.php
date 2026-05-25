@@ -33,10 +33,8 @@
                 <!-- NOTICE -->
                 <div class="notice d-flex bg-light-secondary rounded-3 border border-dashed border-gray-300 p-5 mb-8">
 
-                    <!-- ICON -->
                     <i class="ki-outline ki-information-5 fs-2tx text-gray-700 me-4"></i>
 
-                    <!-- CONTENT -->
                     <div class="d-flex flex-stack flex-grow-1">
 
                         <div class="fw-semibold">
@@ -60,151 +58,271 @@
 
                     @csrf
 
+                    <!-- HIDDEN -->
                     <input type="hidden" id="edit_username" name="username">
 
                     <input type="hidden" id="is_suspended" value="0">
 
                     <!-- ====================================================== -->
-                    <!-- SUBSCRIBER -->
+                    <!-- TABS -->
                     <!-- ====================================================== -->
-                    <div class="border border-gray-200 border-dashed rounded-3 p-6 mb-8">
 
-                        <div class="d-flex align-items-center mb-5">
+                    <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-8 fs-6">
 
-                            <div class="symbol symbol-40px me-3">
+                        <li class="nav-item">
 
-                                <span class="symbol-label bg-light-primary">
+                            <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#subscriber_tab">
 
-                                    <i class="ki-outline ki-profile-circle fs-2 text-primary"></i>
+                                <i class="ki-outline ki-profile-circle fs-5 me-2"></i>
 
-                                </span>
+                                Subscriber
 
-                            </div>
+                            </a>
 
-                            <div>
+                        </li>
 
-                                <h4 class="mb-0 text-gray-900">
-                                    Subscriber Information
-                                </h4>
+                        <li class="nav-item">
 
-                                <div class="fs-7 text-muted">
-                                    Radius account identity and assigned profile
+                            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#network_tab">
+
+                                <i class="ki-outline ki-wifi-square fs-5 me-2"></i>
+
+                                Network & Bandwidth
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                    <!-- ====================================================== -->
+                    <!-- TAB CONTENT -->
+                    <!-- ====================================================== -->
+
+                    <div class="tab-content">
+
+                        <!-- ================================================== -->
+                        <!-- SUBSCRIBER TAB -->
+                        <!-- ================================================== -->
+
+                        <div class="tab-pane fade show active" id="subscriber_tab">
+
+                            <div class="border border-gray-200 border-dashed rounded-3 p-6">
+
+                                <div class="d-flex align-items-center mb-5">
+
+                                    <div class="symbol symbol-40px me-3">
+
+                                        <span class="symbol-label bg-light-primary">
+
+                                            <i class="ki-outline ki-profile-circle fs-2 text-primary"></i>
+
+                                        </span>
+
+                                    </div>
+
+                                    <div>
+
+                                        <h4 class="mb-0 text-gray-900">
+                                            Subscriber Information
+                                        </h4>
+
+                                        <div class="fs-7 text-muted">
+                                            Radius account identity and assigned profile
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row g-5">
+
+                                    <!-- USERNAME -->
+                                    <div class="col-md-6">
+
+                                        <label class="form-label fw-semibold">
+                                            Username
+                                        </label>
+
+                                        <input type="text" id="edit_username_display"
+                                            class="form-control form-control-solid" readonly>
+
+                                    </div>
+
+                                    <!-- PROFILE -->
+                                    <div class="col-md-6">
+
+                                        <label class="form-label fw-semibold">
+                                            Radius Profile
+                                        </label>
+
+                                        <select id="edit_profile" name="profile" class="form-select form-select-solid"
+                                            data-control="select2" data-dropdown-parent="#kt_modal_edit_user"
+                                            data-placeholder="Select Profile">
+
+                                            <option value="">
+                                                Select Profile
+                                            </option>
+
+                                            @foreach ($profiles as $profile)
+                                                <option value="{{ $profile->groupname }}">
+
+                                                    {{ $profile->groupname }}
+
+                                                </option>
+                                            @endforeach
+
+                                        </select>
+
+                                    </div>
+
                                 </div>
 
                             </div>
 
                         </div>
 
-                        <div class="row g-5">
+                        <!-- ================================================== -->
+                        <!-- NETWORK TAB -->
+                        <!-- ================================================== -->
 
-                            <!-- USERNAME -->
-                            <div class="col-md-6">
+                        <div class="tab-pane fade" id="network_tab">
 
-                                <label class="form-label fw-semibold">
-                                    Username
-                                </label>
+                            <div class="border border-gray-200 border-dashed rounded-3 p-6">
 
-                                <input type="text" id="edit_username_display" class="form-control form-control-solid"
-                                    readonly>
+                                <div class="d-flex align-items-center mb-5">
 
-                            </div>
+                                    <div class="symbol symbol-40px me-3">
 
-                            <!-- PROFILE -->
-                            <div class="col-md-6">
+                                        <span class="symbol-label bg-light-success">
 
-                                <label class="form-label fw-semibold">
-                                    Radius Profile
-                                </label>
+                                            <i class="ki-outline ki-wifi-square fs-2 text-success"></i>
 
-                                <select id="edit_profile" name="profile" class="form-select form-select-solid"
-                                    data-control="select2" data-dropdown-parent="#kt_modal_edit_user">
+                                        </span>
 
-                                    @foreach ($profiles as $profile)
-                                        <option value="{{ $profile->groupname }}">
+                                    </div>
 
-                                            {{ $profile->groupname }}
+                                    <div>
 
-                                        </option>
-                                    @endforeach
+                                        <h4 class="mb-0 text-gray-900">
+                                            Network Configuration
+                                        </h4>
 
-                                </select>
+                                        <div class="fs-7 text-muted">
+                                            IP assignment and bandwidth configuration
+                                        </div>
 
-                            </div>
+                                    </div>
 
-                        </div>
-
-                    </div>
-
-                    <!-- ====================================================== -->
-                    <!-- NETWORK -->
-                    <!-- ====================================================== -->
-                    <div class="border border-gray-200 border-dashed rounded-3 p-6 mb-8">
-
-                        <div class="d-flex align-items-center mb-5">
-
-                            <div class="symbol symbol-40px me-3">
-
-                                <span class="symbol-label bg-light-success">
-
-                                    <i class="ki-outline ki-wifi-square fs-2 text-success"></i>
-
-                                </span>
-
-                            </div>
-
-                            <div>
-
-                                <h4 class="mb-0 text-gray-900">
-                                    Network Configuration
-                                </h4>
-
-                                <div class="fs-7 text-muted">
-                                    IP assignment and bandwidth configuration
                                 </div>
 
-                            </div>
+                                <!-- FRAMED IP -->
+                                <div class="row g-5 mb-7">
 
-                        </div>
+                                    <div class="col-md-12">
 
-                        <div class="row g-5 mb-5">
+                                        <label class="form-label fw-semibold">
+                                            Framed IP Address
+                                        </label>
 
-                            <!-- FRAMED IP -->
-                            <div class="col-md-12">
+                                        <input type="text" id="edit_framed_ip" name="framed_ip"
+                                            class="form-control form-control-solid" placeholder="Optional">
 
-                                <label class="form-label fw-semibold">
-                                    Framed IP Address
-                                </label>
+                                    </div>
 
-                                <input type="text" id="edit_framed_ip" name="framed_ip"
-                                    class="form-control form-control-solid" placeholder="Optional">
+                                </div>
 
-                            </div>
+                                <!-- RATE LIMIT SOURCE -->
+                                <div class="d-none mb-7" id="rate_limit_source_wrapper">
 
-                        </div>
+                                    <div class="rounded-3 bg-light-info border border-info border-dashed px-4 py-3">
 
-                        <div class="row g-5">
+                                        <div class="d-flex align-items-center">
 
-                            <!-- DOWNLOAD -->
-                            <div class="col-md-6">
+                                            <div class="symbol symbol-35px me-3">
 
-                                <label class="form-label fw-semibold">
-                                    Download Speed
-                                </label>
+                                                <span class="symbol-label bg-info">
 
-                                <input type="text" id="user_edit_download" name="user_download_speed"
-                                    class="form-control form-control-solid" placeholder="e.g 20M">
+                                                    <i class="ki-outline ki-information-4 fs-5 text-white"></i>
 
-                            </div>
+                                                </span>
 
-                            <!-- UPLOAD -->
-                            <div class="col-md-6">
+                                            </div>
 
-                                <label class="form-label fw-semibold">
-                                    Upload Speed
-                                </label>
+                                            <div class="flex-grow-1">
 
-                                <input type="text" id="user_edit_upload" name="user_upload_speed"
-                                    class="form-control form-control-solid" placeholder="e.g 10M">
+                                                <div class="fw-semibold text-gray-900 fs-7"
+                                                    id="rate_limit_source_title">
+
+                                                    Profile Controlled Bandwidth
+
+                                                </div>
+
+                                                <div class="text-muted fs-8" id="rate_limit_source_description">
+
+                                                    Subscriber inherits bandwidth limits from assigned profile.
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- OVERRIDE TOGGLE -->
+                                <div class="d-none mt-4 mb-6" id="bandwidth_override_wrapper">
+
+                                    <div class="form-check form-switch form-check-custom form-check-solid">
+
+                                        <input class="form-check-input" type="checkbox" value="1"
+                                            id="enable_bandwidth_override" name="enable_bandwidth_override">
+
+                                        <label class="form-check-label fw-semibold text-gray-700 ms-3"
+                                            for="enable_bandwidth_override">
+
+                                            Override profile bandwidth for this subscriber
+
+                                        </label>
+
+                                    </div>
+
+                                    <div class="fs-8 text-muted mt-1 ms-10">
+                                        Enabling this creates a user-specific Mikrotik-Rate-Limit.
+                                    </div>
+
+                                </div>
+
+                                <!-- BANDWIDTH -->
+                                <div class="row g-5">
+
+                                    <!-- DOWNLOAD -->
+                                    <div class="col-md-6">
+
+                                        <label class="form-label fw-semibold">
+                                            Download Speed
+                                        </label>
+
+                                        <input type="text" id="user_edit_download" name="user_download_speed"
+                                            class="form-control form-control-solid" placeholder="e.g 20M">
+
+                                    </div>
+
+                                    <!-- UPLOAD -->
+                                    <div class="col-md-6">
+
+                                        <label class="form-label fw-semibold">
+                                            Upload Speed
+                                        </label>
+
+                                        <input type="text" id="user_edit_upload" name="user_upload_speed"
+                                            class="form-control form-control-solid" placeholder="e.g 10M">
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
@@ -232,7 +350,7 @@
                     </button>
 
                     <!-- SUSPEND -->
-                    <button type="button" class="btn btn-sm btn-light device-action" id="suspend_user_btn">
+                    <button type="button" class="btn btn-sm btn-light-warning device-action" id="suspend_user_btn">
 
                         <i class="ki-outline ki-shield-cross fs-5 me-1"></i>
 

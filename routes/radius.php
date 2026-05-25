@@ -4,6 +4,8 @@ use App\Http\Controllers\RadiusUserController;
 use App\Http\Controllers\RadiusProfileController;
 use App\Http\Controllers\RadiusNasController;
 
+
+
 Route::prefix('radius')->group(function () {
 
     Route::get('/', [RadiusUserController::class, 'index'])
@@ -11,6 +13,10 @@ Route::prefix('radius')->group(function () {
 
     Route::get('/users/list', [RadiusUserController::class, 'listUsers'])
         ->name('radius.users-list');
+
+    Route::get('/user/{username}', [RadiusUserController::class, 'getUser'])
+        ->where('username', '.*')
+        ->name('radius.user.details');
 
     Route::post('/users', [RadiusUserController::class, 'store'])
         ->name('radius.users.store');
@@ -62,11 +68,13 @@ Route::prefix('radius')->group(function () {
     Route::get('/profiles/list', [RadiusProfileController::class, 'list'])
         ->name('radius.profiles-list');
 
-    Route::get('/profiles/{group}', [RadiusProfileController::class, 'show'])
-        ->where('group', '.*')   // IMPORTANT FIX
-        ->name('radius.profiles.show');
+    Route::post('/profiles/{group}/update', [RadiusProfileController::class, 'update'])->name('radius.profiles.update');
 
-    Route::post('/profiles/show', [RadiusProfileController::class, 'show']);
+    Route::get('/profiles/{group}', [RadiusProfileController::class, 'show'])->name('radius.profiles.show');
+
+    Route::post('/profiles/{group}', [RadiusProfileController::class, 'destroy'])->name('radius.profiles.delete');
+
+    // Route::post('/profiles/show', [RadiusProfileController::class, 'show']);
 
 });
 

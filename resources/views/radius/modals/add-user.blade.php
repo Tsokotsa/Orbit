@@ -166,30 +166,50 @@
                                     <div class="fv-row mb-10">
 
                                         <label class="required fw-semibold fs-6 mb-2">
+                                            Region
+                                        </label>
+
+                                        <select name="region_id" class="form-select form-select-solid"
+                                            data-control="select2" data-hide-search="true"
+                                            data-dropdown-parent="#kt_modal_add_user">
+
+                                            <option value="">
+                                                Select Region
+                                            </option>
+                                            @foreach ($regions as $region)
+                                                <option value="{{ $region->id }}">
+                                                    {{ $region->name }} | {{ $region->code }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                    </div>
+
+                                    <div class="fv-row mb-10">
+
+                                        <label class="required fw-semibold fs-6 mb-2">
                                             Service Type
                                         </label>
 
-                                        <select name="service_type" class="form-select form-select-solid"
+                                        <select name="service_type_id" class="form-select form-select-solid"
                                             data-control="select2" data-hide-search="true"
                                             data-dropdown-parent="#kt_modal_add_user">
 
                                             <option value="">
                                                 Select Service
                                             </option>
-
-                                            <option value="parati">
-                                                ParaTi
-                                            </option>
-
-                                            <option value="nettop">
-                                                NetTop
-                                            </option>
-
+                                            @foreach ($service_types as $service)
+                                                <option value="{{ $service->id }}">
+                                                    {{ $service->code }}
+                                                </option>
+                                            @endforeach
                                         </select>
 
                                     </div>
 
                                 </div>
+
+
 
                             </div>
 
@@ -254,8 +274,8 @@
                                             Framed IP Address
                                         </label>
 
-                                        <input type="text" name="framed_ip" class="form-control form-control-solid"
-                                            placeholder="Optional">
+                                        <input type="text" name="framed_ip"
+                                            class="form-control form-control-solid" placeholder="Optional">
 
                                     </div>
 
@@ -298,18 +318,36 @@
                             <!-- STEP 4 -->
                             <div data-kt-stepper-element="content">
 
-                                <div class="border border-dashed border-gray-300 rounded p-8">
+                                <div
+                                    class="notice d-flex bg-light-secondary rounded border-secondary border border-dashed p-6 mb-8">
 
-                                    <div class="mb-5">
+                                    <!-- ICON -->
+                                    <i class="ki-outline ki-information fs-2tx text-warning me-4"></i>
 
-                                        <span class="fw-bold text-gray-800">
-                                            Review user information before creating subscriber.
-                                        </span>
+                                    <!-- WRAPPER -->
+                                    <div class="d-flex flex-stack flex-grow-1">
 
-                                    </div>
+                                        <!-- CONTENT -->
+                                        <div class="fw-semibold">
 
-                                    <div class="text-muted fs-7">
-                                        Click submit to provision Radius authentication and link the selected profile.
+                                            <h4 class="text-gray-900 fw-bold">
+                                                Confirm USER Details
+                                            </h4>
+
+                                            <div class="fs-8 text-gray-700">
+
+                                                Review user information before creating
+
+                                                <b class="text-warning">subscriber</b> .
+
+                                                Generated credentials will unlock access to the internet across our
+                                                infrastructure. Use them wisely, share them responsibly, and remember —
+                                                what happens on Earth may stay on Earth… but Orbit sees everything.
+
+                                            </div>
+
+                                        </div>
+
                                     </div>
 
                                 </div>
@@ -332,7 +370,8 @@
 
                                 <div>
 
-                                    <button type="button" class="btn btn-primary" data-kt-stepper-action="submit">
+                                    <button type="button" class="btn btn-primary" data-kt-stepper-action="submit"
+                                        data-action="submit-user">
 
                                         <span class="indicator-label">
                                             Create User
@@ -455,7 +494,7 @@
 
         function generateUsername() {
 
-            let type = $('select[name="service_type"]').val();
+            let type = $('select[name="service_type_id"]').val();
 
             if (!type) return;
 
@@ -474,7 +513,7 @@
         | ON SERVICE CHANGE
         |--------------------------------------------------------------------------
         */
-        $('select[name="service_type"]').on('change', function() {
+        $('select[name="service_type_id"]').on('change', function() {
 
             generateUsername();
 
@@ -499,7 +538,8 @@
 
         // Submit form
 
-        $('[data-kt-stepper-action="submit"]').on('click', function() {
+        $(document).on('click', '[data-action="submit-user"]', function(e) {
+
 
             Swal.fire({
                 title: 'Create User?',

@@ -20,12 +20,12 @@ use App\Http\Controllers\AdminController;
 // });
 
 //Route::get('/', [DefaultController::class, 'login'])->name('login');
-Route::get('/', [DefaultController::class, 'login']);
+Route::get('/', [DefaultController::class, 'login'])->name('login');
 
 // General Midleware for Auth
 Route::middleware('auth')->group(function () {
-    Route::get('land', [DefaultController::class, 'land'])->name('default')->name("dashboard.view");
-
+    Route::get('land', [DefaultController::class, 'land'])->name("default");
+    //Route::get('land', [DefaultController::class, 'land'])->name('default')->name("dashboard.view");
 
     // SMS Routes
     Route::get('/sms/list', [SmsController::class, "index"])->name("sms.view");

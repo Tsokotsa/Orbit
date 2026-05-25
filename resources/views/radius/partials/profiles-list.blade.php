@@ -18,7 +18,7 @@
         <thead>
             <tr class="text-muted fw-bold fs-7 text-uppercase">
                 <th>Profile Name</th>
-                <th>Users</th>
+                <th class="text-center">Users</th>
                 <th class="text-end">Actions</th>
             </tr>
         </thead>
@@ -28,32 +28,58 @@
             @forelse($profiles as $profile)
                 <tr>
 
+                    {{-- PROFILE --}}
                     <td>
-                        <div class="fw-bold text-gray-900">
-                            {{ $profile->groupname }}
+
+                        <div class="d-flex align-items-center">
+
+
+                            <div class="d-flex flex-column">
+
+                                <span class="badge badge-primary fw-semibold px-2 py-2 w-fit" style="font-size: 10px;">
+
+                                    {{ $profile->groupname }}
+
+                                </span>
+
+                            </div>
+
                         </div>
+
                     </td>
 
-                    <td>
-                        <span class="badge badge-light-primary">
+                    {{-- USERS --}}
+                    <td class="text-center">
+
+                        <div class="d-inline-flex align-items-center text-gray-700 fw-semibold fs-7">
+
+                            <i class="ki-outline ki-user text-success fs-5 me-2"></i>
+
                             {{ $profile->users_count }}
-                        </span>
+
+                        </div>
+
                     </td>
 
+                    {{-- ACTIONS --}}
                     <td class="text-end">
 
                         <button class="btn btn-sm btn-light-primary edit-profile-btn"
                             data-group="{{ $profile->groupname }}">
 
                             <i class="ki-outline ki-pencil fs-5 me-1"></i>
+
                             Edit
+
                         </button>
 
                         <button class="btn btn-sm btn-light-danger delete-profile-btn"
                             data-group="{{ $profile->groupname }}">
 
                             <i class="ki-outline ki-trash fs-5 me-1"></i>
+
                             Delete
+
                         </button>
 
                     </td>

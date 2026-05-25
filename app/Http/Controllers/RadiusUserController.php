@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Region;
+use App\Models\ServiceType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Services\RadiusService;
+use App\Models\PppoeUser;
 
 
 class RadiusUserController extends Controller
@@ -31,16 +34,22 @@ class RadiusUserController extends Controller
             ->groupBy('groupname')
             ->get();
 
+        $regions = Region::where('is_active', 1)->get();
+
+        $service_types = ServiceType::all();
+
         return view('radius.dashboard', compact(
             'user',
             'users',
-            'profiles'
+            'profiles',
+            'regions',
+            'service_types'
         ));
     }
 
     public function listUsers()
     {
-        $user = auth()->user();
+        // $user = auth()->user();
 
         $users = DB::connection('radius')
             ->table('radcheck as rc')
@@ -137,7 +146,103 @@ class RadiusUserController extends Controller
 
             ->get();
 
-        return view('radius.partials.users-list', compact('users', 'user'));
+        return view('radius.partials.users-list', compact('users'));
+    }
+
+    public function getUser($username)
+    {
+        $db = DB::connection('radius');
+
+        /*
+        |--------------------------------------------------------------------------
+        | USER PROFILE
+        |--------------------------------------------------------------------------
+        */
+
+        $profile = $db->table('radusergroup')
+            ->where('username', $username)
+            ->value('groupname');
+
+        /*
+        |--------------------------------------------------------------------------
+        | USER FRAMED IP
+        |--------------------------------------------------------------------------
+        */
+
+        $framedIp = $db->table('radreply')
+            ->where('username', $username)
+            ->where('attribute', 'Framed-IP-Address')
+            ->value('value');
+
+        /*
+        |--------------------------------------------------------------------------
+        | USER STATUS
+        |--------------------------------------------------------------------------
+        */
+
+        $suspended = $db->table('radcheck')
+            ->where('username', $username)
+            ->where('attribute', 'Auth-Type')
+            ->where('value', 'Reject')
+            ->exists();
+
+        /*
+        |--------------------------------------------------------------------------
+        | USER RATE LIMIT
+        |--------------------------------------------------------------------------
+        */
+
+        $userRateLimit = $db->table('radreply')
+            ->where('username', $username)
+            ->where('attribute', 'Mikrotik-Rate-Limit')
+            ->value('value');
+
+        /*
+        |--------------------------------------------------------------------------
+        | PROFILE RATE LIMIT
+        |--------------------------------------------------------------------------
+        */
+
+        $profileRateLimit = null;
+
+        if ($profile) {
+
+            $profileRateLimit = $db->table('radgroupreply')
+                ->where('groupname', $profile)
+                ->where('attribute', 'Mikrotik-Rate-Limit')
+                ->value('value');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FINAL RATE LIMIT
+        |--------------------------------------------------------------------------
+        */
+
+        $rateLimit = null;
+        $rateLimitSource = null;
+
+        if ($userRateLimit) {
+
+            $rateLimit = $userRateLimit;
+            $rateLimitSource = 'user';
+
+        } elseif ($profileRateLimit) {
+
+            $rateLimit = $profileRateLimit;
+            $rateLimitSource = 'profile';
+        }
+
+        return response()->json([
+            'success' => true,
+            'username' => $username,
+            'profile' => $profile,
+            'framed_ip' => $framedIp,
+            'suspended' => $suspended,
+
+            'rate_limit' => $rateLimit,
+            'rate_limit_source' => $rateLimitSource,
+        ]);
     }
 
     public function disconnect(Request $request)
@@ -215,78 +320,114 @@ class RadiusUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'username' => 'required',
-            'service_type' => 'required',
-            'profile' => 'required',
+            // 'client_id' => 'required|integer',
+            'region_id' => 'required|integer',
+            'service_type_id' => 'required|integer',
+            'profile' => 'required|string',
         ]);
 
         try {
+            return DB::transaction(function () use ($request) {
 
-            DB::connection('radius')->beginTransaction();
+                /*
+                |--------------------------------------------------------------------------
+                | CREATE PPPoE USER (LOCKED CONTEXT FOR SAFETY)
+                |--------------------------------------------------------------------------
+                */
 
-            /*
-            |--------------------------------------------------------------------------
-            | PASSWORD
-            |--------------------------------------------------------------------------
-            */
+                $user = PppoeUser::query()
+                    ->where('region_id', $request->region_id)
+                    ->where('service_type_id', $request->service_type_id)
+                    ->lockForUpdate()
+                    ->create([
+                        'client_id' => $request->client_id,
+                        'region_id' => $request->region_id,
+                        'service_type_id' => $request->service_type_id,
+                    ]);
 
-            $password = $request->filled('password')
-                ? $request->password
-                : substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 10);
+                /*
+                |--------------------------------------------------------------------------
+                | GENERATE USERNAME (NOW SAFE AFTER ID IS RESERVED)
+                |--------------------------------------------------------------------------
+                */
 
-            /*
-            |--------------------------------------------------------------------------
-            | RADCHECK (AUTH)
-            |--------------------------------------------------------------------------
-            */
+                $username = $user->generateUsername();
 
-            DB::connection('radius')->table('radcheck')->insert([
-                'username' => $request->username,
-                'attribute' => 'Cleartext-Password',
-                'op' => ':=',
-                'value' => $password
-            ]);
+                /*
+                |--------------------------------------------------------------------------
+                | ENSURE UNIQUE USERNAME (SAFETY NET)
+                |--------------------------------------------------------------------------
+                */
 
-            /*
-            |--------------------------------------------------------------------------
-            | LINK USER TO PROFILE
-            |--------------------------------------------------------------------------
-            */
+                if (DB::connection('radius')->table('radcheck')->where('username', $username)->exists()) {
+                    throw new \Exception("Username already exists in RADIUS: {$username}");
+                }
 
-            DB::connection('radius')->table('radusergroup')->insert([
-                'username' => $request->username,
-                'groupname' => $request->profile,
-                'priority' => 1
-            ]);
+                /*
+                |--------------------------------------------------------------------------
+                | PASSWORD GENERATION
+                |--------------------------------------------------------------------------
+                */
 
-            /*
-            |--------------------------------------------------------------------------
-            | FRAMED IP (USER LEVEL)
-            |--------------------------------------------------------------------------
-            */
+                $password = $request->filled('password')
+                    ? $request->password
+                    : substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 10);
 
-            if ($request->filled('framed_ip')) {
+                /*
+                |--------------------------------------------------------------------------
+                | RADIUS - AUTH
+                |--------------------------------------------------------------------------
+                */
 
-                DB::connection('radius')->table('radreply')->insert([
-                    'username' => $request->username,
-                    'attribute' => 'Framed-IP-Address',
+                DB::connection('radius')->table('radcheck')->insert([
+                    'username' => $username,
+                    'attribute' => 'Cleartext-Password',
                     'op' => ':=',
-                    'value' => $request->framed_ip
+                    'value' => $password
                 ]);
-            }
 
-            DB::connection('radius')->commit();
+                /*
+                |--------------------------------------------------------------------------
+                | RADIUS - GROUP ASSIGNMENT
+                |--------------------------------------------------------------------------
+                */
 
-            return response()->json([
-                'success' => true,
-                'message' => 'User created successfully',
-                'username' => $request->username,
-                'password' => $password
-            ]);
+                DB::connection('radius')->table('radusergroup')->insert([
+                    'username' => $username,
+                    'groupname' => $request->profile,
+                    'priority' => 1
+                ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | RADIUS - STATIC IP (OPTIONAL)
+                |--------------------------------------------------------------------------
+                */
+
+                if ($request->filled('framed_ip')) {
+                    DB::connection('radius')->table('radreply')->insert([
+                        'username' => $username,
+                        'attribute' => 'Framed-IP-Address',
+                        'op' => ':=',
+                        'value' => $request->framed_ip
+                    ]);
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | FINAL RESPONSE
+                |--------------------------------------------------------------------------
+                */
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User created successfully',
+                    'username' => $username,
+                    'password' => $password
+                ]);
+            });
 
         } catch (\Exception $e) {
-
-            DB::connection('radius')->rollBack();
 
             return response()->json([
                 'success' => false,
@@ -297,32 +438,38 @@ class RadiusUserController extends Controller
 
     public function update(Request $request)
     {
-        DB::connection('radius')->beginTransaction();
+        $db = DB::connection('radius');
+
+        $db->beginTransaction();
 
         try {
 
+            $override = $request->boolean('enable_bandwidth_override');
+
             /*
             |--------------------------------------------------------------------------
-            | PROFILE
+            | PROFILE UPDATE (ALWAYS)
             |--------------------------------------------------------------------------
             */
 
-            DB::connection('radius')
-                ->table('radusergroup')
-                ->where('username', $request->username)
-                ->update([
+            $db->table('radusergroup')->updateOrInsert(
+                [
+                    'username' => $request->username
+                ],
+                [
                     'groupname' => $request->profile
-                ]);
+                ]
+            );
 
             /*
             |--------------------------------------------------------------------------
-            | FRAMED IP
+            | FRAMED IP (UNCHANGED)
             |--------------------------------------------------------------------------
             */
 
-            DB::connection('radius')
-                ->table('radreply')
-                ->updateOrInsert(
+            if ($request->filled('framed_ip')) {
+
+                $db->table('radreply')->updateOrInsert(
                     [
                         'username' => $request->username,
                         'attribute' => 'Framed-IP-Address'
@@ -333,40 +480,87 @@ class RadiusUserController extends Controller
                     ]
                 );
 
+            } else {
+
+                $db->table('radreply')
+                    ->where('username', $request->username)
+                    ->where('attribute', 'Framed-IP-Address')
+                    ->delete();
+            }
+
             /*
             |--------------------------------------------------------------------------
-            | DOWNLOAD
+            | RATE LIMIT (CORE RULE)
             |--------------------------------------------------------------------------
             */
 
-            DB::connection('radius')
-                ->table('radreply')
-                ->updateOrInsert(
-                    [
-                        'username' => $request->username,
-                        'attribute' => 'Mikrotik-Rate-Limit'
-                    ],
-                    [
-                        'op' => ':=',
-                        'value' => $request->download_speed . '/' . $request->upload_speed
-                    ]
-                );
+            if (!$override) {
 
-            DB::connection('radius')->commit();
+                /*
+                |--------------------------------------------------------------------------
+                | NO OVERRIDE → REMOVE USER LIMIT ALWAYS
+                |--------------------------------------------------------------------------
+                */
+
+                $db->table('radreply')
+                    ->where('username', $request->username)
+                    ->where('attribute', 'Mikrotik-Rate-Limit')
+                    ->delete();
+
+            } else {
+
+                /*
+                |--------------------------------------------------------------------------
+                | OVERRIDE ENABLED → APPLY USER LIMIT
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    $request->filled('user_download_speed') &&
+                    $request->filled('user_upload_speed')
+                ) {
+
+                    $db->table('radreply')->updateOrInsert(
+                        [
+                            'username' => $request->username,
+                            'attribute' => 'Mikrotik-Rate-Limit'
+                        ],
+                        [
+                            'op' => ':=',
+                            'value' => $request->user_download_speed . '/' . $request->user_upload_speed
+                        ]
+                    );
+
+                } else {
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | OVERRIDE ENABLED BUT EMPTY VALUES → CLEAN UP
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $db->table('radreply')
+                        ->where('username', $request->username)
+                        ->where('attribute', 'Mikrotik-Rate-Limit')
+                        ->delete();
+                }
+            }
+
+            $db->commit();
 
             return response()->json([
-                'success' => true
+                'success' => true,
+                'message' => 'Subscriber updated successfully'
             ]);
 
         } catch (\Exception $e) {
 
-            DB::connection('radius')->rollBack();
+            $db->rollBack();
 
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 500);
-
         }
     }
 
