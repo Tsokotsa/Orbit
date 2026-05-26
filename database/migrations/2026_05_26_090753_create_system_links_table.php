@@ -15,6 +15,8 @@ return new class extends Migration {
 
             $table->string('name');
             $table->string('url');
+            $table->string('section')->nullable();
+            $table->string('permission')->nullable();
 
             $table->string('icon')->nullable();
             $table->string('description')->nullable();
