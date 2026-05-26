@@ -1,199 +1,276 @@
-<div class="card mb-5 mb-xl-10">
-    <div class="card-body pt-8 pb-8">
-        <div class="tab-pane fade active show" id="Overview" role="tabpanel">
-            <form id="kt_modal_new_target_form" class="form fv-plugins-bootstrap5 fv-plugins-framework" action="#"
-                data-select2-id="select2-data-kt_modal_new_target_form">
+<div class="card border-0 shadow-sm">
 
-                <!--begin::Input group-->
-                <div class="row g-9 mb-8">
-                    <div class="col-md-8 fv-row fv-plugins-icon-container">
-                        <!--begin::Label-->
-                        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                            <span class="required">Acc Name</span>
-                            <span class="ms-1" data-bs-toggle="tooltip" aria-label="This is the Acc from Odoo."
-                                data-bs-original-title="This is the Acc from Odoo." data-kt-initialized="1">
-                                <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i></span>
-                        </label>
-                        <!--end::Label-->
-                        <input type="hidden" id="client_id" value="{{ $client_id }}">
-                        <input type="text" class="form-control  disabled" value="{{ $client['name'] ?? 'N/A' }}">
-                        <div
-                            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                        </div>
-                    </div>
+    <div class="card-body p-8">
 
-                    <!--begin::Col-->
-                    <div class="col-md-4 fv-row fv-plugins-icon-container">
-                        <label class="required fs-6 fw-semibold mb-2">Client Type</label>
-                        <input type="text" class="form-control  disabled"
-                            value="{{ Str::ucfirst($client['company_type']) ?? ' N/A' }}">
-                        <div
-                            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                        </div>
-                    </div>
-                    <!--end::Col-->
+        <!--begin::Section Title-->
+        <div class="d-flex align-items-center justify-content-between mb-8">
 
+            <div>
 
+                <h3 class="fw-bold mb-1">
+                    Client Overview
+                </h3>
+
+                <div class="text-muted fs-7">
+                    General information, communication preferences and internal notes
                 </div>
-                <!--end::Input group-->
 
-                <!--begin::Input group-->
-                <div class="row g-9 mb-8">
-                    <!--begin::Col-->
-                    <div class="col-md-4 fv-row fv-plugins-icon-container">
-                        <label class="required fs-6 fw-semibold mb-2">Phone #1</label>
-                        <input type="text" class="form-control  disabled" value="{{ $client['phone'] ?? ' N/A' }}">
-                        <div
-                            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                        </div>
-                    </div>
-                    <!--end::Col-->
+            </div>
 
-                    <!--begin::Col-->
-                    <div class="col-md-4 fv-row fv-plugins-icon-container">
-                        <label class="required fs-6 fw-semibold mb-2">Phone #2</label>
-                        <input type="text" class="form-control  disabled" value="{{ $client['phone2'] ?? ' N/A' }}">
-                        <div
-                            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                        </div>
-                    </div>
-                    <!--end::Col-->
+            <button class="btn btn-sm btn-light-primary">
 
-                    <!--begin::Col-->
-                    <div class="col-md-4 fv-row">
-                        <label class="required fs-6 fw-semibold mb-2">Created Date</label>
+                <i class="ki-outline ki-pencil fs-3"></i>
 
-                        <!--begin::Input-->
-                        <div class="position-relative d-flex align-items-center">
-                            <!--begin::Icon-->
-                            <i class="ki-outline ki-calendar-8 fs-2 position-absolute mx-4"></i>
-                            <!--end::Icon-->
+                Edit Overview
 
-                            <!--begin::Datepicker-->
-                            <input class="form-control  ps-12 flatpickr-input" readonly="readonly"
-                                value="{{ $client['create_date'] ?? ' N/A' }}">
-                            <!--end::Datepicker-->
-                        </div>
-                        <!--end::Input-->
-                    </div>
-                    <!--end::Col-->
-                </div>
-                <!--end::Input group-->
+            </button>
 
-                <!--begin::Input group-->
-                <div class="d-flex flex-column mb-8">
-                    <label class="fs-6 fw-semibold mb-2 text-gray-700">
-                        Special Notes
-                    </label>
-
-                    <textarea class="form-control form-control-solid" rows="4" name="client_special_notes"
-                        placeholder="Add any info regarding this client ...."></textarea>
-
-                    <small class="text-muted mt-1">
-                        Optional – visible to internal teams only
-                    </small>
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Input group-->
-                <div class="d-flex flex-column mb-8 fv-row">
-                    <!--begin::Label-->
-                    <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                        <span class="required">Tags</span>
-
-
-                        <span class="ms-1" data-bs-toggle="tooltip" aria-label="Specify a target priorty"
-                            data-bs-original-title="Specify a target priorty" data-kt-initialized="1">
-                            <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i></span> </label>
-                    <!--end::Label-->
-
-                    <label class="form-label">Default input style</label>
-                    <input name="client_tags" class="form-control" value="Important, Priority, Partner"
-                        id="client_tags" />
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Input group-->
-                <div class="d-flex flex-stack mb-8">
-                    <!--begin::Label-->
-                    <div class="me-5">
-                        <label class="fs-6 fw-semibold">Notify Acc Manager</label>
-
-                        <div class="fs-7 fw-semibold text-muted">If notifications rellated to this Acc
-                        </div>
-                    </div>
-                    <!--end::Label-->
-
-                    <!--begin::Switch-->
-                    <label class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" value="1" checked="checked">
-                        <span class="form-check-label fw-semibold text-muted">
-                            Allowed
-                        </span>
-                    </label>
-                    <!--end::Switch-->
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Input group-->
-                <div class="mb-15 fv-row">
-                    <!--begin::Wrapper-->
-                    <div class="d-flex flex-stack">
-                        <!--begin::Label-->
-                        <div class="fw-semibold me-5">
-                            <label class="fs-6">Notifications</label>
-
-                            <div class="fs-7 text-muted">What channels should be used to notify this client</div>
-                        </div>
-                        <!--end::Label-->
-
-                        <!--begin::Checkboxes-->
-                        <div class="d-flex align-items-center">
-                            <!--begin::Checkbox-->
-                            <label class="form-check form-check-custom form-check-solid me-10">
-                                <input class="form-check-input h-20px w-20px" type="checkbox" name="communication[]"
-                                    value="email" checked="checked">
-
-                                <span class="form-check-label fw-semibold">
-                                    Email
-                                </span>
-                            </label>
-                            <!--end::Checkbox-->
-
-                            <!--begin::Checkbox-->
-                            <label class="form-check form-check-custom form-check-solid">
-                                <input class="form-check-input h-20px w-20px" type="checkbox" name="communication[]"
-                                    value="phone">
-
-                                <span class="form-check-label fw-semibold">
-                                    Phone
-                                </span>
-                            </label>
-                            <!--end::Checkbox-->
-                        </div>
-                        <!--end::Checkboxes-->
-                    </div>
-                    <!--end::Wrapper-->
-                </div>
-                <!--end::Input group-->
-
-                <!--begin::Actions-->
-                <div class="text-center">
-                    <button type="reset" id="kt_modal_new_target_cancel" class="btn btn-light me-3">
-                        Cancel
-                    </button>
-
-                    <button type="submit" id="kt_modal_new_target_submit" class="btn btn-primary">
-                        <span class="indicator-label">
-                            Submit
-                        </span>
-                        <span class="indicator-progress">
-                            Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                        </span>
-                    </button>
-                </div>
-                <!--end::Actions-->
-            </form>
         </div>
+        <!--end::Section Title-->
+
+        <!--begin::Stats-->
+        <div class="row g-5 mb-8">
+
+            <!-- Primary Phone -->
+            <div class="col-xl-4">
+
+                <div class="border border-gray-200 rounded-3 p-6 h-100 bg-light-light">
+
+                    <div class="d-flex align-items-center mb-4">
+
+                        <div class="symbol symbol-45px me-4">
+
+                            <span class="symbol-label bg-light-primary">
+
+                                <i class="ki-outline ki-phone fs-2 text-primary"></i>
+
+                            </span>
+
+                        </div>
+
+                        <div>
+
+                            <div class="text-gray-500 fs-7 text-uppercase fw-semibold">
+                                Primary Phone
+                            </div>
+
+                            <div class="fw-bold fs-4">
+                                {{ $client['phone'] ?? 'N/A' }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Secondary Phone -->
+            <div class="col-xl-4">
+
+                <div class="border border-gray-200 rounded-3 p-6 h-100">
+
+                    <div class="d-flex align-items-center mb-4">
+
+                        <div class="symbol symbol-45px me-4">
+
+                            <span class="symbol-label bg-light-info">
+
+                                <i class="ki-outline ki-phone fs-2 text-info"></i>
+
+                            </span>
+
+                        </div>
+
+                        <div>
+
+                            <div class="text-gray-500 fs-7 text-uppercase fw-semibold">
+                                Secondary Phone
+                            </div>
+
+                            <div class="fw-bold fs-4">
+                                {{ $client['phone2'] ?? 'N/A' }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Client Type -->
+            <div class="col-xl-4">
+
+                <div class="border border-gray-200 rounded-3 p-6 h-100">
+
+                    <div class="d-flex align-items-center mb-4">
+
+                        <div class="symbol symbol-45px me-4">
+
+                            <span class="symbol-label bg-light-success">
+
+                                <i class="ki-outline ki-profile-circle fs-2 text-success"></i>
+
+                            </span>
+
+                        </div>
+
+                        <div>
+
+                            <div class="text-gray-500 fs-7 text-uppercase fw-semibold">
+                                Client Type
+                            </div>
+
+                            <div class="fw-bold fs-4">
+                                {{ Str::ucfirst($client['company_type']) ?? 'N/A' }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!--end::Stats-->
+
+        <!--begin::Row-->
+        <div class="row g-5 mb-8">
+
+            <!-- Tags -->
+            <div class="col-xl-6">
+
+                <div class="card card-flush border rounded-3 h-100">
+
+                    <div class="card-header">
+
+                        <div class="card-title">
+
+                            <h3 class="fw-bold">
+                                Client Tags
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div class="card-body pt-2">
+
+                        <input name="client_tags" class="form-control form-control-solid"
+                            value="Important, Priority, Partner" id="client_tags" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Notifications -->
+            <div class="col-xl-6">
+
+                <div class="card card-flush border rounded-3 h-100">
+
+                    <div class="card-header">
+
+                        <div class="card-title">
+
+                            <h3 class="fw-bold">
+                                Notifications
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div class="card-body pt-2">
+
+                        <div class="d-flex flex-column gap-5">
+
+                            <div class="d-flex flex-stack">
+
+                                <div>
+
+                                    <div class="fw-semibold">
+                                        Email Notifications
+                                    </div>
+
+                                    <div class="text-muted fs-7">
+                                        Receive account updates via email
+                                    </div>
+
+                                </div>
+
+                                <label class="form-check form-switch form-check-solid">
+
+                                    <input class="form-check-input" type="checkbox" checked />
+
+                                </label>
+
+                            </div>
+
+                            <div class="d-flex flex-stack">
+
+                                <div>
+
+                                    <div class="fw-semibold">
+                                        SMS Notifications
+                                    </div>
+
+                                    <div class="text-muted fs-7">
+                                        Receive alerts via SMS
+                                    </div>
+
+                                </div>
+
+                                <label class="form-check form-switch form-check-solid">
+
+                                    <input class="form-check-input" type="checkbox" />
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!--end::Row-->
+
+        <!--begin::Notes-->
+        <div class="card card-flush border rounded-3">
+
+            <div class="card-header">
+
+                <div class="card-title">
+
+                    <h3 class="fw-bold">
+                        Internal Notes
+                    </h3>
+
+                </div>
+
+            </div>
+
+            <div class="card-body pt-2">
+
+                <textarea class="form-control form-control-solid" rows="6"
+                    placeholder="Add internal notes regarding this client..."></textarea>
+
+            </div>
+
+        </div>
+        <!--end::Notes-->
+
     </div>
+
 </div>

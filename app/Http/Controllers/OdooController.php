@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Services\OdooService;
 use Illuminate\Http\Request;
 use Log;
-use Yajra\DataTables\DataTables;
 use App\Models\OdooPartner;
+use Yajra\DataTables\Facades\DataTables;
 
 class OdooController extends Controller
 {
@@ -17,26 +17,26 @@ class OdooController extends Controller
         return view('clients.index')->with(['user' => $user]);
 
     }
-    public function getClients(Request $request)
-    {
-        try {
-            $clients = OdooPartner::query();
-            $total = $clients->count();
+    // public function getClients(Request $request)
+    // {
+    //     try {
+    //         $clients = OdooPartner::query();
+    //         $total = $clients->count();
 
-            Log::info("Found {$total} clients in the DB");
+    //         Log::info("Found {$total} clients in the DB");
 
-            return DataTables::of($clients)->make(true);
+    //         return DataTables::of($clients)->make(true);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'draw' => (int) $request->input('draw'),
-                'recordsTotal' => 0,
-                'recordsFiltered' => 0,
-                'data' => [],
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'draw' => (int) $request->input('draw'),
+    //             'recordsTotal' => 0,
+    //             'recordsFiltered' => 0,
+    //             'data' => [],
+    //             'error' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
 
     //  public function viewClient(OdooService $odoo, Request $request)
     // public function viewCLient()
@@ -44,6 +44,46 @@ class OdooController extends Controller
     //     $client = "";
     //     return view('clients.view', compact('client'));
     // }
+
+    public function getClients(Request $request)
+    {
+        try {
+
+            $clients = OdooPartner::select([
+                'id',
+                'name',
+                'phone',
+                'company_type',
+                'odoo_id',
+                'odoo_create_date'
+            ]);
+
+            return DataTables::eloquent($clients)
+
+                ->editColumn('company_type', function ($client) {
+
+                    return $client->company_type == 'person'
+                        ? 'Personal'
+                        : 'Business';
+
+                })
+
+                ->make(true);
+
+        } catch (\Throwable $e) {
+
+            Log::error($e);
+
+            return response()->json([
+                'draw' => (int) $request->input('draw'),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => $e->getMessage(),
+            ]);
+
+        }
+    }
 
     public function billing()
     {

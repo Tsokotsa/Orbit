@@ -9,53 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class RadiusProfileController extends Controller
 {
-
-    // public function list()
-    // {
-    //     $connection = DB::connection('radius');
-
-    //     // 1. Get all profiles
-    //     $profiles = $connection->table('radusergroup')
-    //         ->select('groupname')
-    //         ->distinct()
-    //         ->orderBy('groupname')
-    //         ->get();
-
-    //     // 2. Attach attributes per profile
-    //     foreach ($profiles as $profile) {
-
-    //         $profile->check = $connection->table('radgroupcheck')
-    //             ->where('groupname', $profile->groupname)
-    //             ->get();
-
-    //         $profile->reply = $connection->table('radgroupreply')
-    //             ->where('groupname', $profile->groupname)
-    //             ->get();
-
-    //         // optional: normalize key/value for easy JS usage
-    //         $profile->attributes = [
-    //             'check' => $profile->check->map(function ($item) {
-    //                 return [
-    //                     'attribute' => $item->attribute,
-    //                     'op' => $item->op,
-    //                     'value' => $item->value,
-    //                 ];
-    //             }),
-
-    //             'reply' => $profile->reply->map(function ($item) {
-    //                 return [
-    //                     'attribute' => $item->attribute,
-    //                     'op' => $item->op,
-    //                     'value' => $item->value,
-    //                 ];
-    //             }),
-    //         ];
-    //     }
-
-    //     return view('radius.partials.profiles-list', compact('profiles'));
-    // }
-
-
     public function list()
     {
         $db = DB::connection('radius');
@@ -116,87 +69,6 @@ class RadiusProfileController extends Controller
             compact('profiles')
         );
     }
-
-    // public function show($group)
-    // {
-    //     $db = DB::connection('radius');
-
-    //     // Get group name safely
-    //     $groupname = $group;
-
-    //     // PROFILE REPLY ATTRIBUTES (bandwidth, limits, etc)
-    //     $reply = $db->table('radgroupreply')
-    //         ->where('groupname', $groupname)
-    //         ->get();
-
-    //     // PROFILE CHECK ATTRIBUTES (auth rules)
-    //     $check = $db->table('radgroupcheck')
-    //         ->where('groupname', $groupname)
-    //         ->get();
-
-    //     return response()->json([
-    //         'groupname' => $groupname,
-    //         'reply' => $reply,
-    //         'check' => $check
-    //     ]);
-    // }
-
-    // public function show($groupname)
-    // {
-    //     $db = DB::connection('radius');
-
-    //     $reply = $db->table('radgroupreply')
-    //         ->where('groupname', $groupname)
-    //         ->get();
-
-    //     $check = $db->table('radgroupcheck')
-    //         ->where('groupname', $groupname)
-    //         ->get();
-
-    //     // defaults
-    //     $profile = [
-    //         'groupname' => $groupname,
-    //         'download' => null,
-    //         'upload' => null,
-    //         'max_sessions' => null,
-    //         'idle_timeout' => null,
-    //         'auth_type' => null,
-    //     ];
-
-    //     foreach ($reply as $attr) {
-
-    //         $attribute = strtolower(trim($attr->attribute ?? ''));
-    //         $value = trim($attr->value ?? '');
-
-    //         switch ($attribute) {
-
-    //             case 'mikrotik-rate-limit':
-    //                 $parts = explode('/', $value);
-    //                 $profile['download'] = $parts[0] ?? null;
-    //                 $profile['upload'] = $parts[1] ?? null;
-    //                 break;
-
-    //             case 'simultaneous-use':
-    //                 $profile['max_sessions'] = $value;
-    //                 break;
-
-    //             case 'idle-timeout':
-    //                 $profile['idle_timeout'] = $value;
-    //                 break;
-
-    //             case 'auth-type':
-    //                 $profile['auth_type'] = $value;
-    //                 break;
-    //         }
-    //     }
-
-    //     // optional: include raw attributes if needed for debugging later
-    //     return response()->json([
-    //         'profile' => $profile,
-    //         'reply' => $reply,
-    //         'check' => $check,
-    //     ]);
-    // }
 
     public function show($groupname)
     {
@@ -279,8 +151,8 @@ class RadiusProfileController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'download_speed' => 'required',
-            'upload_speed' => 'required',
+            // 'download_speed' => 'required',
+            // 'upload_speed' => 'required',
         ]);
 
         DB::connection('radius')->beginTransaction();

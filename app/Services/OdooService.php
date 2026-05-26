@@ -28,14 +28,20 @@ class OdooService
      * Base HTTP client (DEV only disables SSL)
      */
 
+    //     protected function http()
+//     {
+//         return Http::withOptions([
+// #            'verify' => !app()->environment(['local', 'uat']),
+// 	'verify' => '/etc/pki/tls/certs/ca-bundle.crt',
+//         ]);
+//     }
+
     protected function http()
     {
         return Http::withOptions([
-#            'verify' => !app()->environment(['local', 'uat']),
-	'verify' => '/etc/pki/tls/certs/ca-bundle.crt',
+            'verify' => true,
         ]);
     }
-
     /**
      * Authenticate user and get UID
      */

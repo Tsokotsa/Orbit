@@ -5,80 +5,239 @@
         <!--begin::Content container-->
         <div id="kt_app_content_container" class="app-container container-fluid">
 
-            <div class="card mb-5 mb-xl-10 position-relative overflow-hidden card-rounded">
-                <!-- Ribbon Top-Left -->
-                <div class="ribbon ribbon-triangle ribbon-top-start border-success">
-                    <div class="ribbon-icon mt-n5 ms-n6">
-                        <i class="bi bi-check fs-2 text-white"></i> <!-- Replace icon as needed -->
-                    </div>
-                </div>
+            <div class="card mb-5 mb-xl-10 border-0 shadow-sm overflow-hidden">
 
-                <!-- Header -->
-                <div class="card-header py-4">
-                    <div class="card-title d-flex flex-column">
-                        <span class="text-muted text-uppercase fw-semibold fs-6 mb-1">
-                            {{ $client->name }}
-                        </span>
-                        <span class="fw-bold fs-9 text-gray-900 letter-spacing">
-                            Acc Number: {{ $client->odoo_id }}
-                        </span>
-                    </div>
-                </div>
+                <!--begin::Top Accent-->
+                <div class="h-5px bg-success"></div>
+                <!--end::Top Accent-->
 
-                <!-- Body -->
-                <div class="card-body pt-2 pb-0">
-                    <!-- Optional Details Section -->
-                    <div class="d-flex flex-wrap flex-sm-nowrap">
-                        <!-- Add summary stats, badges, or icons here -->
-                    </div>
+                <!--begin::Body-->
+                <div class="card-body p-0">
 
-                    <!-- Nav Tabs -->
-                    <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold"
-                        id="dataTabs" role="tablist">
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5 active" data-bs-toggle="tab"
-                                data-tab="overview" href="#">Overview</a>
-                        </li>
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="assets"
-                                href="#">Assets</a>
-                        </li>
-                        <!--begin::Nav item-->
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="services"
-                                href="#">Services</a>
-                        </li>
-                        <!--end::Nav item-->
-                        <!--begin::Nav item-->
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="billing"
-                                href="#">Billing</a>
-                        </li>
-                        <!--end::Nav item-->
-                        <!--begin::Nav item-->
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="contacts"
-                                href="#">Contacts & Address</a>
-                        </li>
-                        <!--end::Nav item-->
-                        <!--begin::Nav item-->
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab"
-                                data-tab="notifications" href="#">Notifications</a>
-                        </li>
-                        <!--end::Nav item-->
-                        <!--begin::Nav item-->
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="finance"
-                                href="#">Finance Data</a>
-                        </li>
-                        <!--end::Nav item-->
-                        <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" data-bs-toggle="tab" data-tab="logs"
-                                href="#">Logs</a>
-                        </li>
-                    </ul>
+                    <!--begin::Client Header-->
+                    <div class="px-9 pt-8 pb-6">
+
+                        <div class="d-flex flex-wrap flex-sm-nowrap align-items-center">
+
+                            <!-- Avatar -->
+                            <div class="symbol symbol-80px symbol-circle me-6">
+
+                                <div class="symbol-label fs-2 fw-bold bg-light-primary text-primary">
+                                    {{ strtoupper(substr($client->name, 0, 1)) }}
+                                </div>
+
+                            </div>
+
+                            <!-- Client Info -->
+                            <div class="flex-grow-1">
+
+                                <div class="d-flex align-items-center flex-wrap mb-2">
+
+                                    <h2 class="fw-bold text-gray-900 me-4 mb-1">
+                                        {{ $client->name }}
+                                    </h2>
+
+                                    <span class="badge badge-light-success fw-bold px-4 py-2">
+                                        Active
+                                    </span>
+
+                                </div>
+
+                                <div class="d-flex flex-wrap fw-semibold fs-6 text-muted gap-5">
+
+                                    <div class="d-flex align-items-center">
+
+                                        <i class="ki-outline ki-profile-circle fs-5 me-2"></i>
+
+                                        Acc #: {{ $client->odoo_id }}
+
+                                    </div>
+
+                                    <div class="d-flex align-items-center">
+
+                                        <i class="ki-outline ki-geolocation fs-5 me-2"></i>
+
+                                        {{ ($client['company_type'] ?? '') == 'person' ? 'Personal Clent' : 'Business Client' }}
+
+                                    </div>
+
+                                    <div class="d-flex align-items-center">
+
+                                        <i class="ki-outline ki-calendar fs-5 me-2"></i>
+
+                                        Since {{ \Carbon\Carbon::parse($client->odoo_create_date)->format('M Y') }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Quick Actions -->
+                            {{-- <div class="d-flex gap-3">
+
+                                <button class="btn btn-light-primary btn-sm">
+
+                                    <i class="ki-outline ki-phone fs-3"></i>
+
+                                    Contact
+
+                                </button>
+
+                                <button class="btn btn-primary btn-sm">
+
+                                    <i class="ki-outline ki-pencil fs-3"></i>
+
+                                    Edit
+
+                                </button>
+
+                            </div> --}}
+
+                        </div>
+
+                    </div>
+                    <!--end::Client Header-->
+
+                    <!--begin::Stats Strip-->
+                    <div class="px-9 pb-6">
+
+                        <div class="row g-5">
+
+                            <!-- Services -->
+                            <div class="col-md-3">
+
+                                <div class="border border-dashed border-gray-300 rounded-3 px-6 py-5">
+
+                                    <div class="fs-6 text-muted fw-semibold mb-1">
+                                        Active Services
+                                    </div>
+
+                                    <div class="fs-2 fw-bold text-gray-900">
+                                        12
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Assets -->
+                            <div class="col-md-3">
+
+                                <div class="border border-dashed border-gray-300 rounded-3 px-6 py-5">
+
+                                    <div class="fs-6 text-muted fw-semibold mb-1">
+                                        Assets
+                                    </div>
+
+                                    <div class="fs-2 fw-bold text-gray-900">
+                                        8
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Billing -->
+                            <div class="col-md-3">
+
+                                <div class="border border-dashed border-gray-300 rounded-3 px-6 py-5">
+
+                                    <div class="fs-6 text-muted fw-semibold mb-1">
+                                        Outstanding
+                                    </div>
+
+                                    <div class="fs-2 fw-bold text-danger">
+                                        $420
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Tickets -->
+                            <div class="col-md-3">
+
+                                <div class="border border-dashed border-gray-300 rounded-3 px-6 py-5">
+
+                                    <div class="fs-6 text-muted fw-semibold mb-1">
+                                        Open Tickets
+                                    </div>
+
+                                    <div class="fs-2 fw-bold text-warning">
+                                        2
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <!--end::Stats Strip-->
+
+                    <!--begin::Tabs-->
+                    <div class="px-9">
+
+                        <ul class="nav nav-line-tabs nav-line-tabs-2x fs-6 fw-bold">
+
+                            <li class="nav-item">
+                                <a class="nav-link active" data-tab="overview" href="#">
+                                    Overview
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" data-tab="assets" href="#">
+                                    Assets
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" data-tab="services" href="#">
+                                    Services
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" data-tab="billing" href="#">
+                                    Billing
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" data-tab="contacts" href="#">
+                                    Contacts
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" data-tab="notifications" href="#">
+                                    Usage Notifications
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" data-tab="finance" href="#">
+                                    Finance Data
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" data-tab="logs" href="#">
+                                    Logs
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </div>
+                    <!--end::Tabs-->
+
                 </div>
+                <!--end::Body-->
+
             </div>
 
 
@@ -95,31 +254,6 @@
 
         </div>
         <!--end::Content container-->
-    </div>
-    <div class="modal fade" tabindex="-1" id="edit-contact">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Edit Contact</h3>
-
-                    <!--begin::Close-->
-                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
-                        aria-label="Close">
-                        <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
-                    </div>
-                    <!--end::Close-->
-                </div>
-
-                <div class="modal-body">
-                    <p>Modal body text goes here.</p>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
     </div>
     @include('clients.services.modals.add-service')
 @endsection
