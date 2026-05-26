@@ -570,11 +570,18 @@ class RadiusUserController extends Controller
 
     //     return back()->with('success', 'User activated');
     // }
-
     public function destroy(string $username)
     {
-        $this->radiusService->deleteUser($username);
+        try {
+            $this->radiusService->deleteUser($username);
 
-        return back()->with('success', 'User deleted');
+            return response()->json([
+                'message' => 'User deleted successfully'
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Deletion failed'
+            ], 500);
+        }
     }
 }

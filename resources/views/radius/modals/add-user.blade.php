@@ -219,24 +219,19 @@
                                 <div class="w-100">
 
                                     <!-- USERNAME -->
-                                    <div class="fv-row mb-10">
+                                    <div class="input-group mb-5">
 
-                                        <label class="fw-semibold fs-6 mb-2">
-                                            Username
-                                        </label>
+                                        <span class="input-group-text" id="username-addon">
+                                            <i class="ki-duotone ki-profile-circle fs-1">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
+                                        </span>
 
-                                        <div class="input-group">
-
-                                            <input type="text" name="username" id="generated_username"
-                                                class="form-control form-control-solid" readonly>
-
-                                            <button type="button" class="btn btn-light-primary" id="generate_username">
-
-                                                Regenerate
-
-                                            </button>
-
-                                        </div>
+                                        <input type="text" name="username" id="generated_username"
+                                            class="form-control form-control border" placeholder="Username"
+                                            aria-label="Username" aria-describedby="username-addon" readonly>
 
                                     </div>
 
@@ -275,7 +270,7 @@
                                         </label>
 
                                         <input type="text" name="framed_ip"
-                                            class="form-control form-control-solid" placeholder="Optional">
+                                            class="form-control form-control-solid ip_mask" placeholder="Optional">
 
                                     </div>
 
@@ -498,12 +493,12 @@
 
             if (!type) return;
 
-            let domain = type === 'parati' ? 'parati.paratus.co.mz' : 'nettop.paratus.co.mz';
+            let domain = type === '1' ? 'parati.paratus.co.mz' : 'nettop.paratus.co.mz';
 
             /*let random = Math.floor(Math.random() * 9000) + 1000;
 
             let username = `user${random}@${domain}`; */
-            let username = `user_example@${domain}`;
+            let username = `xxx-region@${domain}`;
 
             $('#generated_username').val(username);
         }

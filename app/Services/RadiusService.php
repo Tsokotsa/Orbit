@@ -32,7 +32,7 @@ class RadiusService
             |--------------------------------------------------------------------------
             */
 
-            DB::table('radcheck')->insert([
+            $this->radius->table('radcheck')->insert([
                 'username' => $data['username'],
                 'attribute' => 'Cleartext-Password',
                 'op' => ':=',
@@ -45,7 +45,7 @@ class RadiusService
             |--------------------------------------------------------------------------
             */
 
-            DB::table('radusergroup')->insert([
+            $this->radius->table('radusergroup')->insert([
                 'username' => $data['username'],
                 'groupname' => $data['profile'],
                 'priority' => 1,
@@ -72,7 +72,7 @@ class RadiusService
 
             if (!empty($data['password'])) {
 
-                DB::table('radcheck')
+                $this->radius->table('radcheck')
                     ->where('username', $username)
                     ->where('attribute', 'Cleartext-Password')
                     ->update([
@@ -86,11 +86,11 @@ class RadiusService
             |--------------------------------------------------------------------------
             */
 
-            DB::table('radusergroup')
+            $this->radius->table('radusergroup')
                 ->where('username', $username)
                 ->delete();
 
-            DB::table('radusergroup')->insert([
+            $this->radius->table('radusergroup')->insert([
                 'username' => $username,
                 'groupname' => $data['profile'],
                 'priority' => 1,
@@ -107,7 +107,7 @@ class RadiusService
 
     public function suspendUser(string $username): void
     {
-        DB::table('radcheck')->updateOrInsert(
+        $this->radius->table('radcheck')->updateOrInsert(
             [
                 'username' => $username,
                 'attribute' => 'Auth-Type',
@@ -127,7 +127,7 @@ class RadiusService
 
     public function unsuspendUser(string $username): void
     {
-        DB::table('radcheck')
+        $this->radius->table('radcheck')
             ->where('username', $username)
             ->where('attribute', 'Auth-Type')
             ->delete();
@@ -143,15 +143,15 @@ class RadiusService
     {
         DB::transaction(function () use ($username) {
 
-            DB::table('radcheck')
+            $this->radius->table('radcheck')
                 ->where('username', $username)
                 ->delete();
 
-            DB::table('radreply')
+            $this->radius->table('radreply')
                 ->where('username', $username)
                 ->delete();
 
-            DB::table('radusergroup')
+            $this->radius->table('radusergroup')
                 ->where('username', $username)
                 ->delete();
 
@@ -166,7 +166,7 @@ class RadiusService
 
     public function createProfile(array $data): void
     {
-        DB::table('radgroupreply')->insert([
+        $this->radius->table('radgroupreply')->insert([
 
             'groupname' => $data['name'],
             'attribute' => 'Mikrotik-Rate-Limit',
@@ -184,7 +184,7 @@ class RadiusService
 
     public function onlineUsers()
     {
-        return DB::table('radacct')
+        return $this->radius->table('radacct')
             ->whereNull('acctstoptime')
             ->orderByDesc('acctstarttime')
             ->get();

@@ -93,18 +93,14 @@
                     {{-- ACTION --}}
                     <td class="text-end">
 
-                        {{-- <button class="btn btn-sm btn-light-primary edit-user-btn"
-                            data-username="{{ $radiusUser->username }}" data-profile="{{ $radiusUser->profile }}"
-                            data-framedip="{{ $radiusUser->framed_ip }}"
-                            data-suspended="{{ $radiusUser->auth_type === 'Reject' ? 1 : 0 }}">
-
-                            Edit
-
-                        </button> --}}
-
                         <button type="button" class="btn btn-sm btn-light-primary edit-user-btn"
                             data-username="{{ $radiusUser->username }}">
                             Edit
+                        </button>
+
+                        <button type="button" class="btn btn-sm btn-light-danger delete-user-btn"
+                            data-username="{{ $radiusUser->username }}">
+                            Delete
                         </button>
 
                     </td>
@@ -126,11 +122,6 @@
 </div>
 @push('scripts')
     <script>
-        /*
-                                                                        |--------------------------------------------------------------------------
-                                                                        | INIT DATATABLE
-                                                                        |--------------------------------------------------------------------------
-                                                                        */
         function initRadiusUsersDatatable() {
 
             /*

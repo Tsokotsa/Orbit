@@ -995,7 +995,7 @@
             }
 
             $.ajax({
-                url: '/assets/add_new',
+                url: '/asset/add_new',
                 method: 'GET',
                 cache: false,
                 success: function(response) {

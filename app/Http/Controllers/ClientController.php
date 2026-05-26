@@ -98,6 +98,8 @@ class ClientController extends Controller
                         'm.name as model_name'
                     )->get();
 
+                //dd($assets);
+
                 Log::info("Retrieved assets for client $clientId: " . $assets->count());
 
                 return view('clients.tabs.assets', [
@@ -147,6 +149,7 @@ class ClientController extends Controller
                             'icon' => $serviceMeta->icon,
                             'd_speed' => $serviceMeta->d_speed,
                             'count' => $count,
+                            'profile' => $serviceMeta->profile
                         ];
                     }
 

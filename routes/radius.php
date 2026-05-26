@@ -15,7 +15,6 @@ Route::prefix('radius')->group(function () {
         ->name('radius.users-list');
 
     Route::get('/user/{username}', [RadiusUserController::class, 'getUser'])
-        ->where('username', '.*')
         ->name('radius.user.details');
 
     Route::post('/users', [RadiusUserController::class, 'store'])
@@ -27,7 +26,7 @@ Route::prefix('radius')->group(function () {
     Route::post('/users/{username}/suspend', [RadiusUserController::class, 'suspend'])
         ->name('radius.users.suspend');
 
-    Route::delete('/users/{username}', [RadiusUserController::class, 'destroy'])
+    Route::delete('/user/{username}', [RadiusUserController::class, 'destroy'])
         ->name('radius.users.destroy');
 
     Route::get('/nas', [RadiusNasController::class, 'nasView'])

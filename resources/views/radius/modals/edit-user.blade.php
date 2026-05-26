@@ -226,7 +226,7 @@
                                         </label>
 
                                         <input type="text" id="edit_framed_ip" name="framed_ip"
-                                            class="form-control form-control-solid" placeholder="Optional">
+                                            class="form-control form-control-solid ip_mask" placeholder="Optional">
 
                                     </div>
 

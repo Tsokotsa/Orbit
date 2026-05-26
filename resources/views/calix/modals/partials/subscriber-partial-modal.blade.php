@@ -20,11 +20,7 @@
                     </i>
                 </span>
                 <h6
-                    class="fs-8 fw-semibold mb-0 ms-4 badge {{ $port['ont_status']['oper-status'] === 'present'
-                        ? 'bg-light-primary'
-                        : 'bg-light-danger
-                                                                                                
-                                                                                                ' }} text-dark">
+                    class="fs-8 fw-semibold mb-0 ms-4 badge {{ $port['ont_status']['oper-status'] === 'present' ? 'bg-light-primary' : 'bg-light-danger' }} text-dark">
                     {{ $port['port'] ?? '—' }}
                     <span class="badge badge-light ms-2">
                         {{ $port['network-name'] ?? 'Unknown OLT' }}
@@ -197,32 +193,49 @@
 
                                         <!-- Begin of Actions -->
                                         <td class="text-center align-middle">
-                                            <div class="d-inline-flex gap-2 justify-content-center">
 
-                                                <!-- Play -->
+                                            <div class="d-inline-flex gap-2 justify-content-center flex-wrap">
+
+                                                <!-- Pause / Resume -->
                                                 <a href="#"
-                                                    class="btn btn-xs btn-dark d-flex align-items-center gap-1">
-                                                    <i class="las {{ ($port['ont_status']['oper-status'] ?? '') === 'present' ? 'la-pause text-danger' : 'la-play text-success' }}"></i>
-                                                    <span class="{{ ($port['ont_status']['oper-status'] ?? '') === 'present' ? 'text-danger' : 'text-success' }}">
-                                                        {{ ($port['ont_status']['oper-status'] ?? '') === 'present' ? 'Pause' : 'Enable' }}
+                                                    class="btn btn-sm btn-light d-inline-flex align-items-center gap-2">
+
+                                                    <i
+                                                        class="las {{ ($port['ont_status']['oper-status'] ?? '') === 'present' ? 'la-pause text-danger' : 'la-play text-success' }}"></i>
+
+                                                    <span class="fw-semibold text-gray-700">
+                                                        {{ ($port['ont_status']['oper-status'] ?? '') === 'present' ? 'Pause Service' : 'Resume Service' }}
                                                     </span>
+
                                                 </a>
 
-                                                <!-- Edit profile -->
+                                                <!-- Edit Profile -->
                                                 <a href="#"
-                                                    class="btn btn-xs btn-dark d-flex align-items-center gap-1">
-                                                    <i class="las la-user-edit text-warning"></i>
-                                                    <span class="text-warning">Edit Profile</span>
+                                                    class="btn btn-sm btn-light d-inline-flex align-items-center gap-2">
+
+                                                    <i class="las la-user-edit text-primary"></i>
+
+                                                    <span class="fw-semibold text-gray-700">
+                                                        Edit Profile
+                                                    </span>
+
                                                 </a>
 
-                                                <!-- Delete device -->
+                                                <!-- Delete Service -->
                                                 <a href="#"
-                                                    class="btn btn-xs btn-dark d-flex align-items-center gap-1"
-                                                    onclick="return confirm('Delete this device?')">
+                                                    class="btn btn-sm btn-light d-inline-flex align-items-center gap-2"
+                                                    onclick="return confirm('Delete this service?')">
+
                                                     <i class="las la-trash text-danger"></i>
-                                                    <span class="text-danger">Delete Service</span>
+
+                                                    <span class="fw-semibold text-gray-700">
+                                                        Delete Service
+                                                    </span>
+
                                                 </a>
+
                                             </div>
+
                                         </td>
 
                                         <!-- End of Actions -->

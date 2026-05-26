@@ -402,7 +402,7 @@
                                     <!-- LOGS -->
                                     <div class="menu-item">
 
-                                        <a href="#" class="menu-link">
+                                        <a href="/radius/logs" class="menu-link">
 
                                             <span class="menu-icon">
                                                 <i class="ki-outline ki-chart-simple fs-2"></i>
@@ -410,6 +410,10 @@
 
                                             <span class="menu-title">
                                                 Logs
+                                            </span>
+
+                                            <span class="badge badge-warning ms-auto">
+                                                Coming Soon
                                             </span>
 
                                         </a>
@@ -789,6 +793,59 @@
 
         //     modal.show();
         // });
+
+        $(document).on('click', '.delete-user-btn', function() {
+
+            let username = $(this).data('username');
+
+            Swal.fire({
+                title: 'Delete User?',
+                text: 'This will permanently remove the User and all accounting data',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                confirmButtonColor: '#d33'
+            }).then((result) => {
+
+                if (!result.isConfirmed) return;
+
+                $.ajax({
+
+                    url: `/radius/user/${username}`,
+
+                    type: 'DELETE',
+
+                    success: function() {
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted',
+                            text: 'User deleted successfully'
+                        }).then(() => {
+
+                            location.reload();
+
+                        });
+
+                    },
+
+                    error: function(xhr) {
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed',
+                            text: xhr.responseJSON?.message ??
+                                'Unable to delete user'
+                        });
+
+                    }
+
+                });
+
+            });
+
+        });
+
 
         $(document).on('click', '.edit-user-btn', function() {
 

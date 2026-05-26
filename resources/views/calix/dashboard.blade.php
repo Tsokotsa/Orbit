@@ -47,27 +47,55 @@
                             </div>
                             <!-- Card Body -->
                             <div class="card-body pt-3">
+
                                 <div class="d-flex flex-wrap gap-3">
+
                                     <!-- Provisioned -->
                                     <div
                                         class="rounded min-w-125px py-3 px-4 border border-dashed {{ $isEven ? 'border-white-50' : 'border-gray-300' }}">
-                                        <div class="fs-2 fw-bold">{{ $olts['provisionedONTsCount'] }}</div>
-                                        <div class="fw-semibold fs-7 opacity-50">Provisioned</div>
+
+                                        <div class="fs-2 fw-bold count-up" data-count="{{ $olts['provisionedONTsCount'] }}">
+                                            0
+                                        </div>
+
+                                        <div class="fw-semibold fs-7 opacity-50">
+                                            Provisioned
+                                        </div>
+
                                     </div>
+
                                     <!-- Online -->
                                     <div
                                         class="rounded min-w-125px py-3 px-4 border border-dashed {{ $isEven ? 'border-white-50' : 'border-gray-300' }}">
-                                        <div class="fs-2 fw-bold text-success">
-                                            {{ $olts['provisionedONTsCount'] - $olts['missingONTsCount'] }}</div>
-                                        <div class="fw-semibold fs-7 opacity-50">Online</div>
+
+                                        <div class="fs-2 fw-bold text-success count-up"
+                                            data-count="{{ $olts['provisionedONTsCount'] - $olts['missingONTsCount'] }}">
+                                            0
+                                        </div>
+
+                                        <div class="fw-semibold fs-7 opacity-50">
+                                            Online
+                                        </div>
+
                                     </div>
+
                                     <!-- Missing -->
                                     <div
                                         class="rounded min-w-125px py-3 px-4 border border-dashed {{ $isEven ? 'border-white-50' : 'border-gray-300' }}">
-                                        <div class="fs-2 fw-bold text-danger">{{ $olts['missingONTsCount'] }}</div>
-                                        <div class="fw-semibold fs-7 opacity-50">Missing</div>
+
+                                        <div class="fs-2 fw-bold text-danger count-up"
+                                            data-count="{{ $olts['missingONTsCount'] }}">
+                                            0
+                                        </div>
+
+                                        <div class="fw-semibold fs-7 opacity-50">
+                                            Missing
+                                        </div>
+
                                     </div>
+
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -247,5 +275,58 @@
 @endsection
 
 @push('scripts')
-    <script></script>
+    <script>
+        function formatNumber(value) {
+            return new Intl.NumberFormat().format(value);
+        }
+
+        function animateCountUp(el, duration = 2500) {
+
+            let target = parseInt(el.getAttribute('data-count')) || 0;
+            let startTime = null;
+
+            function easeOutQuad(t) {
+                return t * (2 - t);
+            }
+
+            function step(timestamp) {
+
+                if (!startTime) startTime = timestamp;
+
+                let progress = (timestamp - startTime) / duration;
+
+                if (progress > 1) progress = 1;
+
+                let eased = easeOutQuad(progress);
+
+                let value = Math.floor(eased * target);
+
+                el.innerText = formatNumber(value);
+
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    el.innerText = formatNumber(target);
+                }
+
+            }
+
+            window.requestAnimationFrame(step);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            let elements = document.querySelectorAll('.count-up');
+
+            elements.forEach((el, index) => {
+
+                // ⬇️ stagger effect (feels like loading wave)
+                setTimeout(() => {
+                    animateCountUp(el);
+                }, index * 150);
+
+            });
+
+        });
+    </script>
 @endpush

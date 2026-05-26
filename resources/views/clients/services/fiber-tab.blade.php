@@ -23,7 +23,7 @@
                     <td class="fw-bold p-0">{{ $service->service_name }}</td>
                     <td><span class="badge-speed">{{ $service->d_speed }} / {{ $service->u_speed }}</span></td>
                     <td>{{ $service->profile }}</td>
-                    <td><span class="sn-box"> {{ $service->service_id }} </span></td>
+                    <td><span class="sn-box">parati-100-mpm-baixa</span></td>
                     <td><span
                             class="badge {{ $service->status == 'active' ? 'badge-light-success' : ($service->status == 'suspended' ? 'badge-light-danger' : 'badge-light-warning') }}">
                             {{ ucfirst($service->status) }}</span></td>

@@ -36,7 +36,8 @@
 
                             <div class="d-flex flex-column">
 
-                                <span class="badge badge-primary fw-semibold px-2 py-2 w-fit" style="font-size: 10px;">
+                                <span class="badge badge-primary badge-outline fw-semibold px-2 py-2 w-fit"
+                                    style="font-size: 10px;">
 
                                     {{ $profile->groupname }}
 
@@ -54,8 +55,10 @@
                         <div class="d-inline-flex align-items-center text-gray-700 fw-semibold fs-7">
 
                             <i class="ki-outline ki-user text-success fs-5 me-2"></i>
+                            <span class="badge badge-secondary ms-auto">
+                                {{ $profile->users_count }} Users Assigned
+                            </span>
 
-                            {{ $profile->users_count }}
 
                         </div>
 
