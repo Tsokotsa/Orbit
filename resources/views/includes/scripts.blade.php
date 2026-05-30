@@ -3,6 +3,9 @@
     var hostUrl = "assets/";
 </script>
 <!--begin::Global Javascript Bundle(mandatory for all pages)-->
+<script {{-- // src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5glOFZFwr6uTti9vvJSe8ehMksyBT2PI&libraries=places&loading=async"> --}}
+    src="https://places.googleapis.com/v1/places/ChIJj61dQgK6j4AR4GeTYWZsKWw?fields=id,displayName&key=AIzaSyD5glOFZFwr6uTti9vvJSe8ehMksyBT2PI">
+</script>
 <script src="assets/plugins/global/plugins.bundle.js"></script>
 <script src="assets/js/scripts.bundle.js"></script>
 <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
@@ -25,6 +28,8 @@
 <script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
 <script src="assets/js/custom/utilities/modals/users-search.js"></script>
 <script src="assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
+
+
 @stack('scripts')
 
 <!--end::Custom Javascript-->

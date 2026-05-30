@@ -154,4 +154,5 @@ require __DIR__ . '/odoo.php';
 require __DIR__ . '/recargaki.php';
 require __DIR__ . '/product.php';
 require __DIR__ . '/radius.php';
+require __DIR__ . '/operations.php';
 

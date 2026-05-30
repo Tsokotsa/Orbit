@@ -60,14 +60,6 @@ class OdooController extends Controller
 
             return DataTables::eloquent($clients)
 
-                ->editColumn('company_type', function ($client) {
-
-                    return $client->company_type == 'person'
-                        ? 'Personal'
-                        : 'Business';
-
-                })
-
                 ->make(true);
 
         } catch (\Throwable $e) {

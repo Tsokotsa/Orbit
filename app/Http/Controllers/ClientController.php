@@ -66,9 +66,6 @@ class ClientController extends Controller
     {
         $client_id = $request->query('client_id');
 
-        // Log::info("Got from Request $client_id");
-        // return false;
-
         switch ($tab) {
             case 'overview':
 
@@ -174,7 +171,6 @@ class ClientController extends Controller
                     'invoices' => $invoices
                 ]);
 
-
             case 'logs':
                 $clientId = $request->query('client_id');
                 $userId = auth()->id(); // currently logged-in user
@@ -191,7 +187,6 @@ class ClientController extends Controller
                 ]);
 
             case 'contacts':
-
                 $clientId = $request->query('client_id');
                 $userId = auth()->id(); // currently logged-in user
 
@@ -208,7 +203,6 @@ class ClientController extends Controller
                 ]);
 
             case 'notifications':
-
                 $clientId = $request->query('client_id');
                 $userId = auth()->id(); // currently logged-in user
 
@@ -223,7 +217,6 @@ class ClientController extends Controller
                 ]);
 
             case 'finance':
-
                 $clientId = $request->query('client_id');
                 $userId = auth()->id(); // currently logged-in user
 

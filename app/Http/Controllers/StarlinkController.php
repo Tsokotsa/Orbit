@@ -39,11 +39,11 @@ class StarlinkController extends Controller
         try {
 
             $accounts = StarlinkAccount::orderBy('id')->get();
-            $subscribers = $this->starlink->allSubscribers();
+            //$subscribers = $this->starlink->allSubscribers();
 
             return view('starlink.index', [
                 'accounts' => $accounts,
-                'subscribers' => $subscribers,
+                //'subscribers' => $subscribers,
                 'user' => $user,
             ]);
 

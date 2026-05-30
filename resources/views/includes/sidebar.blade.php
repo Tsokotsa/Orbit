@@ -229,6 +229,44 @@
             </div>
 
             <!-- ===================================================== -->
+            <!-- OPERATIONS ITEMS -->
+            <!-- ===================================================== -->
+            <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
+                class="menu-item py-2">
+
+                <span class="menu-link menu-center">
+                    <span class="menu-icon me-0">
+                        <i class="fa fa-screwdriver-wrench fs-1"></i>
+                    </span>
+                </span>
+
+                <div class="menu-sub menu-sub-dropdown menu-sub-indention px-2 py-4 w-250px mh-75 overflow-auto">
+
+                    <div class="menu-item">
+                        <div class="menu-content">
+                            <span class="menu-section fs-5 fw-bolder ps-1 py-1">
+                                Operations
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Roles -->
+                    <div class="menu-item">
+                        <a class="menu-link" href="{{ route('ops.callout-calculation') }}">
+                            <span class="menu-icon">
+                                <i class="las la-calculator fs-2"></i>
+                            </span>
+
+                            <span class="menu-title">
+                                Callout Simulation
+                            </span>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ===================================================== -->
             <!-- SETTINGS STANDALONE ITEMS -->
             <!-- ===================================================== -->
             <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"

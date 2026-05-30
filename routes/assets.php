@@ -42,6 +42,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/store', [AssetsController::class, 'store'])
             ->name('assets.store')
             ->middleware('permission:assets.create');
+
+        Route::get('/models/{vendor}', [AssetsController::class, 'getVendorModels']);
+
+        Route::get('/{asset}/edit', [AssetsController::class, 'edit']);
+
+        Route::put('/{asset}', [AssetsController::class, 'update']);
     });
 
     // VENDORS
@@ -54,7 +60,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/add', [AssetsController::class, 'add_vendor'])
             ->name('vendors.store')
             ->middleware('permission:vendors.manage');
+        // Route::get('/{vendor}/models', [AssetsController::class, 'models'])->name('vendor.view-models');
     });
+
+
 
     // MODELS
     Route::prefix('models')->group(function () {

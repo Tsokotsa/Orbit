@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Asset;
 use DB;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\Request;
@@ -23,6 +24,9 @@ class AssetsController extends Controller
     public function view()
     {
         $user = auth()->user();
+
+        $mediums = DB::table('mediums')->get();
+
         $vendors = DB::table('vendor')
             ->select(
                 'vendor.id',
@@ -64,7 +68,18 @@ class AssetsController extends Controller
 
         Log::info("This is our vendor : $vendors");
 
-        return view("assets.index")->with(['vendors' => $vendors, 'user' => $user]);
+        return view("assets.index")->with(['vendors' => $vendors, 'mediums' => $mediums, 'user' => $user]);
+    }
+
+    public function getVendorModels($vendorId)
+    {
+        $models = DB::table('vendor_models')->where('v_id', $vendorId)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json([
+            'models' => $models
+        ]);
     }
 
     public function get_all_ajax(Request $request)
@@ -75,7 +90,7 @@ class AssetsController extends Controller
             $assets = DB::table('assets')
                 ->select(
                     'assets.*',
-                    'vendor.name as vendor_name',    // adjust field names
+                    'vendor.name as vendor_name',
                     'vendor.logo_path as logo_path',
                     'vendor_models.name as model_name',
                     'stock_group.name as group_name',
@@ -84,12 +99,15 @@ class AssetsController extends Controller
                 ->leftJoin('vendor', 'assets.vendor_id', '=', 'vendor.id')
                 ->leftJoin('vendor_models', 'assets.model', '=', 'vendor_models.id')
                 ->leftJoin('stock_group', 'assets.group_id', '=', 'stock_group.id')
-                ->leftJoin('mediums', 'assets.media_type', '=', 'mediums.id')
-                // ->where('serial', 'like', '%' . $q . '%')
-                ->limit(10)
-                ->get(['id', 'serial', 'vendor_name', 'logo_path', 'description', 'model_name', 'model', 'medium_name', 'status']);
+                ->leftJoin('mediums', 'assets.media_type', '=', 'mediums.id');
 
-            return DataTables::of($assets)->make(true);
+            return DataTables::of($assets)
+                ->editColumn(
+                    'created_at',
+                    fn($row) =>
+                    $row->created_at ? date('d-m-Y', strtotime($row->created_at)) : ''
+                )->make(true);
+
         } catch (\Exception $e) {
             return response()->json([
                 'draw' => intval($request->input('draw')),
@@ -99,6 +117,75 @@ class AssetsController extends Controller
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    public function edit($id)
+    {
+        $asset = DB::table('assets')
+            ->leftJoin('mediums', 'assets.media_type', '=', 'mediums.id')
+            ->leftJoin('vendor', 'assets.vendor_id', '=', 'vendor.id')
+            ->leftJoin('vendor_models', 'assets.model', '=', 'vendor_models.id')
+            ->select(
+                'assets.*',
+                'mediums.name as medium_name',
+                'vendor.name as vendor_name',
+                'vendor_models.name as model_name'
+            )
+            ->where('assets.id', $id)
+            ->first();
+
+        return response()->json($asset);
+    }
+
+    public function update(Request $request, Asset $asset)
+    {
+        $validated = $request->validate([
+
+            'serial' => 'required|string|max:255',
+
+            'medium_id' => 'required|exists:mediums,id',
+
+            //  'vendor_id' => 'required|exists:vendors,id',
+
+            'description' => 'nullable|string|max:1000',
+
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | UPDATE
+        |--------------------------------------------------------------------------
+        */
+
+        $asset->update([
+
+            'serial' => $validated['serial'],
+
+            'medium_id' => $validated['medium_id'],
+
+            //    'vendor_id' => $validated['vendor_id'],
+
+            'description' => $validated['description'] ?? null,
+
+            'active' => $request->has('is_enabled')
+                ? 'y'
+                : 'n',
+
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Asset updated successfully'
+
+        ]);
     }
 
     public function get_all_mediums_ajax()
@@ -247,11 +334,15 @@ class AssetsController extends Controller
         DB::table('assets')->insert([
             'vendor_id' => $request->vendor_id,
             'media_type' => $request->medium_id,
+            'model' => $request->model_id,
             'serial' => $request->asset_serial,
-            'asset_name' => $request->asset_description,
             'description' => $request->asset_description,
+            'asset_name' => $request->asset_serial | $request->medium_id,
             'created_at' => now(),
             'updated_at' => now(),
+            'active' => $request->has('is_enabled')
+                ? 'y'
+                : 'n',
         ]);
 
         return response()->json([

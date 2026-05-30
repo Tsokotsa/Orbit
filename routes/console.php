@@ -47,7 +47,8 @@ Schedule::command('starlink:poll')
 // Sync Starlink main Accounts
 Schedule::job(new SyncStarlinkAccountsJob)->everySixHours();
 
-// Schedule::job(new SyncOdooInvoicesJob)->everyMinute();
+Schedule::job(new SyncOdooInvoicesJob)->dailyAt('19:00');
+
 
 // Refresh RECARGAKI Token
 Schedule::command('app:refresh-recarg-aki-token')->everyTenMinutes();
