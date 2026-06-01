@@ -20,8 +20,8 @@ Route::prefix('radius')->group(function () {
     Route::post('/users', [RadiusUserController::class, 'store'])
         ->name('radius.users.store');
 
-    Route::put('/users/{username}', [RadiusUserController::class, 'update'])
-        ->name('radius.users.update');
+    // Route::put('/users/{username}', [RadiusUserController::class, 'update'])
+    //     ->name('radius.users.update');
 
     Route::post('/users/{username}/suspend', [RadiusUserController::class, 'suspend'])
         ->name('radius.users.suspend');

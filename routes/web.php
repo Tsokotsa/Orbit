@@ -14,7 +14,7 @@ use App\Http\Controllers\AssetsController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\AdminController;
 
-Route::get('/', [DefaultController::class, 'login'])->name('login');
+Route::get('/', [DefaultController::class, 'login']);
 
 // General Midleware for Auth
 Route::middleware('auth')->group(function () {
