@@ -236,7 +236,7 @@
 
                 <span class="menu-link menu-center">
                     <span class="menu-icon me-0">
-                        <i class="fa fa-screwdriver-wrench fs-1"></i>
+                        <i class="las la-tools fs-1"></i>
                     </span>
                 </span>
 

@@ -54,7 +54,6 @@ class OperationsController extends Controller
     public function searchLocation(Request $request)
     {
         $query = $request->query('q');
-        // https://api.geoapify.com/v1/geocode/autocomplete?text=Mosco&apiKey=cbd54ae057ff43ae834cc1f97304bb2d
         $response = Http::get(
             'https://api.geoapify.com/v1/geocode/autocomplete',
             [

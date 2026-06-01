@@ -38,138 +38,58 @@
                 {{-- MAIN CARD --}}
                 <div class="col-xl-8">
 
-                    <div class="card card-flush border-0 shadow-sm">
+                    <div class="card-body">
 
-                        {{-- HEADER --}}
-                        <div class="card-header border-0 pt-7">
+                        <div class="accordion" id="quoteAccordion">
 
-                            <div class="card-title">
+                            <!-- ROUTE & TRAVEL -->
+                            <div class="accordion-item border-0 mb-5 shadow-sm rounded">
 
-                                <div class="d-flex align-items-center">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button fw-bold fs-5" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#travel_section">
 
-                                    <div class="symbol symbol-45px me-3">
-                                        <div class="symbol-label bg-light-success">
-                                            <i class="ki-duotone ki-setting-2 fs-2 text-success">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                    </div>
+                                        <i class="ki-duotone ki-geolocation text-primary fs-2 me-3"></i>
 
-                                    <div>
-                                        <h3 class="fw-bold mb-0">
-                                            Quote Configuration
-                                        </h3>
+                                        Route & Travel
+                                    </button>
+                                </h2>
 
-                                        <div class="text-muted fs-7">
-                                            Configure route, vehicle, labour and costing
-                                        </div>
-                                    </div>
+                                <div id="travel_section" class="accordion-collapse collapse show"
+                                    data-bs-parent="#quoteAccordion">
 
-                                </div>
+                                    <div class="accordion-body">
 
-                            </div>
+                                        <div class="row g-5">
 
-                        </div>
-
-                        {{-- BODY --}}
-                        <div class="card-body pt-3">
-
-                            {{-- TABS --}}
-                            <ul
-                                class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-6 fw-bold mb-10">
-
-                                <li class="nav-item">
-                                    <a class="nav-link text-active-primary active" data-bs-toggle="tab" href="#route_tab">
-                                        <i class="ki-duotone ki-geolocation fs-3 me-2"></i>
-                                        Route
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link text-active-primary" data-bs-toggle="tab" href="#vehicle_tab">
-                                        <i class="ki-duotone ki-car fs-3 me-2"></i>
-                                        Vehicle
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link text-active-primary" data-bs-toggle="tab" href="#labour_tab">
-                                        <i class="ki-duotone ki-profile-user fs-3 me-2"></i>
-                                        Labour
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link text-active-primary" data-bs-toggle="tab" href="#costs_tab">
-                                        <i class="ki-duotone ki-dollar fs-3 me-2"></i>
-                                        Costs
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link text-active-primary" data-bs-toggle="tab" href="#notes_tab">
-                                        <i class="ki-duotone ki-notepad fs-3 me-2"></i>
-                                        Notes
-                                    </a>
-                                </li>
-
-                            </ul>
-
-                            <div class="tab-content">
-
-                                {{-- ROUTE TAB --}}
-                                <div class="tab-pane fade show active" id="route_tab">
-
-                                    <div class="row g-6">
-
-                                        <div class="col-md-6">
-
-                                            <div class="border border-gray-200 rounded-3 p-5 h-100">
-
-                                                <label class="form-label fw-bold text-gray-700">
+                                            <!-- Head Office -->
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">
                                                     Head Office
                                                 </label>
 
-                                                <div class="position-relative">
-
-                                                    <span class="position-absolute top-50 translate-middle-y ms-4">
-                                                        <i class="ki-duotone ki-building fs-2 text-primary">
-                                                            <span class="path1"></span>
-                                                            <span class="path2"></span>
-                                                        </i>
-                                                    </span>
-
-                                                    <input type="text"
-                                                        class="form-control form-control-solid form-control-lg ps-13"
-                                                        value="Maputo Head Office" readonly>
-
-                                                </div>
-
+                                                <input type="text" class="form-control form-control-solid"
+                                                    value="Paratus HQ Marginal" readonly>
                                             </div>
 
-                                        </div>
+                                            <!-- Customer -->
+                                            <div class="col-md-6 position-relative">
 
-                                        <div class="col-md-6 position-relative">
-
-                                            <div class="border border-gray-200 rounded-3 p-5 h-100">
-
-                                                <label class="form-label fw-bold text-gray-700">
+                                                <label class="form-label fw-bold">
                                                     Customer Location
                                                 </label>
 
-                                                <div class="position-relative">
+                                                <div class="input-group input-group-solid">
 
-                                                    <span class="position-absolute top-50 translate-middle-y ms-4">
-                                                        <i class="ki-duotone ki-geolocation fs-2 text-success">
+                                                    <span class="input-group-text">
+                                                        <i class="ki-duotone ki-geolocation fs-2 text-primary">
                                                             <span class="path1"></span>
                                                             <span class="path2"></span>
                                                         </i>
                                                     </span>
 
-                                                    <input type="text" id="customer_location"
-                                                        class="form-control form-control-solid form-control-lg ps-13"
-                                                        placeholder="Search Mozambique location">
+                                                    <input type="text" id="customer_location" class="form-control"
+                                                        placeholder="Search city, district or customer location">
 
                                                 </div>
 
@@ -177,95 +97,51 @@
 
                                             </div>
 
-                                        </div>
+                                            <div class="col-md-3">
 
-                                        <div class="col-md-4">
-
-                                            <div class="border border-dashed border-primary rounded-3 p-5">
-
-                                                <div class="d-flex align-items-center mb-3">
-
-                                                    <i class="ki-duotone ki-map fs-2 text-primary me-2">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-
-                                                    <label class="fw-bold mb-0">
-                                                        Distance
-                                                    </label>
-
-                                                </div>
+                                                <label class="form-label fw-bold">
+                                                    Distance
+                                                </label>
 
                                                 <div class="input-group input-group-solid">
-                                                    <input type="text" id="distance"
-                                                        class="form-control form-control-lg fw-bold" readonly>
 
                                                     <span class="input-group-text">
+                                                        <i class="ki-duotone ki-car fs-2 text-primary">
+                                                            <span class="path1"></span>
+                                                            <span class="path2"></span>
+                                                        </i>
+                                                    </span>
+
+                                                    <input type="text" id="distance" class="form-control fw-bold"
+                                                        readonly>
+
+                                                    <span class="input-group-text fw-bold">
                                                         KM
                                                     </span>
+
                                                 </div>
 
                                             </div>
 
-                                        </div>
+                                            <div class="col-md-3">
 
-                                        <div class="col-md-4">
-
-                                            <div class="border border-dashed border-warning rounded-3 p-5">
-
-                                                <div class="d-flex align-items-center mb-3">
-
-                                                    <i class="ki-duotone ki-arrow-left-right fs-2 text-warning me-2">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-
-                                                    <label class="fw-bold mb-0">
-                                                        Round Trip
-                                                    </label>
-
-                                                </div>
-
-                                                <select id="round_trip"
-                                                    class="form-select form-select-solid form-select-lg">
-
-                                                    <option value="1">
-                                                        No
-                                                    </option>
-
-                                                    <option value="2">
-                                                        Yes (x2)
-                                                    </option>
-
-                                                </select>
-
-                                            </div>
-
-                                        </div>
-
-                                        <div class="col-md-4">
-
-                                            <div class="border border-dashed border-success rounded-3 p-5">
-
-                                                <div class="d-flex align-items-center mb-3">
-
-                                                    <i class="ki-duotone ki-time fs-2 text-success me-2">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
-
-                                                    <label class="fw-bold mb-0">
-                                                        Travel Duration
-                                                    </label>
-
-                                                </div>
+                                                <label class="form-label fw-bold">
+                                                    Travel Duration
+                                                </label>
 
                                                 <div class="input-group input-group-solid">
 
-                                                    <input type="text" id="duration"
-                                                        class="form-control form-control-lg fw-bold" readonly>
-
                                                     <span class="input-group-text">
+                                                        <i class="ki-duotone ki-time fs-2 text-success">
+                                                            <span class="path1"></span>
+                                                            <span class="path2"></span>
+                                                        </i>
+                                                    </span>
+
+                                                    <input type="text" id="duration" class="form-control fw-bold"
+                                                        readonly>
+
+                                                    <span class="input-group-text fw-bold">
                                                         Hours
                                                     </span>
 
@@ -273,27 +149,23 @@
 
                                             </div>
 
-                                        </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">
+                                                    Round Trip
+                                                </label>
 
-                                    </div>
+                                                <select id="round_trip" class="form-select" data-control="select2">
+                                                    <option value="1">One Way</option>
+                                                    <option value="2" selected>Round Trip</option>
+                                                </select>
+                                            </div>
 
-                                </div>
-
-                                {{-- VEHICLE TAB --}}
-                                <div class="tab-pane fade" id="vehicle_tab">
-
-                                    <div class="row g-6">
-
-                                        <div class="col-md-6">
-
-                                            <div class="border rounded-3 p-5">
-
+                                            <div class="col-md-4">
                                                 <label class="form-label fw-bold">
                                                     Fuel Type
                                                 </label>
 
-                                                <select id="fuel_type"
-                                                    class="form-select form-select-solid form-select-lg">
+                                                <select id="fuel_type" class="form-select" data-control="select2">
 
                                                     <option value="diesel">
                                                         Diesel
@@ -304,21 +176,14 @@
                                                     </option>
 
                                                 </select>
-
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-6">
-
-                                            <div class="border rounded-3 p-5">
-
+                                            <div class="col-md-4">
                                                 <label class="form-label fw-bold">
-                                                    Vehicle Brand
+                                                    Vehicle
                                                 </label>
 
-                                                <select id="vehicle_model"
-                                                    class="form-select form-select-solid form-select-lg">
+                                                <select id="vehicle_model" class="form-select" data-control="select2">
 
                                                     <option value="12">
                                                         Toyota Hilux
@@ -333,76 +198,33 @@
                                                     </option>
 
                                                 </select>
-
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-4">
-
-                                            <div class="border rounded-3 p-5">
-
+                                            <div class="col-md-4">
                                                 <label class="form-label fw-bold">
                                                     Fuel Price
                                                 </label>
 
-                                                <div class="input-group input-group-solid">
-
-                                                    <span class="input-group-text">
-                                                        MZN
-                                                    </span>
-
-                                                    <input type="number" id="fuel_price"
-                                                        class="form-control form-control-lg fw-bold">
-
-                                                </div>
-
+                                                <input type="number" id="fuel_price"
+                                                    class="form-control form-control-solid" readonly>
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-4">
-
-                                            <div class="border rounded-3 p-5">
-
+                                            <div class="col-md-6">
                                                 <label class="form-label fw-bold">
-                                                    Fuel Consumption
+                                                    Fuel Consumption (L/100KM)
                                                 </label>
 
-                                                <div class="input-group input-group-solid">
-
-                                                    <input type="number" id="fuel_consumption"
-                                                        class="form-control form-control-lg fw-bold">
-
-                                                    <span class="input-group-text">
-                                                        L/100KM
-                                                    </span>
-
-                                                </div>
-
+                                                <input type="number" id="fuel_consumption"
+                                                    class="form-control form-control-solid" readonly>
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-4">
-
-                                            <div class="border rounded-3 p-5">
-
+                                            <div class="col-md-6">
                                                 <label class="form-label fw-bold">
                                                     Wear & Tear / KM
                                                 </label>
 
-                                                <div class="input-group input-group-solid">
-
-                                                    <span class="input-group-text">
-                                                        MZN
-                                                    </span>
-
-                                                    <input type="number" id="wear_tear"
-                                                        class="form-control form-control-lg" value="2">
-
-                                                </div>
-
+                                                <input type="number" id="wear_tear"
+                                                    class="form-control form-control-solid" value="9" readonly>
                                             </div>
 
                                         </div>
@@ -411,21 +233,38 @@
 
                                 </div>
 
-                                {{-- LABOUR TAB --}}
-                                <div class="tab-pane fade" id="labour_tab">
+                            </div>
 
-                                    <div class="row g-6">
+                            <!-- LABOUR -->
+                            <div class="accordion-item border-0 mb-5 shadow-sm rounded">
 
-                                        <div class="col-md-4">
+                                <h2 class="accordion-header">
 
-                                            <div class="border rounded-3 p-5">
+                                    <button class="accordion-button collapsed fw-bold fs-5" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#labour_section">
+
+                                        <i class="ki-duotone ki-profile-user text-success fs-2 me-3"></i>
+
+                                        Labour & Accommodation
+
+                                    </button>
+
+                                </h2>
+
+                                <div id="labour_section" class="accordion-collapse collapse"
+                                    data-bs-parent="#quoteAccordion">
+
+                                    <div class="accordion-body">
+
+                                        <div class="row g-5">
+
+                                            <div class="col-md-4">
 
                                                 <label class="form-label fw-bold">
                                                     Labour Duration
                                                 </label>
 
-                                                <select id="labour_duration"
-                                                    class="form-select form-select-solid form-select-lg">
+                                                <select id="labour_duration" class="form-select" data-control="select2">
 
                                                     <option value="1">1 Hour</option>
                                                     <option value="2">2 Hours</option>
@@ -436,18 +275,13 @@
 
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-4">
-
-                                            <div class="border rounded-3 p-5">
+                                            <div class="col-md-4">
 
                                                 <label class="form-label fw-bold">
                                                     Staff
                                                 </label>
 
-                                                <select id="staff"
-                                                    class="form-select form-select-solid form-select-lg">
+                                                <select id="staff" class="form-select" data-control="select2">
 
                                                     <option value="1">1</option>
                                                     <option value="2">2</option>
@@ -458,78 +292,36 @@
 
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-4">
-
-                                            <div class="border rounded-3 p-5">
+                                            <div class="col-md-4">
 
                                                 <label class="form-label fw-bold">
                                                     Hourly Rate
                                                 </label>
 
-                                                <div class="input-group input-group-solid">
-
-                                                    <span class="input-group-text">
-                                                        MZN
-                                                    </span>
-
-                                                    <input type="number" id="hourly_rate"
-                                                        class="form-control form-control-lg" value="100">
-
-                                                </div>
+                                                <input type="number" id="hourly_rate"
+                                                    class="form-control form-control-solid" readonly value="800.00">
 
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-6">
-
-                                            <div class="border rounded-3 p-5">
+                                            <div class="col-md-6">
 
                                                 <label class="form-label fw-bold">
-                                                    Per Diem Distance
+                                                    Per Diem
                                                 </label>
 
-                                                <select id="per_diem_range"
-                                                    class="form-select form-select-solid form-select-lg">
-
-                                                    <option value="0">
-                                                        0 - 50KM
-                                                    </option>
-
-                                                    <option value="500">
-                                                        50 - 150KM
-                                                    </option>
-
-                                                    <option value="1000">
-                                                        150KM+
-                                                    </option>
-
-                                                </select>
+                                                <input type="number" id="per_diem"
+                                                    class="form-control form-control-solid" value="750.00" readonly>
 
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-6">
-
-                                            <div class="border rounded-3 p-5">
+                                            <div class="col-md-6">
 
                                                 <label class="form-label fw-bold">
-                                                    Per Diem Per Staff
+                                                    Accommodation Per Staff
                                                 </label>
 
-                                                <div class="input-group input-group-solid">
-
-                                                    <span class="input-group-text">
-                                                        MZN
-                                                    </span>
-
-                                                    <input type="number" id="per_diem"
-                                                        class="form-control form-control-lg" value="750">
-
-                                                </div>
+                                                <input type="number" id="accommodation"
+                                                    class="form-control bg-light-primary fw-bold" value="0.00" readonly>
 
                                             </div>
 
@@ -539,67 +331,60 @@
 
                                 </div>
 
-                                {{-- COSTS TAB --}}
-                                <div class="tab-pane fade" id="costs_tab">
+                            </div>
 
-                                    <div class="row g-6">
+                            <!-- COMMERCIAL -->
+                            <div class="accordion-item border-0 shadow-sm rounded">
 
-                                        <div class="col-md-6">
+                                <h2 class="accordion-header">
 
-                                            <div class="border rounded-3 p-5">
+                                    <button class="accordion-button collapsed fw-bold fs-5" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#commercial_section">
+
+                                        <i class="ki-duotone ki-dollar text-warning fs-2 me-3"></i>
+
+                                        Commercial Terms
+
+                                    </button>
+
+                                </h2>
+
+                                <div id="commercial_section" class="accordion-collapse collapse"
+                                    data-bs-parent="#quoteAccordion">
+
+                                    <div class="accordion-body">
+
+                                        <div class="row g-5">
+
+                                            <div class="col-md-6">
 
                                                 <label class="form-label fw-bold">
                                                     Toll Gates
                                                 </label>
 
-                                                <div class="input-group input-group-solid">
-
-                                                    <span class="input-group-text">
-                                                        MZN
-                                                    </span>
-
-                                                    <input type="number" id="toll"
-                                                        class="form-control form-control-lg" value="0">
-
-                                                </div>
+                                                <input type="number" id="toll" class="form-control"
+                                                    value="0">
 
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-6">
-
-                                            <div class="border rounded-3 p-5">
+                                            <div class="col-md-6">
 
                                                 <label class="form-label fw-bold">
                                                     Additional Costs
                                                 </label>
 
-                                                <div class="input-group input-group-solid">
-
-                                                    <span class="input-group-text">
-                                                        MZN
-                                                    </span>
-
-                                                    <input type="number" id="extra_cost"
-                                                        class="form-control form-control-lg" value="0">
-
-                                                </div>
+                                                <input type="number" id="extra_cost" class="form-control"
+                                                    value="0">
 
                                             </div>
 
-                                        </div>
-
-                                        <div class="col-md-12">
-
-                                            <div class="border rounded-3 p-5">
+                                            <div class="col-md-12">
 
                                                 <label class="form-label fw-bold">
                                                     Profit Margin
                                                 </label>
 
-                                                <select id="profit"
-                                                    class="form-select form-select-solid form-select-lg">
+                                                <select id="profit" class="form-select" data-control="select2">
 
                                                     <option value="20">20%</option>
                                                     <option value="25">25%</option>
@@ -610,35 +395,31 @@
 
                                             </div>
 
+                                            <div class="col-md-12">
+
+                                                <label class="form-label fw-bold">
+                                                    Notes
+                                                </label>
+
+                                                <textarea id="notes" class="form-control" rows="4"></textarea>
+
+                                            </div>
+
+                                            <div class="col-md-12">
+
+                                                <button class="btn btn-primary btn-lg w-100">
+
+                                                    <i class="ki-duotone ki-file-down fs-2 me-2"></i>
+
+                                                    Generate Professional Quote
+
+                                                </button>
+
+                                            </div>
+
                                         </div>
 
                                     </div>
-
-                                </div>
-
-                                {{-- NOTES TAB --}}
-                                <div class="tab-pane fade" id="notes_tab">
-
-                                    <div class="border rounded-3 p-5 mb-5">
-
-                                        <label class="form-label fw-bold">
-                                            Additional Notes
-                                        </label>
-
-                                        <textarea id="notes" class="form-control form-control-solid" rows="6"></textarea>
-
-                                    </div>
-
-                                    <button class="btn btn-primary btn-lg w-100">
-
-                                        <i class="ki-duotone ki-file-down fs-2 me-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-
-                                        Generate PDF Quote
-
-                                    </button>
 
                                 </div>
 
@@ -653,68 +434,136 @@
                 {{-- SUMMARY --}}
                 <div class="col-xl-4">
 
-                    <div class="card bg-dark shadow-sm position-sticky" style="top:120px;">
+                    <div class="card border-0 shadow-lg position-sticky overflow-hidden"
+                        style="top:120px;border-radius:20px;">
 
-                        <div class="card-header border-0">
+                        <!-- HEADER -->
+                        <div class="card-header border-0 py-5"
+                            style="background:linear-gradient(135deg,#0F172A,#1E293B);">
 
-                            <div class="card-title">
+                            <div class="d-flex align-items-center w-100">
 
-                                <h3 class="text-white">
-                                    Itemized Quote Summary
-                                </h3>
+                                <div class="symbol symbol-50px me-4">
+                                    <div class="symbol-label bg-primary">
+                                        <i class="ki-duotone ki-chart-line-up fs-2 text-white">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-white fw-bold mb-1">
+                                        Quote Summary
+                                    </h3>
+
+                                    <div class="text-gray-400 fs-7">
+                                        Real-time cost estimation
+                                    </div>
+                                </div>
 
                             </div>
 
                         </div>
 
-                        <div class="card-body">
+                        <div class="card-body p-6 bg-light">
 
-                            <div class="summary-item">
-                                <span>Fuel Cost</span>
-                                <strong id="fuel_cost">MZN 0.00</strong>
-                            </div>
+                            <!-- CALLOUT TYPE -->
+                            <div class="mb-5 text-center">
 
-                            <div class="summary-item">
-                                <span>Wear & Tear</span>
-                                <strong id="wear_cost">MZN 0.00</strong>
-                            </div>
-
-                            <div class="summary-item">
-                                <span>Labour</span>
-                                <strong id="labour_cost">MZN 0.00</strong>
-                            </div>
-
-                            <div class="summary-item">
-                                <span>Per Diem</span>
-                                <strong id="perdiem_cost">MZN 0.00</strong>
-                            </div>
-
-                            <div class="summary-item">
-                                <span>Toll Fees</span>
-                                <strong id="toll_cost">MZN 0.00</strong>
-                            </div>
-
-                            <div class="summary-item">
-                                <span>Additional Costs</span>
-                                <strong id="extra_cost_summary">MZN 0.00</strong>
-                            </div>
-
-                            <div class="summary-item">
-                                <span>Profit Margin</span>
-                                <strong id="profit_summary">20%</strong>
-                            </div>
-
-                            <div class="separator separator-dashed border-gray-600 my-7"></div>
-
-                            <div class="d-flex justify-content-between align-items-center">
-
-                                <span class="fs-2 fw-bold text-white">
-                                    Total Quote
+                                <span id="callout_type" class="badge badge-light-primary fs-7 px-5 py-3 fw-bold">
+                                    Local Callout
                                 </span>
 
-                                <span class="fs-1 fw-bolder text-success" id="total_quote">
-                                    MZN 0.00
-                                </span>
+                            </div>
+
+                            <!-- BREAKDOWN -->
+                            <div class="mb-6">
+
+                                <div class="fw-bold text-gray-700 text-uppercase fs-8 mb-4">
+                                    Cost Breakdown <small class="fs-9 text-success">(MZM)</small>
+                                </div>
+
+                                <div class="summary-row">
+                                    <div>
+                                        <i class="ki-duotone ki-gas-station text-primary fs-4 me-2"></i>
+                                        Fuel Cost
+                                    </div>
+                                    <strong id="fuel_cost"> 0.00</strong>
+                                </div>
+
+                                <div class="summary-row">
+                                    <div>
+                                        <i class="ki-duotone ki-wrench text-warning fs-4 me-2"></i>
+                                        Wear & Tear
+                                    </div>
+                                    <strong id="wear_cost"> 0.00</strong>
+                                </div>
+
+                                <div class="summary-row">
+                                    <div>
+                                        <i class="ki-duotone ki-profile-user text-info fs-4 me-2"></i>
+                                        Labour
+                                    </div>
+                                    <strong id="labour_cost"> 0.00</strong>
+                                </div>
+
+                                <div class="summary-row">
+                                    <div>
+                                        <i class="ki-duotone ki-wallet text-success fs-4 me-2"></i>
+                                        Per Diem
+                                    </div>
+                                    <strong id="perdiem_cost"> 0.00</strong>
+                                </div>
+
+                                <div class="summary-row">
+                                    <div>
+                                        <i class="ki-duotone ki-home text-danger fs-4 me-2"></i>
+                                        Accommodation
+                                    </div>
+                                    <strong id="accommodation_cost"> 0.00</strong>
+                                </div>
+
+                                <div class="summary-row">
+                                    <div>
+                                        <i class="ki-duotone ki-road fs-4 me-2 text-dark"></i>
+                                        Toll Fees
+                                    </div>
+                                    <strong id="toll_cost"> 0.00</strong>
+                                </div>
+
+                                <div class="summary-row">
+                                    <div>
+                                        <i class="ki-duotone ki-plus-circle fs-4 me-2 text-secondary"></i>
+                                        Additional Costs
+                                    </div>
+                                    <strong id="extra_cost_summary"> 0.00</strong>
+                                </div>
+
+                                <div class="summary-row border-0">
+                                    <div>
+                                        <i class="ki-duotone ki-chart-simple fs-4 me-2 text-primary"></i>
+                                        Profit Margin
+                                    </div>
+                                    <strong id="profit_summary">20%</strong>
+                                </div>
+
+                            </div>
+
+                            <!-- TOTAL -->
+                            <div class="bg-dark rounded-4 p-5 text-center">
+
+                                <div class="text-gray-400 fw-semibold mb-2">
+                                    TOTAL QUOTE VALUE
+                                </div>
+
+                                <div id="total_quote" class="fs-1 fw-bolder text-success">
+                                    MZM 0.00
+                                </div>
+
+                                <div class="text-gray-500 fs-8 mt-2">
+                                    Including operational costs and margin
+                                </div>
 
                             </div>
 
@@ -732,6 +581,30 @@
 @endsection
 
 <style>
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid #E4E6EF;
+        font-size: 14px;
+        color: #5E6278;
+    }
+
+    .summary-row strong {
+        color: #181C32;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .summary-row:hover {
+        background: rgba(0, 0, 0, .02);
+        transition: all .2s ease;
+        padding-left: 8px;
+        padding-right: 8px;
+        border-radius: 8px;
+    }
+
     #location_results {
         position: absolute;
         width: 100%;
@@ -767,13 +640,36 @@
     .card {
         border-radius: 16px;
     }
+
+    .accordion-button {
+        background: #fff !important;
+        border-radius: 12px !important;
+        box-shadow: none !important;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background: #F8F9FA !important;
+    }
+
+    .select2-container .select2-selection--single {
+        height: 44px !important;
+        border: 1px solid #E4E6EF !important;
+    }
+
+    .select2-selection__rendered {
+        line-height: 42px !important;
+    }
+
+    .select2-selection__arrow {
+        height: 42px !important;
+    }
 </style>
 
 @push('scripts')
     <script>
         const headOffice = {
-            lat: -25.9692,
-            lng: 32.5732
+            lat: -25.925235395855076,
+            lng: 32.63714653366664
         };
 
         let destinationLat = null;
@@ -839,33 +735,6 @@
 
         /*
         |--------------------------------------------------------------------------
-        | PER DIEM AUTO RANGE
-        |--------------------------------------------------------------------------
-        */
-
-        function updatePerDiemRange(distance) {
-
-            if (distance <= 50) {
-
-                $('#per_diem_range').val(0);
-                $('#per_diem').val(0);
-
-            } else if (distance <= 150) {
-
-                $('#per_diem_range').val(500);
-                $('#per_diem').val(500);
-
-            } else {
-
-                $('#per_diem_range').val(1000);
-                $('#per_diem').val(1000);
-
-            }
-
-        }
-
-        /*
-        |--------------------------------------------------------------------------
         | GEO SEARCH
         |--------------------------------------------------------------------------
         */
@@ -901,21 +770,28 @@
                         res.features.forEach(function(item) {
 
                             $('#location_results').append(`
-                        <div class="location-item"
-                             data-lat="${item.geometry.coordinates[1]}"
-                             data-lng="${item.geometry.coordinates[0]}"
-                             data-name="${item.properties.formatted}">
+    <div class="location-item"
+         data-lat="${item.geometry.coordinates[1]}"
+         data-lng="${item.geometry.coordinates[0]}"
+         data-name="${item.properties.formatted}">
 
-                            <div class="fw-bold">
-                                ${item.properties.address_line1 ?? ''}
-                            </div>
+        <div class="location-title">
 
-                            <div class="text-muted fs-7">
-                                ${item.properties.formatted}
-                            </div>
+            <i class="ki-duotone ki-geolocation text-primary fs-4">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
 
-                        </div>
-                    `);
+            ${item.properties.address_line1 ?? 'Location'}
+
+        </div>
+
+        <div class="location-subtitle">
+            ${item.properties.formatted}
+        </div>
+
+    </div>
+`);
 
                         });
 
@@ -974,10 +850,6 @@
                     $('#distance').val(res.distance_km);
                     $('#duration').val(res.duration_hours);
 
-                    updatePerDiemRange(
-                        parseFloat(res.distance_km)
-                    );
-
                     calculateQuote();
 
                 }
@@ -1012,8 +884,44 @@
 
             distance = distance * roundTrip;
 
+            let isRemoteCallout = distance > 80;
+
+
+            // if (isRemoteCallout) {
+
+            //     $('#callout_type')
+            //         .removeClass('alert-info')
+            //         .addClass('alert-warning')
+            //         .html(
+            //             '<i class="ki-duotone ki-map fs-3 me-2"></i> Remote Callout (>80 KM)'
+            //         );
+
+            // } else {
+
+            //     $('#callout_type')
+            //         .removeClass('alert-warning')
+            //         .addClass('alert-info')
+            //         .html(
+            //             '<i class="ki-duotone ki-geolocation fs-3 me-2"></i> Local Callout (≤80 KM)'
+            //         );
+            // }
+
+            $('#callout_type')
+                .removeClass('badge-light-primary badge-light-warning')
+                .addClass(isRemoteCallout ? 'badge-light-warning' : 'badge-light-primary')
+                .text(isRemoteCallout ? 'Remote Callout ' : 'Local Callout ');
+
+            // distance = distance * roundTrip;
             let fuelPrice =
                 parseFloat($('#fuel_price').val()) || 0;
+
+            let accommodationPerStaff = 0;
+
+            if (isRemoteCallout) {
+                accommodationPerStaff = 3500.00;
+            }
+
+            $('#accommodation').val(accommodationPerStaff);
 
             let fuelConsumption =
                 parseFloat($('#fuel_consumption').val()) || 0;
@@ -1030,8 +938,6 @@
             let labourDuration =
                 parseFloat($('#labour_duration').val()) || 0;
 
-            let perDiem =
-                parseFloat($('#per_diem').val()) || 0;
 
             let toll =
                 parseFloat($('#toll').val()) || 0;
@@ -1041,6 +947,9 @@
 
             let profit =
                 parseFloat($('#profit').val()) || 0;
+
+            let perDiem =
+                parseFloat($('#per_diem').val()) || 0;
 
             /*
             |--------------------------------------------------------------------------
@@ -1057,20 +966,38 @@
             let labourCost =
                 labourDuration * staff * hourly;
 
-            let perDiemCost =
-                staff * perDiem;
+            let perDiemCost = 0;
+
+            let accommodationCost = 0;
+
+            if (isRemoteCallout) {
+
+                perDiemCost =
+                    staff * perDiem;
+
+                accommodationCost =
+                    staff * accommodationPerStaff;
+            }
 
             let subtotal =
                 fuelCost +
                 wearCost +
                 labourCost +
                 perDiemCost +
+                accommodationCost +
                 toll +
                 extra;
 
             let total =
                 subtotal + (subtotal * profit / 100);
 
+            // console.log({
+            //     distance,
+            //     staff,
+            //     perDiemCost,
+            //     accommodationCost,
+            //     isRemoteCallout
+            // });
             /*
             |--------------------------------------------------------------------------
             | UPDATE UI
@@ -1078,27 +1005,31 @@
             */
 
             $('#fuel_cost').text(
-                'MZN ' + fuelCost.toFixed(2)
+                fuelCost.toFixed(2)
             );
 
             $('#wear_cost').text(
-                'MZN ' + wearCost.toFixed(2)
+                wearCost.toFixed(2)
             );
 
             $('#labour_cost').text(
-                'MZN ' + labourCost.toFixed(2)
+                labourCost.toFixed(2)
             );
 
             $('#perdiem_cost').text(
-                'MZN ' + perDiemCost.toFixed(2)
+                perDiemCost.toFixed(2)
+            );
+
+            $('#accommodation_cost').text(
+                accommodationCost.toFixed(2)
             );
 
             $('#toll_cost').text(
-                'MZN ' + toll.toFixed(2)
+                toll.toFixed(2)
             );
 
             $('#extra_cost_summary').text(
-                'MZN ' + extra.toFixed(2)
+                extra.toFixed(2)
             );
 
             $('#profit_summary').text(
@@ -1106,7 +1037,7 @@
             );
 
             $('#total_quote').text(
-                'MZN ' + total.toFixed(2)
+                'MZM ' + total.toFixed(2)
             );
 
         }
@@ -1119,5 +1050,11 @@
 
         $('#fuel_type').trigger('change');
         $('#vehicle_model').trigger('change');
+
+        $(document).ready(function() {
+
+            $('[data-control="select2"]').select2();
+
+        });
     </script>
 @endpush
