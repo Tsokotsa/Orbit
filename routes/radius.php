@@ -23,8 +23,8 @@ Route::prefix('radius')->group(function () {
     // Route::put('/users/{username}', [RadiusUserController::class, 'update'])
     //     ->name('radius.users.update');
 
-    Route::post('/users/{username}/suspend', [RadiusUserController::class, 'suspend'])
-        ->name('radius.users.suspend');
+    // Route::post('/users/{username}/suspend', [RadiusUserController::class, 'suspend'])
+    //     ->name('radius.users.suspend');
 
     Route::delete('/user/{username}', [RadiusUserController::class, 'destroy'])
         ->name('radius.users.destroy');
@@ -48,8 +48,7 @@ Route::prefix('radius')->group(function () {
     Route::post(
         '/radius/users/suspend',
         [RadiusUserController::class, 'suspend']
-    )
-        ->name('radius.users.suspend');
+    )->name('radius.users.suspend');
 
     Route::post('/radius/users/unsuspend', [RadiusUserController::class, 'unsuspend'])
         ->name('radius.users.unsuspend');
