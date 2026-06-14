@@ -141,6 +141,8 @@ class AssetsController extends Controller
     {
         $validated = $request->validate([
 
+            'edit_asset_name' => 'required|string|max:255',
+
             'serial' => 'required|string|max:255',
 
             'medium_id' => 'required|exists:mediums,id',
@@ -158,6 +160,8 @@ class AssetsController extends Controller
         */
 
         $asset->update([
+
+            'asset_name' => $validated['edit_asset_name'],
 
             'serial' => $validated['serial'],
 
@@ -337,7 +341,7 @@ class AssetsController extends Controller
             'model' => $request->model_id,
             'serial' => $request->asset_serial,
             'description' => $request->asset_description,
-            'asset_name' => $request->asset_serial | $request->medium_id,
+            'asset_name' => $request->asset_name,
             'created_at' => now(),
             'updated_at' => now(),
             'active' => $request->has('is_enabled')

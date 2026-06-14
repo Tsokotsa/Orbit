@@ -1,25 +1,43 @@
 <div class="modal fade" tabindex="-1" id="editAssetModal">
 
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
 
-        <div class="modal-content border-0 rounded-4 shadow-sm">
+        <div class="modal-content border-0 shadow-sm">
 
-            <!-- HEADER -->
-            <div class="modal-header border-0 px-8 py-6">
+            {{-- HEADER --}}
+            <div class="modal-header border-bottom px-8 py-6">
 
-                <div>
+                <div class="d-flex align-items-center">
 
-                    <h2 class="fw-bold mb-1">
-                        Edit Asset
-                    </h2>
+                    <div class="symbol symbol-50px me-4">
 
-                    <div class="text-muted fs-7">
-                        Update asset information and settings
+                        <div class="symbol-label bg-light-primary">
+
+                            <i class="ki-duotone ki-package fs-2 text-primary">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <h2 class="fw-bold mb-1">
+                            Edit Asset
+                        </h2>
+
+                        <div class="text-muted fs-7">
+                            Update asset information, ownership and operational settings
+                        </div>
+
                     </div>
 
                 </div>
 
-                <button type="button" class="btn btn-sm btn-icon btn-light" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-icon btn-sm btn-light-secondary" data-bs-dismiss="modal">
 
                     <i class="ki-outline ki-cross fs-2"></i>
 
@@ -27,22 +45,22 @@
 
             </div>
 
-            <!-- BODY -->
-            <div class="modal-body px-8 py-6">
+            {{-- BODY --}}
+            <div class="modal-body px-8 py-7">
 
-                <!-- LOADING -->
+                {{-- LOADING --}}
                 <div id="editAssetLoading" class="text-center py-15">
 
                     <div class="spinner-border text-primary mb-5" style="width:3rem;height:3rem;">
                     </div>
 
-                    <div class="fw-semibold fs-6">
-                        Loading asset details...
+                    <div class="fw-semibold fs-6 text-muted">
+                        Loading asset information...
                     </div>
 
                 </div>
 
-                <!-- CONTENT -->
+                {{-- CONTENT --}}
                 <div id="editAssetContent" class="d-none">
 
                     <form id="edit_asset_form">
@@ -51,48 +69,89 @@
 
                         <input type="hidden" name="asset_id" id="edit_asset_id">
 
-                        <div class="row g-7">
+                        {{-- INFO ALERT --}}
+                        <div class="alert alert-light-primary d-flex align-items-center mb-7">
 
-                            <!-- SERIAL -->
-                            <div class="col-md-6">
+                            <i class="ki-duotone ki-information-5 fs-2hx text-primary me-4">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
 
-                                <label class="required fw-semibold fs-6 mb-2">
+                            <div>
+
+                                <div class="fw-bold">
+                                    Asset Information
+                                </div>
+
+                                <div class="text-muted fs-7">
+                                    Update the details below and save your changes.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row g-6">
+
+                            {{-- ASSET NAME --}}
+                            <div class="col-md-8">
+
+                                <label class="required form-label fw-semibold">
+                                    Asset Name
+                                </label>
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+                                        <i class="ki-duotone ki-package fs-4">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                    </span>
+
+                                    <input type="text" class="form-control" name="edit_asset_name"
+                                        id="edit_asset_name" placeholder="Enter asset name">
+
+                                </div>
+
+                            </div>
+
+                            {{-- SERIAL --}}
+                            <div class="col-md-4">
+
+                                <label class="required form-label fw-semibold">
                                     Asset Serial
                                 </label>
 
-                                <input type="text" class="form-control form-control-solid" name="serial">
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+                                        <i class="ki-duotone ki-barcode fs-4">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </span>
+
+                                    <input type="text" class="form-control" name="serial"
+                                        placeholder="Serial Number">
+
+                                </div>
 
                             </div>
 
-                            <!-- MEDIUM -->
+                            {{-- VENDOR --}}
                             <div class="col-md-6">
 
-                                <label class="required fw-semibold fs-6 mb-2">
-                                    Medium
-                                </label>
-
-                                <select class="form-select form-select-solid" name="medium_id" id="edit_medium_id"
-                                    data-control="select2" data-dropdown-parent="#editAssetModal">
-
-                                    @foreach ($mediums as $medium)
-                                        <option value="{{ $medium->id }}">
-                                            {{ $medium->name }}
-                                        </option>
-                                    @endforeach
-
-                                </select>
-
-                            </div>
-
-                            <!-- VENDOR -->
-                            <div class="col-md-6">
-
-                                <label class="required fw-semibold fs-6 mb-2">
+                                <label class="required form-label fw-semibold">
                                     Vendor
                                 </label>
 
-                                <select class="form-select form-select-solid" name="vendor_id" id="edit_vendor_id"
-                                    data-control="select2" data-dropdown-parent="#editAssetModal">
+                                <select class="form-select" name="vendor_id" id="edit_vendor_id" data-control="select2"
+                                    data-placeholder="Select vendor" data-dropdown-parent="#editAssetModal">
+
+                                    <option></option>
 
                                     @foreach ($vendors as $vendor)
                                         <option value="{{ $vendor->id }}">
@@ -104,42 +163,69 @@
 
                             </div>
 
-                            <!-- MODEL -->
+                            {{-- MEDIUM --}}
                             <div class="col-md-6">
 
-                                <label class="required fw-semibold fs-6 mb-2">
+                                <label class="required form-label fw-semibold">
+                                    Medium
+                                </label>
+
+                                <select class="form-select" name="medium_id" id="edit_medium_id" data-control="select2"
+                                    data-placeholder="Select medium" data-dropdown-parent="#editAssetModal">
+
+                                    <option></option>
+
+                                    @foreach ($mediums as $medium)
+                                        <option value="{{ $medium->id }}">
+                                            {{ $medium->name }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+
+                            </div>
+
+                            {{-- MODEL --}}
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
                                     Model
                                 </label>
-                                <input type="text" class="form-control form-control-solid" id="edit_model_display">
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+                                        <i class="ki-duotone ki-setting-2 fs-4">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </span>
+
+                                    <input type="text" class="form-control" id="edit_model_display" readonly>
+
+                                </div>
 
                             </div>
 
-                            <!-- DESCRIPTION -->
-                            <div class="col-12">
+                            {{-- STATUS --}}
+                            <div class="col-md-6">
 
-                                <label class="fw-semibold fs-6 mb-2">
-                                    Description
+                                <label class="form-label fw-semibold">
+                                    Asset Status
                                 </label>
 
-                                <textarea class="form-control form-control-solid" rows="4" name="description"></textarea>
-
-                            </div>
-
-                            <!-- STATUS -->
-                            <div class="col-12">
-
-                                <div class="border rounded-3 p-5 bg-light">
+                                <div class="border rounded p-4 h-100">
 
                                     <div class="d-flex justify-content-between align-items-center">
 
                                         <div>
 
                                             <div class="fw-bold">
-                                                Asset Status
+                                                Active Asset
                                             </div>
 
                                             <div class="text-muted fs-7">
-                                                Disabled assets cannot be assigned
+                                                Asset available for assignments
                                             </div>
 
                                         </div>
@@ -149,14 +235,45 @@
                                             <input class="form-check-input" type="checkbox" name="is_enabled"
                                                 value="y" id="edit_is_enabled">
 
-                                            <span class="form-check-label">
-                                                Active
-                                            </span>
-
                                         </label>
 
                                     </div>
 
+                                </div>
+
+                            </div>
+
+                            {{-- DESCRIPTION --}}
+                            <div class="col-12">
+
+                                <label class="form-label fw-semibold">
+                                    Description
+                                </label>
+
+                                <textarea class="form-control" rows="5" name="description"
+                                    placeholder="Additional information about this asset..."></textarea>
+
+                            </div>
+
+                        </div>
+
+                        {{-- STATUS ALERT --}}
+                        <div class="alert alert-light-warning d-flex align-items-center mt-7 mb-0">
+
+                            <i class="ki-duotone ki-shield-tick fs-2hx text-warning me-4">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+
+                            <div>
+
+                                <div class="fw-bold">
+                                    Important
+                                </div>
+
+                                <div class="fs-7 text-muted">
+                                    Disabling an asset will prevent it from being assigned
+                                    to customers, projects and operational activities.
                                 </div>
 
                             </div>
@@ -169,8 +286,8 @@
 
             </div>
 
-            <!-- FOOTER -->
-            <div class="modal-footer border-0 px-8 py-5">
+            {{-- FOOTER --}}
+            <div class="modal-footer border-top px-8 py-5">
 
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">
 
@@ -181,7 +298,14 @@
                 <button type="button" class="btn btn-primary" id="submit_edit_asset">
 
                     <span class="indicator-label">
+
+                        <i class="ki-duotone ki-check fs-4 me-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+
                         Save Changes
+
                     </span>
 
                     <span class="indicator-progress">

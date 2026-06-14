@@ -291,11 +291,11 @@
                 ${
                     row.logo_path
                     ? `
-                                                                                                                                           <div class="symbol symbol-35px bg-light border">
-                                                                                                                                            <img src="${row.logo_path}"
-                                                                                                                                                 style="object-fit:contain;padding:4px;">
-                                                                                                                                                </div>
-                                                                                                                                            `
+                                                                                                                                                       <div class="symbol symbol-35px bg-light border">
+                                                                                                                                                        <img src="${row.logo_path}"
+                                                                                                                                                             style="object-fit:contain;padding:4px;">
+                                                                                                                                                            </div>
+                                                                                                                                                        `
                     : ''
                 }
 
@@ -604,7 +604,7 @@
                     | BASIC FIELDS
                     |--------------------------------------------------------------------------
                     */
-
+                    $('#edit_asset_name').val(response.asset_name);
                     $('#edit_asset_id').val(response.id);
                     $('input[name="serial"]').val(response.serial);
                     $('textarea[name="description"]').val(response.description);

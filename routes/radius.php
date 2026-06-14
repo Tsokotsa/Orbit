@@ -5,7 +5,6 @@ use App\Http\Controllers\RadiusProfileController;
 use App\Http\Controllers\RadiusNasController;
 
 
-
 Route::prefix('radius')->group(function () {
 
     Route::get('/', [RadiusUserController::class, 'index'])

@@ -390,7 +390,7 @@ class RadiusProfileController extends Controller
 
             if ($request->filled('max_sessions')) {
 
-                $upsertReply('Simultaneous-Use', $request->max_sessions);
+                $upsertCheck('Simultaneous-Use', $request->max_sessions);
 
             } else {
 

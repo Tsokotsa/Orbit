@@ -68,28 +68,25 @@
                     </td>
 
                     {{-- SESSION --}}
-                    <td class="min-w-300px">
-
+                    <td class="min-w-250px">
                         @if ($radiusUser->status == 'online')
-                            <div class="bg-light-success rounded p-3">
-
-                                <div class="fs-8 fw-bold text-success mb-2">
-                                    Active Session
+                            <div class="bg-light-success rounded px-3 py-2">
+                                <div class="text-success fw-bold fs-8 mb-1">
+                                    Online
                                 </div>
 
-                                <div class="fs-8">IP: {{ $radiusUser->framedipaddress ?? '-' }}</div>
-                                <div class="fs-8">MAC: {{ $radiusUser->callingstationid ?? '-' }}</div>
-                                <div class="fs-8">NAS: {{ $radiusUser->nasipaddress ?? '-' }}</div>
-
+                                <div class="fs-8 text-gray-700">
+                                    {{ $radiusUser->framedipaddress ?? '-' }}
+                                    <span class="mx-2 text-muted">|</span>
+                                    {{ $radiusUser->callingstationid ?? '-' }}
+                                </div>
                             </div>
                         @else
-                            <div class="bg-light rounded p-3">
-                                <span class="text-muted fs-8">No Active Session</span>
-                            </div>
+                            <span class="badge badge-light-secondary">
+                                No Active Session
+                            </span>
                         @endif
-
                     </td>
-
                     {{-- ACTION --}}
                     <td class="text-end">
 

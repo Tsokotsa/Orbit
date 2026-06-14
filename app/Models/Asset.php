@@ -11,6 +11,7 @@ class Asset extends Model
 
     protected $fillable = [
         'serial',
+        'asset_name',
         'vendor_id',
         'media_type',
         'active'

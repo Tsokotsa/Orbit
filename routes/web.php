@@ -10,7 +10,6 @@ use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AssetsController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\AdminController;
 
@@ -145,6 +144,17 @@ Route::middleware('auth')->group(function () {
 
 }); // END OF AUTH GROUP
 
+
+// Route::get('/rfo/{id}/preview-pdf', function ($id) {
+
+//     $rfo = App\Models\Rfo::with(['preparer', 'timelines'])
+//         ->findOrFail($id);
+
+//     return Spatie\LaravelPdf\Facades\Pdf::view('pdf.templates.rfo', [
+//         'rfo' => $rfo
+//     ])->format('a4')->name('rfo.pdf');
+// });
+
 require __DIR__ . '/starlink.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/clients.php';
@@ -155,4 +165,5 @@ require __DIR__ . '/recargaki.php';
 require __DIR__ . '/product.php';
 require __DIR__ . '/radius.php';
 require __DIR__ . '/operations.php';
+require __DIR__ . '/system.php';
 

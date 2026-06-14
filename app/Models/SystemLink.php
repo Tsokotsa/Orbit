@@ -12,6 +12,7 @@ class SystemLink extends Model
         'name',
         'url',
         'icon',
+        'section',
         'description',
         'category',
         'is_active',

@@ -1,113 +1,284 @@
 <div class="modal fade" tabindex="-1" id="add_asset_modal">
-    <div class="modal-dialog mw-650px">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Add Asset</h3>
-                <!--begin::Close-->
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+
+        <div class="modal-content border-0 shadow-sm">
+
+            {{-- HEADER --}}
+            <div class="modal-header border-bottom px-8 py-6">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="symbol symbol-50px me-4">
+
+                        <div class="symbol-label bg-light-primary">
+
+                            <i class="ki-duotone ki-package fs-2 text-primary">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <h2 class="fw-bold mb-1">
+                            Add Asset
+                        </h2>
+
+                        <div class="text-muted fs-7">
+                            Assign an asset to the customer account
+                        </div>
+
+                    </div>
+
                 </div>
-                <!--end::Close-->
+
+                <button type="button" class="btn btn-icon btn-sm btn-light-secondary" data-bs-dismiss="modal">
+
+                    <i class="ki-outline ki-cross fs-2"></i>
+
+                </button>
+
             </div>
-            <div class="modal-body">
+
+            {{-- BODY --}}
+            <div class="modal-body px-8 py-7">
+
                 <form method="POST" id="asset-form">
+
                     @csrf
 
                     <input type="hidden" id="cid" name="client_id" value="{{ $cid }}">
                     <input type="hidden" id="asset_id" name="asset_id">
-                    <div class="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
 
-                        <!--begin::Label-->
-                        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-                            <span class="required">Asset S/N</span>
-                            <span class="ms-1" data-bs-toggle="tooltip"
-                                aria-label="Start type and should autocomplete"
-                                data-bs-original-title="Start type and should autocomplete" data-kt-initialized="1">
-                                <i class="ki-outline ki-information-5 text-gray-500 fs-6"></i>
-                            </span>
-                        </label>
-                        <!--end::Label-->
-                        {{-- <input type="text" class="form-control form-control-solid" placeholder="Start typing..." name="target_title"> --}}
+                    {{-- INFORMATION --}}
+                    <div class="alert alert-light-primary d-flex align-items-center mb-7">
 
-                        <div class="position-relative">
-                            <input type="text" id="asset-search" class="form-control" name="asset_serial"
-                                placeholder="Start typing asset name…" autocomplete="off">
+                        <i class="ki-duotone ki-information-5 fs-2hx text-primary me-4">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i>
 
-                            <div id="asset-suggestions" class="list-group position-absolute w-100 shadow"
-                                style="z-index: 1056; display:none;">
+                        <div>
+
+                            <div class="fw-bold">
+                                Asset Assignment
                             </div>
+
+                            <div class="text-muted fs-7">
+                                Search for an existing asset and assign it to the selected customer account.
+                            </div>
+
                         </div>
+
                     </div>
-                    <div class="row mb-5">
-                        <div class="col-md-6 text-start">
-                            <label class="required fs-5 fw-semibold mb-2 text-left">Asset Name</label>
-                            <input type="text" class="form-control form-control-solid" placeholder=""
-                                name="asset_name" id="asset_name" readonly>
-                            <div
-                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+
+                    <div class="row g-6">
+
+                        {{-- SEARCH ASSET --}}
+                        <div class="col-12">
+
+                            <label class="required form-label fw-semibold">
+                                Search Asset
+                            </label>
+
+                            <div class="position-relative">
+
+                                <span class="position-absolute top-50 translate-middle-y ms-4">
+
+                                    <i class="ki-duotone ki-magnifier fs-2 text-gray-500">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+
+                                </span>
+
+                                <input type="text" id="asset-search" class="form-control ps-13" name="asset_serial"
+                                    placeholder="Search by serial number or asset name..." autocomplete="off">
+
+                                <div id="asset-suggestions" class="list-group position-absolute w-100 shadow-sm"
+                                    style="z-index:1056;display:none;">
+                                </div>
+
                             </div>
+
                         </div>
-                        <div class="col-md-6 text-start">
-                            <label class="required fs-5 fw-semibold mb-2 text-left">Asset Description</label>
-                            <input type="text" class="form-control form-control-solid" placeholder=""
-                                name="asset_description" id="asset_description" readonly>
-                            <div
-                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+
+                        {{-- ASSET NAME --}}
+                        <div class="col-md-8">
+
+                            <label class="required form-label fw-semibold">
+                                Asset Name
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="ki-duotone ki-package fs-4">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+
+                                </span>
+
+                                <input type="text" class="form-control" name="asset_name" id="asset_name" readonly>
+
                             </div>
+
                         </div>
-                    </div>
-                    <div class="row mb-5 text-start">
+
+                        {{-- DESCRIPTION --}}
+                        <div class="col-md-4">
+
+                            <label class="required form-label fw-semibold">
+                                Description
+                            </label>
+
+                            <input type="text" class="form-control" name="asset_description" id="asset_description"
+                                readonly>
+
+                        </div>
+
+                        {{-- MODEL --}}
                         <div class="col-md-12">
-                            <label class="required fs-5 fw-semibold mb-2 text-left">Choose Model</label>
+
+                            <label class="required form-label fw-semibold">
+                                Vendor Model
+                            </label>
 
                             <select id="vendor_model" name="vendor_model" class="form-select" data-control="select2"
-                                data-placeholder="Vendor Model" disabled>
+                                data-placeholder="Select Vendor Model" disabled>
+
+                                <option></option>
+
                             </select>
 
                         </div>
 
-                    </div>
-                    <div class="row mb-5">
-                        <div class="col-md-6 text-start">
-                            <div class="d-flex flex-stack">
-                                <div class="me-5 text-start">
-                                    <label class="fs-6 fw-semibold form-label">Is asset enabled?</label>
-                                    <div class="fs-7 fw-semibold text-muted">You can change services while
-                                        disabled
+                        {{-- ENABLED --}}
+                        <div class="col-md-6">
+
+                            <div class="border rounded p-5 h-100">
+
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <div>
+
+                                        <div class="fw-bold">
+                                            Asset Enabled
+                                        </div>
+
+                                        <div class="text-muted fs-7">
+                                            Asset can be used and assigned to services.
+                                        </div>
+
                                     </div>
-                                    <label class="form-check form-switch form-check-custom form-check-solid">
+
+                                    <label class="form-check form-switch form-check-solid">
+
                                         <input class="form-check-input" type="checkbox" name="asset_enabled"
-                                            value="y" checked="checked">
-                                        <span class="form-check-label fw-semibold text-muted">Enabled</span>
+                                            value="y" checked>
+
                                     </label>
+
                                 </div>
 
                             </div>
+
                         </div>
 
-                        <div class="col-md-6 text-start">
-                            <div class="d-flex flex-stack">
-                                <div class="me-5 text-start">
-                                    <label class="fs-6 fw-semibold form-label">Prevent Transfer</label>
-                                    <div class="fs-7 fw-semibold text-muted">Can asset be transfered to another
-                                        acc
+                        {{-- TRANSFER --}}
+                        <div class="col-md-6">
+
+                            <div class="border rounded p-5 h-100">
+
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <div>
+
+                                        <div class="fw-bold">
+                                            Prevent Transfer
+                                        </div>
+
+                                        <div class="text-muted fs-7">
+                                            Prevent this asset from being transferred to another account.
+                                        </div>
+
                                     </div>
-                                    <label class="form-check form-switch form-check-custom form-check-solid">
+
+                                    <label class="form-check form-switch form-check-solid">
+
                                         <input class="form-check-input" type="checkbox" name="asset_transfer"
                                             value="y">
-                                        <span class="form-check-label fw-semibold text-muted">Yes</span>
+
                                     </label>
+
                                 </div>
+
                             </div>
+
                         </div>
 
                     </div>
-                    <div class="modal-footer justify-content-center mt-12">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary add-asset-click">Save changes</button>
+
+                    {{-- WARNING --}}
+                    <div class="alert alert-light-warning d-flex align-items-center mt-7 mb-0">
+
+                        <i class="ki-duotone ki-shield-tick fs-2hx text-warning me-4">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+
+                        <div>
+
+                            <div class="fw-bold">
+                                Important
+                            </div>
+
+                            <div class="text-muted fs-7">
+                                Once assigned, the asset becomes associated with this customer account and may be used
+                                for service provisioning and billing.
+                            </div>
+
+                        </div>
+
                     </div>
+
                 </form>
+
             </div>
+
+            {{-- FOOTER --}}
+            <div class="modal-footer border-top px-8 py-5">
+
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+
+                    Cancel
+
+                </button>
+
+                <button type="button" class="btn btn-primary add-asset-click">
+
+                    <i class="ki-duotone ki-check fs-4 me-2">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
+
+                    Save Asset
+
+                </button>
+
+            </div>
+
         </div>
+
     </div>
+
 </div>

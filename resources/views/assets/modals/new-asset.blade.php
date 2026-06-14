@@ -1,244 +1,321 @@
 <div class="modal fade" tabindex="-1" id="assetModal">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow rounded-4">
 
-            <!-- HEADER -->
-            <div class="modal-header border-bottom px-8 py-6 bg-white">
-                <div>
-                    <h2 class="fw-bold mb-1 text-gray-900">
-                        Add New Asset
-                    </h2>
+    <div class="modal-dialog modal-dialog-centered modal-xl">
 
-                    <div class="text-muted fs-7">
-                        Register and manage infrastructure assets
+        <div class="modal-content border-0 shadow-sm">
+
+            {{-- HEADER --}}
+            <div class="modal-header border-bottom px-8 py-6">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="symbol symbol-50px me-4">
+
+                        <div class="symbol-label bg-light-primary">
+
+                            <i class="ki-duotone ki-package fs-2 text-primary">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+
+                        </div>
+
                     </div>
+
+                    <div>
+
+                        <h2 class="fw-bold mb-1">
+                            Add New Asset
+                        </h2>
+
+                        <div class="text-muted fs-7">
+                            Register a new infrastructure asset in Orbit
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <button type="button" class="btn btn-sm btn-icon btn-light btn-active-light-primary rounded-circle"
-                    data-bs-dismiss="modal">
+                <button type="button" class="btn btn-icon btn-sm btn-light-secondary" data-bs-dismiss="modal">
 
                     <i class="ki-outline ki-cross fs-2"></i>
+
                 </button>
+
             </div>
 
-            <!-- BODY -->
+            {{-- BODY --}}
             <div class="modal-body px-8 py-7 bg-white">
 
-                <!-- LOADING -->
+                {{-- LOADING --}}
                 <div id="assetLoading" class="text-center py-15 d-none">
-                    <div class="spinner-border text-primary mb-5" style="width: 3rem; height: 3rem;">
+
+                    <div class="spinner-border text-primary mb-5" style="width:3rem;height:3rem;">
                     </div>
 
-                    <h4 class="fw-semibold mb-2">
+                    <div class="fw-semibold fs-6 text-muted">
                         Preparing asset form...
-                    </h4>
-
-                    <div class="text-muted">
-                        Please wait while Orbit loads resources
                     </div>
+
                 </div>
 
-                <!-- CONTENT -->
+                {{-- CONTENT --}}
                 <div id="assetContent">
 
                     <form id="add_asset_form">
 
                         @csrf
 
-                        <!-- BASIC -->
-                        <div class="mb-10">
+                        {{-- INFORMATION --}}
+                        <div class="alert alert-light-primary d-flex align-items-center mb-7">
 
-                            <div class="mb-6">
-                                <h4 class="fw-bold text-gray-900 mb-1">
-                                    Basic Information
-                                </h4>
+                            <i class="ki-duotone ki-information-5 fs-2hx text-primary me-4">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+
+                            <div>
+
+                                <div class="fw-bold">
+                                    Asset Registration
+                                </div>
 
                                 <div class="text-muted fs-7">
-                                    Main identification details for this asset
-                                </div>
-                            </div>
-
-                            <div class="row g-7">
-
-                                <!-- SERIAL -->
-                                <div class="col-md-6">
-                                    <label class="required fw-semibold fs-6 mb-2">
-                                        Asset Serial
-                                    </label>
-
-                                    <div class="position-relative">
-                                        <input type="text" class="form-control form-control-solid form-control-lg"
-                                            name="asset_serial" placeholder="e.g ORBIT-SW-001">
-
-                                        <div class="position-absolute top-50 end-0 translate-middle-y me-4">
-                                            <i class="ki-outline ki-barcode fs-2 text-gray-400"></i>
-                                        </div>
-                                    </div>
-
-                                    <div class="text-muted fs-8 mt-2">
-                                        Unique serial number or inventory code
-                                    </div>
-                                </div>
-
-                                <!-- MEDIUM -->
-                                <div class="col-md-6">
-                                    <label class="required fw-semibold fs-6 mb-2">
-                                        Medium
-                                    </label>
-
-                                    <select class="form-select form-select-solid form-select-lg" name="medium_id"
-                                        data-control="select2" data-placeholder="Select medium"
-                                        id="asset_medium_select">
-
-                                        <option></option>
-
-                                    </select>
+                                    Complete the information below to register a new asset in the inventory.
                                 </div>
 
                             </div>
 
                         </div>
 
-                        <!-- DETAILS -->
-                        <div class="mb-10">
+                        <div class="row g-6">
 
-                            <div class="mb-6">
-                                <h4 class="fw-bold text-gray-900 mb-1">
-                                    Asset Details
-                                </h4>
+                            {{-- ASSET NAME --}}
+                            <div class="col-md-8">
 
-                                <div class="text-muted fs-7">
-                                    Vendor and model information
-                                </div>
-                            </div>
+                                <label class="required form-label fw-semibold">
+                                    Asset Name
+                                </label>
 
-                            <div class="row g-7">
+                                <div class="input-group">
 
-                                <!-- VENDOR -->
-                                <div class="col-md-6">
-                                    <label class="required fw-semibold fs-6 mb-2">
-                                        Vendor
-                                    </label>
+                                    <span class="input-group-text">
 
-                                    <select class="form-select form-select-solid" name="vendor_id"
-                                        data-control="select2" data-placeholder="Select vendor"
-                                        id="asset_vendor_select">
+                                        <i class="ki-duotone ki-package fs-4">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
 
-                                        <option></option>
+                                    </span>
 
-                                    </select>
-                                </div>
+                                    <input type="text" class="form-control" name="asset_name"
+                                        placeholder="e.g Core Router, GPON OLT, Cisco Switch">
 
-                                <!-- MODEL -->
-                                <div class="col-md-6">
-                                    <label class="required fw-semibold fs-6 mb-2">
-                                        Asset Model
-                                    </label>
-
-                                    <select class="form-select form-select-solid" name="model_id" data-control="select2"
-                                        data-placeholder="Select model" id="asset_model_select" disabled>
-
-                                        <option></option>
-
-                                    </select>
-
-                                    <div class="text-muted fs-8 mt-2">
-                                        Models are loaded based on selected vendor
-                                    </div>
                                 </div>
 
                             </div>
 
-                        </div>
+                            {{-- SERIAL --}}
+                            <div class="col-md-4">
 
-                        <!-- DESCRIPTION -->
-                        <div class="mb-10">
+                                <label class="required form-label fw-semibold">
+                                    Asset Serial
+                                </label>
 
-                            <div class="mb-6">
-                                <h4 class="fw-bold text-gray-900 mb-1">
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        <i class="ki-duotone ki-barcode fs-4">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+
+                                    </span>
+
+                                    <input type="text" class="form-control" name="asset_serial"
+                                        placeholder="Asset Serial">
+
+                                </div>
+
+                            </div>
+
+                            {{-- VENDOR --}}
+                            <div class="col-md-6">
+
+                                <label class="required form-label fw-semibold">
+                                    Vendor
+                                </label>
+
+                                <select class="form-select" name="vendor_id" id="asset_vendor_select"
+                                    data-control="select2" data-placeholder="Select Vendor"
+                                    data-dropdown-parent="#assetModal">
+
+                                    <option></option>
+
+                                </select>
+
+                            </div>
+
+                            {{-- MEDIUM --}}
+                            <div class="col-md-6">
+
+                                <label class="required form-label fw-semibold">
+                                    Medium
+                                </label>
+
+                                <select class="form-select" name="medium_id" id="asset_medium_select"
+                                    data-control="select2" data-placeholder="Select Medium"
+                                    data-dropdown-parent="#assetModal">
+
+                                    <option></option>
+
+                                </select>
+
+                            </div>
+
+                            {{-- MODEL --}}
+                            <div class="col-md-12">
+
+                                <label class="required form-label fw-semibold">
+                                    Asset Model
+                                </label>
+
+                                <select class="form-select" name="model_id" id="asset_model_select"
+                                    data-control="select2" data-placeholder="Select Asset Model"
+                                    data-dropdown-parent="#assetModal" disabled>
+
+                                    <option></option>
+
+                                </select>
+
+                                <div class="text-muted fs-7 mt-2">
+                                    Models are automatically loaded after selecting a vendor.
+                                </div>
+
+                            </div>
+
+                            {{-- DESCRIPTION --}}
+                            <div class="col-12">
+
+                                <label class="form-label fw-semibold">
                                     Description
-                                </h4>
+                                </label>
+
+                                <textarea class="form-control" rows="5" name="asset_description"
+                                    placeholder="Technical notes, specifications or additional information..."></textarea>
+
                             </div>
 
-                            <textarea class="form-control form-control-solid" rows="4" name="asset_description"
-                                placeholder="Short description, notes or technical details..."></textarea>
+                            {{-- STATUS --}}
+                            <div class="col-md-6">
 
-                        </div>
+                                <label class="form-label fw-semibold">
+                                    Asset Status
+                                </label>
 
-                        <!-- SETTINGS -->
-                        <div class="border rounded-4 p-6 bg-light-secondary">
+                                <div class="border rounded p-5 h-100">
 
-                            <div class="mb-6">
-                                <h4 class="fw-bold text-gray-900 mb-1">
-                                    Asset Settings
-                                </h4>
+                                    <div class="d-flex justify-content-between align-items-center">
 
-                                <div class="text-muted fs-7">
-                                    Configure status and notifications
-                                </div>
-                            </div>
+                                        <div>
 
-                            <div class="d-flex flex-column gap-7">
+                                            <div class="fw-bold">
+                                                Asset Enabled
+                                            </div>
 
-                                <!-- ENABLE -->
-                                <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-muted fs-7">
+                                                Disabled assets cannot be assigned.
+                                            </div>
 
-                                    <div>
-                                        <div class="fw-semibold">
-                                            Asset Enabled
                                         </div>
 
-                                        <div class="text-muted fs-7">
-                                            Disabled assets cannot be assigned
-                                        </div>
+                                        <label class="form-check form-switch form-check-solid">
+
+                                            <input class="form-check-input" type="checkbox" name="is_enabled"
+                                                value="1" checked>
+
+                                        </label>
+
                                     </div>
 
-                                    <label class="form-check form-switch form-check-solid">
-                                        <input class="form-check-input" type="checkbox" name="is_enabled" value="1"
-                                            checked>
-
-                                        <span class="form-check-label">
-                                            Active
-                                        </span>
-                                    </label>
-
                                 </div>
 
-                                <!-- NOTIFICATIONS -->
-                                <div class="d-flex justify-content-between align-items-center">
+                            </div>
 
-                                    <div>
-                                        <div class="fw-semibold">
-                                            Sales Notification
+                            {{-- NOTIFICATIONS --}}
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+                                    Sales Notification
+                                </label>
+
+                                <div class="border rounded p-5 h-100">
+
+                                    <div class="mb-4">
+
+                                        <div class="fw-bold">
+                                            Notify Sales Team
                                         </div>
 
                                         <div class="text-muted fs-7">
-                                            Notify sales team after creation
+                                            Send notifications after asset creation.
                                         </div>
+
                                     </div>
 
                                     <div class="d-flex gap-6">
 
-                                        <label class="form-check form-check-solid">
+                                        <label class="form-check form-check-custom form-check-solid">
+
                                             <input class="form-check-input" type="checkbox" name="communication[]"
                                                 value="email" checked>
 
                                             <span class="form-check-label">
                                                 Email
                                             </span>
+
                                         </label>
 
-                                        <label class="form-check form-check-solid">
+                                        <label class="form-check form-check-custom form-check-solid">
+
                                             <input class="form-check-input" type="checkbox" name="communication[]"
                                                 value="sms">
 
                                             <span class="form-check-label">
                                                 SMS
                                             </span>
+
                                         </label>
 
                                     </div>
 
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {{-- FOOTER ALERT --}}
+                        <div class="alert alert-light-warning d-flex align-items-center mt-7 mb-0">
+
+                            <i class="ki-duotone ki-shield-tick fs-2hx text-warning me-4">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+
+                            <div>
+
+                                <div class="fw-bold">
+                                    Inventory Notice
+                                </div>
+
+                                <div class="text-muted fs-7">
+                                    Ensure the serial number is unique before creating the asset. Duplicate serials may
+                                    cause inventory and assignment issues.
                                 </div>
 
                             </div>
@@ -251,25 +328,32 @@
 
             </div>
 
-            <!-- FOOTER -->
-            <div class="modal-footer border-top px-8 py-5 bg-white">
+            {{-- FOOTER --}}
+            <div class="modal-footer border-top px-8 py-5">
 
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">
 
                     Cancel
+
                 </button>
 
-                <button type="button" class="btn btn-primary px-8 add-asset-submit">
+                <button type="button" class="btn btn-primary add-asset-submit">
 
-                    <i class="ki-outline ki-plus fs-3"></i>
+                    <i class="ki-duotone ki-plus fs-4 me-2">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
 
                     Create Asset
+
                 </button>
 
             </div>
 
         </div>
+
     </div>
+
 </div>
 
 

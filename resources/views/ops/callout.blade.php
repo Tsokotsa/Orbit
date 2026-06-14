@@ -68,7 +68,7 @@
                                                     Head Office
                                                 </label>
 
-                                                <input type="text" class="form-control form-control-solid"
+                                                <input type="text" class="form-control bg-light-primary"
                                                     value="Paratus HQ Marginal" readonly>
                                             </div>
 
@@ -205,8 +205,8 @@
                                                     Fuel Price
                                                 </label>
 
-                                                <input type="number" id="fuel_price"
-                                                    class="form-control form-control-solid" readonly>
+                                                <input type="number" id="fuel_price" class="form-control bg-light-primary"
+                                                    readonly>
                                             </div>
 
                                             <div class="col-md-6">
@@ -215,7 +215,7 @@
                                                 </label>
 
                                                 <input type="number" id="fuel_consumption"
-                                                    class="form-control form-control-solid" readonly>
+                                                    class="form-control bg-light-primary" readonly>
                                             </div>
 
                                             <div class="col-md-6">
@@ -224,7 +224,7 @@
                                                 </label>
 
                                                 <input type="number" id="wear_tear"
-                                                    class="form-control form-control-solid" value="9" readonly>
+                                                    class="form-control bg-light-primary" value="9" readonly>
                                             </div>
 
                                         </div>
@@ -303,7 +303,7 @@
 
                                             </div>
 
-                                            <div class="col-md-6">
+                                            <div class="col-md-5">
 
                                                 <label class="form-label fw-bold">
                                                     Per Diem
@@ -314,7 +314,7 @@
 
                                             </div>
 
-                                            <div class="col-md-6">
+                                            {{-- <div class="col-md-5">
 
                                                 <label class="form-label fw-bold">
                                                     Accommodation Per Staff
@@ -322,6 +322,22 @@
 
                                                 <input type="number" id="accommodation"
                                                     class="form-control bg-light-primary fw-bold" value="0.00" readonly>
+
+                                            </div> --}}
+
+                                            <div class="col-md-4">
+
+                                                <label class="form-label fw-bold">
+                                                    Include Accommodation
+                                                </label>
+
+                                                <div class="form-check form-switch form-check-custom form-check-solid">
+                                                    <input class="form-check-input h-40px w-60px" type="checkbox"
+                                                        value="1" id="accomodation" />
+                                                    <label class="form-check-label" for="flexSwitchDefault">
+                                                        Yes
+                                                    </label>
+                                                </div>
 
                                             </div>
 
@@ -486,7 +502,7 @@
 
                                 <div class="summary-row">
                                     <div>
-                                        <i class="ki-duotone ki-gas-station text-primary fs-4 me-2"></i>
+                                        <i class="las la-gas-pump text-primary fs-4 me-2"></i>
                                         Fuel Cost
                                     </div>
                                     <strong id="fuel_cost"> 0.00</strong>
@@ -494,7 +510,7 @@
 
                                 <div class="summary-row">
                                     <div>
-                                        <i class="ki-duotone ki-wrench text-warning fs-4 me-2"></i>
+                                        <i class="las la-sad-tear text-dark fs-4 me-2"></i>
                                         Wear & Tear
                                     </div>
                                     <strong id="wear_cost"> 0.00</strong>
@@ -502,7 +518,7 @@
 
                                 <div class="summary-row">
                                     <div>
-                                        <i class="ki-duotone ki-profile-user text-info fs-4 me-2"></i>
+                                        <i class="las la-hands-helping text-dark fs-4 me-2"></i>
                                         Labour
                                     </div>
                                     <strong id="labour_cost"> 0.00</strong>
@@ -510,7 +526,7 @@
 
                                 <div class="summary-row">
                                     <div>
-                                        <i class="ki-duotone ki-wallet text-success fs-4 me-2"></i>
+                                        <i class="las la-wallet text-success fs-4 me-2"></i>
                                         Per Diem
                                     </div>
                                     <strong id="perdiem_cost"> 0.00</strong>
@@ -526,7 +542,7 @@
 
                                 <div class="summary-row">
                                     <div>
-                                        <i class="ki-duotone ki-road fs-4 me-2 text-dark"></i>
+                                        <i class="las la-road fs-4 me-2 text-dark"></i>
                                         Toll Fees
                                     </div>
                                     <strong id="toll_cost"> 0.00</strong>
@@ -534,7 +550,7 @@
 
                                 <div class="summary-row">
                                     <div>
-                                        <i class="ki-duotone ki-plus-circle fs-4 me-2 text-secondary"></i>
+                                        <i class="las la-plus-circle fs-4 me-2 text-dark"></i>
                                         Additional Costs
                                     </div>
                                     <strong id="extra_cost_summary"> 0.00</strong>
@@ -886,6 +902,8 @@
 
             let isRemoteCallout = distance > 80;
 
+            let isAccomodate = distance > 400;
+
 
             // if (isRemoteCallout) {
 
@@ -974,6 +992,13 @@
 
                 perDiemCost =
                     staff * perDiem;
+
+                accommodationCost = 0;
+                // accommodationCost =
+                //     staff * accommodationPerStaff;
+            }
+
+            if (isAccomodate) {
 
                 accommodationCost =
                     staff * accommodationPerStaff;

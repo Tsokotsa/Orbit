@@ -250,7 +250,7 @@
                         </div>
                     </div>
 
-                    <!-- Roles -->
+                    <!-- Callout -->
                     <div class="menu-item">
                         <a class="menu-link" href="{{ route('ops.callout-calculation') }}">
                             <span class="menu-icon">
@@ -259,6 +259,19 @@
 
                             <span class="menu-title">
                                 Callout Simulation
+                            </span>
+                        </a>
+                    </div>
+
+                    <!-- Rfo -->
+                    <div class="menu-item">
+                        <a class="menu-link" href="{{ route('rfo.index') }}">
+                            <span class="menu-icon">
+                                <i class="las la-pen-alt fs-2"></i>
+                            </span>
+
+                            <span class="menu-title">
+                                Create RFO
                             </span>
                         </a>
                     </div>
@@ -494,298 +507,4 @@
 <!--end::Sidebar-->
 
 
-<div class="modal fade" id="addSystemLinkModal" tabindex="-1" aria-hidden="true">
-
-    <div class="modal-dialog modal-dialog-centered mw-750px">
-
-        <div class="modal-content rounded-4 shadow-sm">
-
-            <!--begin::Form-->
-            <form method="POST" action="/link/store" id="systemLinkForm">
-
-                @csrf
-
-                <!--begin::Header-->
-                <div class="modal-header border-0 pb-0">
-
-                    <div>
-
-                        <h1 class="fw-bold mb-1">
-                            Add System Link
-                        </h1>
-
-                        <div class="text-muted fs-6">
-                            Register a new internal or external system shortcut
-                        </div>
-
-                    </div>
-
-                    <div class="btn btn-sm btn-icon btn-active-light-primary" data-bs-dismiss="modal">
-
-                        <i class="ki-outline ki-cross fs-1"></i>
-
-                    </div>
-
-                </div>
-                <!--end::Header-->
-
-                <!--begin::Body-->
-                <div class="modal-body py-10 px-lg-15">
-
-                    <!--begin::Basic Information-->
-                    <div class="mb-10">
-
-                        <div class="d-flex align-items-center mb-5">
-
-                            <i class="ki-outline ki-information-5 fs-2 text-primary me-2"></i>
-
-                            <h3 class="fw-bold m-0">
-                                Basic Information
-                            </h3>
-
-                        </div>
-
-                        <div class="row g-5">
-
-                            <!-- Section -->
-                            <div class="col-md-6">
-
-                                <label class="required form-label fw-semibold">
-                                    Section
-                                </label>
-
-                                <input type="text" name="section" class="form-control form-control-solid"
-                                    placeholder="Monitoring" />
-
-                                <div class="form-text">
-                                    Group where the link will appear
-                                </div>
-
-                            </div>
-
-                            <!-- Title -->
-                            <div class="col-md-6">
-
-                                <label class="required form-label fw-semibold">
-                                    Title
-                                </label>
-
-                                <input type="text" name="title" class="form-control form-control-solid"
-                                    placeholder="Zabbix" />
-
-                                <div class="form-text">
-                                    Display name shown in menu
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <!--end::Basic Information-->
-
-                    <!--begin::Link Details-->
-                    <div class="mb-10">
-
-                        <div class="d-flex align-items-center mb-5">
-
-                            <i class="ki-outline ki-link fs-2 text-primary me-2"></i>
-
-                            <h3 class="fw-bold m-0">
-                                Link Details
-                            </h3>
-
-                        </div>
-
-                        <div class="row g-5">
-
-                            <!-- URL -->
-                            <div class="col-12">
-
-                                <label class="required form-label fw-semibold">
-                                    URL
-                                </label>
-
-                                <input type="text" name="url" class="form-control form-control-solid"
-                                    placeholder="https://zabbix.company.com" />
-
-                            </div>
-
-                            <!-- Icon -->
-                            <div class="col-md-6">
-
-                                <label class="form-label fw-semibold">
-                                    Icon
-                                </label>
-
-                                <input type="text" name="icon" class="form-control form-control-solid"
-                                    placeholder="ki-monitor" />
-
-                                <div class="form-text">
-                                    KeenIcons / FontAwesome icon class
-                                </div>
-
-                            </div>
-
-                            <!-- Sort Order -->
-                            <div class="col-md-6">
-
-                                <label class="form-label fw-semibold">
-                                    Sort Order
-                                </label>
-
-                                <input type="number" name="sort_order" class="form-control form-control-solid"
-                                    value="0" />
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <!--end::Link Details-->
-
-                    <!--begin::Access Control-->
-                    <div class="mb-5">
-
-                        <div class="d-flex align-items-center mb-5">
-
-                            <i class="ki-outline ki-shield-tick fs-2 text-primary me-2"></i>
-
-                            <h3 class="fw-bold m-0">
-                                Access Control
-                            </h3>
-
-                        </div>
-
-                        <div class="row g-5">
-
-                            <!-- Permission -->
-                            <div class="col-md-6">
-
-                                <label class="form-label fw-semibold">
-                                    Permission
-                                </label>
-
-                                <input type="text" name="permission" class="form-control form-control-solid"
-                                    placeholder="monitoring.view" />
-
-                                <div class="form-text">
-                                    Leave empty for public visibility
-                                </div>
-
-                            </div>
-
-                            <!-- Environment -->
-                            <div class="col-md-6">
-
-                                <label class="form-label fw-semibold">
-                                    Environment
-                                </label>
-
-                                <select name="environment" class="form-select form-select-solid">
-
-                                    <option value="production">
-                                        Production
-                                    </option>
-
-                                    <option value="staging">
-                                        Staging
-                                    </option>
-
-                                    <option value="development">
-                                        Development
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <!--end::Access Control-->
-
-                    <!--begin::Options-->
-                    <div class="separator separator-dashed my-10"></div>
-
-                    <div class="row g-5">
-
-                        <!-- Open in New Tab -->
-                        <div class="col-md-4">
-
-                            <div class="form-check form-switch form-check-custom form-check-solid">
-
-                                <input class="form-check-input" type="checkbox" name="new_tab" checked />
-
-                                <label class="form-check-label fw-semibold ms-3">
-                                    Open in New Tab
-                                </label>
-
-                            </div>
-
-                        </div>
-
-                        <!-- Active -->
-                        <div class="col-md-4">
-
-                            <div class="form-check form-switch form-check-custom form-check-solid">
-
-                                <input class="form-check-input" type="checkbox" name="is_active" checked />
-
-                                <label class="form-check-label fw-semibold ms-3">
-                                    Active
-                                </label>
-
-                            </div>
-
-                        </div>
-
-                        <!-- Visible -->
-                        <div class="col-md-4">
-
-                            <div class="form-check form-switch form-check-custom form-check-solid">
-
-                                <input class="form-check-input" type="checkbox" name="visible_in_sidebar" checked />
-
-                                <label class="form-check-label fw-semibold ms-3">
-                                    Visible in Sidebar
-                                </label>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <!--end::Options-->
-
-                </div>
-                <!--end::Body-->
-
-                <!--begin::Footer-->
-                <div class="modal-footer border-0 pt-0">
-
-                    <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">
-
-                        Cancel
-
-                    </button>
-
-                    <button type="submit" class="btn btn-primary">
-
-                        <span class="indicator-label">
-                            Save Link
-                        </span>
-
-                    </button>
-
-                </div>
-                <!--end::Footer-->
-
-            </form>
-            <!--end::Form-->
-
-        </div>
-
-    </div>
-
-</div>
+@include('includes.modals.add-systemlinks')

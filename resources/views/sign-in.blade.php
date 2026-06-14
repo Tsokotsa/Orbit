@@ -106,6 +106,50 @@
                     <div class="d-flex flex-center flex-column align-items-stretch h-lg-100 w-md-400px">
                         <!--begin::Wrapper-->
                         <div class="d-flex flex-center flex-column flex-column-fluid pb-15 pb-lg-20">
+
+                            <!-- Messages From Authentication Microsoft -->
+                            @if (session('success'))
+                                <div class="alert alert-success d-flex align-items-center p-5 mb-5">
+                                    <i class="ki-duotone ki-check-circle fs-2hx text-success me-4">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+
+                                    <div>
+                                        {{ session('success') }}
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if (session('error'))
+                                <div class="alert alert-danger d-flex align-items-center p-5 mb-5">
+                                    <i class="ki-duotone ki-shield-cross fs-2hx text-danger me-4">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+
+                                    <div>
+                                        {{ session('error') }}
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if ($errors->any())
+                                <div class="alert alert-danger d-flex align-items-center p-5 mb-5">
+                                    <i class="ki-duotone ki-shield-cross fs-2hx text-danger me-4">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+
+                                    <div>
+                                        @foreach ($errors->all() as $error)
+                                            <div>{{ $error }}</div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                            <!-- End of Messages Microsoft -->
+
                             <!--begin::Form-->
                             <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" method="POST"
                                 action="{{ route('login') }}" data-kt-redirect-url="/land">
